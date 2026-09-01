@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-09-01T14:28:54.3949091+08:00",
+  "cell": {
+    "width": 32,
+    "height": 48
+  },
+  "characters": [
+    "player",
+    "mira",
+    "kai",
+    "sol",
+    "sky",
+    "goh"
+  ],
+  "frameCountPerCharacter": 40,
+  "directions": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "notes": [
+    "Sky preserves center-parted black hair, round glasses, dusty-rose cardigan, cream shirt, and sky-blue apron.",
+    "Mira is an adult neko-maid librarian with cat ears, tail, glasses, navy-and-cream uniform, teal ribbon, and bell.",
+    "All PNGs use genuine alpha and exact 32x48 frame cells.",
+    "All sheets use an 8-column grid and nearest-neighbour pixel construction.",
+    "Version 1.1 adds true 32x48 single-pixel lighting, fabric, face, and identity accents for world-art compatibility."
+  ]
+}

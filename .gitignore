@@ -1,0 +1,26 @@
+# Third-party source packs are downloaded separately.
+# Keep only the source/license manifest in Git.
+assets/third-party/*
+!assets/third-party/ASSET_MANIFEST.md
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files and local caches
+tmp/
+temp/
+*.tmp
+*.log
+__pycache__/
+*.py[cod]
+
+# Environment files and credentials
+.env
+.env.*
+!.env.example
