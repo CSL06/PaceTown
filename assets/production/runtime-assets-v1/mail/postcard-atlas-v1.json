@@ -1,0 +1,298 @@
+{
+  "frames": {
+    "guardian-mira.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "guardian-kai.png": {
+      "frame": {
+        "x": 160,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "guardian-sol.png": {
+      "frame": {
+        "x": 0,
+        "y": 112,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "guardian-sky.png": {
+      "frame": {
+        "x": 160,
+        "y": 112,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "guardian-goh.png": {
+      "frame": {
+        "x": 0,
+        "y": 224,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "story-1.png": {
+      "frame": {
+        "x": 160,
+        "y": 224,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "story-2.png": {
+      "frame": {
+        "x": 0,
+        "y": 336,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "story-3.png": {
+      "frame": {
+        "x": 160,
+        "y": 336,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "story-4.png": {
+      "frame": {
+        "x": 0,
+        "y": 448,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "story-5.png": {
+      "frame": {
+        "x": 160,
+        "y": 448,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "guardian-council.png": {
+      "frame": {
+        "x": 0,
+        "y": 560,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "recovery-garden.png": {
+      "frame": {
+        "x": 160,
+        "y": 560,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "calendar-rebalance.png": {
+      "frame": {
+        "x": 0,
+        "y": 672,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    },
+    "blank.png": {
+      "frame": {
+        "x": 160,
+        "y": 672,
+        "w": 160,
+        "h": 112
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 112
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 112
+      }
+    }
+  },
+  "meta": {
+    "app": "PaceTown deterministic pixel builder",
+    "version": "1.0",
+    "image": "postcard-atlas-v1.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 320,
+      "h": 784
+    },
+    "scale": "1",
+    "tags": [
+      "14-postcards"
+    ]
+  }
+}

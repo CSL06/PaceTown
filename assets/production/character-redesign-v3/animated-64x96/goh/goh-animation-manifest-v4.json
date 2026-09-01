@@ -1,0 +1,18 @@
+{
+  "character": "goh",
+  "cell": {
+    "width": 64,
+    "height": 96
+  },
+  "frameCount": 40,
+  "animationCount": 18,
+  "columns": 8,
+  "rows": 5,
+  "identitySource": "assets/generated/characters/goh/goh-sprite-style-master-v3.png",
+  "poseSource": "assets/generated/characters/goh/goh-animation-pose-master-v4.png",
+  "notes": [
+    "Portrait-faithful v3 goh identity is preserved.",
+    "All production frames use genuine transparency and exact 64x96 cells.",
+    "The pose master supplies front-facing special states; side and rear motion is derived deterministically from approved directional bases."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "idle": {
+    "frames": [
+      "idle_0.png",
+      "idle_1.png"
+    ],
+    "frameRate": 2,
+    "repeat": -1
+  },
+  "talk": {
+    "frames": [
+      "talk_0.png",
+      "talk_1.png"
+    ],
+    "frameRate": 4,
+    "repeat": -1
+  },
+  "tea_serve": {
+    "frames": [
+      "tea_serve_0.png",
+      "tea_serve_1.png"
+    ],
+    "frameRate": 3,
+    "repeat": 0
+  },
+  "breathe": {
+    "frames": [
+      "breathe_0.png",
+      "breathe_1.png"
+    ],
+    "frameRate": 1,
+    "repeat": -1
+  },
+  "sit": {
+    "frames": [
+      "sit_0.png"
+    ],
+    "frameRate": 1,
+    "repeat": 0
+  },
+  "phone": {
+    "frames": [
+      "phone_0.png"
+    ],
+    "frameRate": 1,
+    "repeat": 0
+  },
+  "concerned": {
+    "frames": [
+      "concerned_0.png"
+    ],
+    "frameRate": 1,
+    "repeat": 0
+  },
+  "happy": {
+    "frames": [
+      "happy_0.png"
+    ],
+    "frameRate": 1,
+    "repeat": 0
+  }
+}

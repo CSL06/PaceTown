@@ -16,6 +16,7 @@ AGENTS.md
 # Temporary files and local caches
 tmp/
 temp/
+dist/
 *.tmp
 *.log
 __pycache__/

@@ -1,0 +1,812 @@
+{
+  "characters": {
+    "player": {
+      "frames": 40,
+      "animations": 18,
+      "alphaFrames": 40,
+      "cell": {
+        "width": 64,
+        "height": 96
+      }
+    },
+    "mira": {
+      "frames": 40,
+      "animations": 18,
+      "alphaFrames": 40,
+      "cell": {
+        "width": 64,
+        "height": 96
+      }
+    },
+    "kai": {
+      "frames": 40,
+      "animations": 18,
+      "alphaFrames": 40,
+      "cell": {
+        "width": 64,
+        "height": 96
+      }
+    },
+    "sol": {
+      "frames": 40,
+      "animations": 18,
+      "alphaFrames": 40,
+      "cell": {
+        "width": 64,
+        "height": 96
+      }
+    },
+    "sky": {
+      "frames": 40,
+      "animations": 18,
+      "alphaFrames": 40,
+      "cell": {
+        "width": 64,
+        "height": 96
+      }
+    },
+    "goh": {
+      "frames": 40,
+      "animations": 18,
+      "alphaFrames": 40,
+      "cell": {
+        "width": 64,
+        "height": 96
+      }
+    }
+  },
+  "runtime": {
+    "objects/enchanted-storybook-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/musical-clock-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/ripple-fountain-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/tea-counter-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/lantern-stall-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/backpack-inspection-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/council-bell-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/garden-plot-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/future-mailbox-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/postcard-board-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/calendar-terminal-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/rebalance-table-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/quiet-lantern-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/calm-portal-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "objects/exit-noticeboard-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "minigames/firefly-stories-foregrounds-v1": {
+      "frames": 17,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "minigames/chime-drift-foregrounds-v1": {
+      "frames": 16,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "minigames/gentle-ripples-foregrounds-v1": {
+      "frames": 21,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "minigames/warm-cup-foregrounds-v1": {
+      "frames": 21,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "minigames/night-lanterns-foregrounds-v1": {
+      "frames": 39,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        160
+      ]
+    },
+    "workload/backpack-states-v1": {
+      "frames": 5,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        320,
+        64
+      ]
+    },
+    "workload/task-item-atlas-v1": {
+      "frames": 14,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        224,
+        64
+      ]
+    },
+    "workload/scheduling-state-atlas-v1": {
+      "frames": 3,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        96,
+        32
+      ]
+    },
+    "states/loading-illustration-v1": {
+      "frames": 1,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        96
+      ]
+    },
+    "states/empty-calendar-illustration-v1": {
+      "frames": 1,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        96
+      ]
+    },
+    "states/offline-illustration-v1": {
+      "frames": 1,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        96
+      ]
+    },
+    "states/ai-unavailable-illustration-v1": {
+      "frames": 1,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        96
+      ]
+    },
+    "states/no-tasks-illustration-v1": {
+      "frames": 1,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        96
+      ]
+    },
+    "ambient/student-reading-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "ambient/student-laptop-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "ambient/student-resting-tree-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "ambient/student-groceries-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "ambient/student-headphones-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "ambient/student-cafe-drink-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "ambient/birds-animation-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "ambient/cats-animation-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "ambient/squirrel-animation-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "ambient/butterflies-animation-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "ambient/garden-fish-animation-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "garden/plot-progression-v1": {
+      "frames": 5,
+      "cell": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        480,
+        96
+      ]
+    },
+    "garden/plant-growth-atlas-v1": {
+      "frames": 36,
+      "cell": [
+        32,
+        48
+      ],
+      "mode": "RGBA",
+      "size": [
+        192,
+        288
+      ]
+    },
+    "garden/birdbath-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "garden/wind-chime-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "garden/time-overlays-v1": {
+      "frames": 3,
+      "cell": [
+        320,
+        180
+      ],
+      "mode": "RGBA",
+      "size": [
+        320,
+        540
+      ]
+    },
+    "garden/garden-complete-effect-v1": {
+      "frames": 6,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        384,
+        64
+      ]
+    },
+    "mail/mailbox-states-v1": {
+      "frames": 4,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        64
+      ]
+    },
+    "mail/envelope-letter-animation-v1": {
+      "frames": 5,
+      "cell": [
+        48,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        240,
+        32
+      ]
+    },
+    "mail/postcard-atlas-v1": {
+      "frames": 14,
+      "cell": [
+        160,
+        112
+      ],
+      "mode": "RGBA",
+      "size": [
+        320,
+        784
+      ]
+    },
+    "calendar/calendar-additional-atlas-v1": {
+      "frames": 3,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        96,
+        32
+      ]
+    },
+    "calendar/schedule-preview-backgrounds-v1": {
+      "frames": 2,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        96
+      ]
+    },
+    "effects/scene-overlays-v1": {
+      "frames": 4,
+      "cell": [
+        320,
+        180
+      ],
+      "mode": "RGBA",
+      "size": [
+        320,
+        720
+      ]
+    },
+    "effects/ambient-dust-sparkle-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "effects/interaction-pulse-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "effects/footstep-particles-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "effects/guardian-speech-indicator-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "effects/loading-transition-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "effects/interaction-cursor-v1": {
+      "frames": 4,
+      "cell": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "size": [
+        128,
+        32
+      ]
+    },
+    "ui/ui-icon-atlas-production-v2": {
+      "frames": 16,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        256,
+        256
+      ]
+    },
+    "calendar/calendar-state-sheet-production-v2": {
+      "frames": 6,
+      "cell": [
+        128,
+        96
+      ],
+      "mode": "RGBA",
+      "size": [
+        384,
+        192
+      ]
+    },
+    "effects/load-weather-atlas-production-v2": {
+      "frames": 32,
+      "cell": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "size": [
+        512,
+        256
+      ]
+    },
+    "branding/app-icon-pixel-master-v2": {
+      "frames": 1,
+      "cell": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "size": [
+        512,
+        512
+      ]
+    },
+    "qa/pacetown-campus-integration-test-v1": {
+      "frames": 1,
+      "cell": [
+        960,
+        540
+      ],
+      "mode": "RGBA",
+      "size": [
+        960,
+        540
+      ]
+    }
+  },
+  "errors": [],
+  "summary": {
+    "characterPackages": 6,
+    "characterFrames": 240,
+    "characterAnimations": 108,
+    "runtimeSheets": 62,
+    "passed": true
+  }
+}

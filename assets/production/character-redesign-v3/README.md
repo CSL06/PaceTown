@@ -33,11 +33,14 @@ Sky also uses `../../generated/references/sky-user-reference.png` as the authori
 
 - Four-direction standing bases: ready.
 - Exact transparent `64x96` cells: ready.
-- Full walk, talk, interaction, breathing, sitting, phone, concerned, and happy animations: still need conversion from these v3 bases.
+- Complete animation packages: ready under `animated-64x96/<character>/` for the player, Mira, Kai, Sol, Sky, and Goh.
+- Every character has 40 transparent `64x96` frames, 18 shared animation definitions, Phaser atlas JSON, a manifest, GIF previews, a review board, and a campus-scale test.
+- Shared states: four-direction idle, walk and talk; front-facing interaction, sitting, phone, breathing, concerned and happy.
 - The older `production/characters/` sheets are retained only for animation-layout reference and should not define the final character appearance.
 
 Regenerate the exact-grid previews with the bundled workspace Python runtime:
 
 ```powershell
 & "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" `.\tools\build_character_redesign_previews.py
+& "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" `.\tools\build_player_animation_v4.py --character sky
 ```

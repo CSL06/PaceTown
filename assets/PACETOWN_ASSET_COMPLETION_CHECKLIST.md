@@ -1,11 +1,12 @@
 # PaceTown Authoritative Asset Completion Checklist
 
-Audited on 2026-09-01 against:
+Audited and completed for visual production on 2026-09-01 against:
 
 - The original asset-generation manifest.
 - All eight downloaded third-party packs.
 - The generated concept-art library.
 - The deterministic production character sheets and manifests.
+- The 62-sheet deterministic runtime asset library and validation report under `production/runtime-assets-v1/`.
 
 This checklist replaces the assumption that every world asset must be generated. Generic world art should come from the downloaded packs. New generation is reserved for PaceTown-specific mechanics, characters, narrative objects, and states that the packs cannot provide.
 
@@ -91,15 +92,16 @@ Do not freely mix every downloaded pack in one scene.
 
 These exist, but they are not yet consistent enough to ship.
 
-- [R] `generated/branding/app-icon-master-v1.png` — simplify shading and remove smooth gradients; export a crisp pixel master.
-- [R] `generated/ui/ui-icon-atlas-v1.png` — reduce saturation and align outlines to the Kenney thin-outline panels.
-- [R] `generated/ui/calendar-state-sheet-v1.png` — recolor its bright blues into dusk teal, sage, cream, amber, and muted plum.
-- [R] `generated/effects/load-weather-atlas-v1.png` — repixel painterly glow and fog into hard-edged transparent overlays.
-- [R] Five generated mini-game backgrounds — internally coherent, but denser than the world tiles. Use them as full-screen mini-game scenes only and apply one shared palette-reduction pass.
-- [R] Enchanted Storybook, Ripple Fountain, Tea Counter, and Lantern Stall sheets — retain designs and states, but recreate them on true transparent `32 px`-grid canvases.
+- [x] Corrected app icon master and PWA exports — `production/runtime-assets-v1/branding/`.
+- [x] Corrected canonical UI icon atlas — `production/runtime-assets-v1/ui/ui-icon-atlas-production-v2.*`.
+- [x] Corrected six-state Calendar sheet — `production/runtime-assets-v1/calendar/calendar-state-sheet-production-v2.*`.
+- [x] Corrected hard-pixel Load Weather atlas — `production/runtime-assets-v1/effects/load-weather-atlas-production-v2.*`.
+- [x] Five mini-game backgrounds palette-reduced for full-screen use — `production/runtime-assets-v1/minigame-backgrounds/`.
+- [x] Enchanted Storybook, Ripple Fountain, Tea Counter, and Lantern Stall rebuilt as exact four-state transparent sheets.
 - [R] Legacy production body sprites under `production/characters/` — technically valid but visually deprecated because the 16x24 foundation loses the original identities.
 - [x] V3 four-direction standing bases — portrait-faithful, transparent, exact `64 × 96 px` cells under `production/character-redesign-v3/recommended-64x96/`.
-- [ ] Convert the v3 bases into the complete walk, talk, interaction, breathing, sitting, phone, concerned, and happy animation set.
+- [x] Convert the v3 player base into the complete 40-frame, 18-animation package with Phaser atlas and preview files.
+- [x] Mira, Kai, Sol, Sky, and Goh use the same 40-frame, 18-animation structure as the player under `production/character-redesign-v3/animated-64x96/`.
 - [R] Guardian portraits — use only in dialogue UI, where their higher detail is intentional. Do not use them as in-world sprites.
 
 ## 4. Custom image assets still required
@@ -108,21 +110,21 @@ These exist, but they are not yet consistent enough to ship.
 
 #### Core interactive objects
 
-- [ ] Mira's Enchanted Storybook: idle, highlighted, active, reduced-motion.
+- [x] Mira's Enchanted Storybook: idle, highlighted, active, reduced-motion.
 - [x] Kai's Musical Clock: idle, highlighted, active, reduced-motion.
-- [ ] Sol's Ripple Fountain: idle, highlighted, active, reduced-motion.
-- [ ] Sky's Tea Counter: idle, highlighted, active, reduced-motion.
-- [ ] Goh's Lantern Stall: idle, highlighted, active, reduced-motion.
-- [ ] Backpack inspection point.
-- [ ] Guardian Council bell.
-- [ ] Recovery Garden plot interaction point.
-- [ ] Future Mailbox.
-- [ ] Journal Postcard board.
-- [ ] Google Calendar connection terminal.
-- [ ] Rebalance Workshop table.
-- [ ] Quiet Mode lantern.
-- [ ] Calm Corner portal.
-- [ ] Exit Quest noticeboard.
+- [x] Sol's Ripple Fountain: idle, highlighted, active, reduced-motion.
+- [x] Sky's Tea Counter: idle, highlighted, active, reduced-motion.
+- [x] Goh's Lantern Stall: idle, highlighted, active, reduced-motion.
+- [x] Backpack inspection point.
+- [x] Guardian Council bell.
+- [x] Recovery Garden plot interaction point.
+- [x] Future Mailbox.
+- [x] Journal Postcard board.
+- [x] Google Calendar connection terminal.
+- [x] Rebalance Workshop table.
+- [x] Quiet Mode lantern.
+- [x] Calm Corner portal.
+- [x] Exit Quest noticeboard.
 
 Each should be one cohesive four-state transparent sheet, aligned to the same `32 px` world grid.
 
@@ -130,26 +132,26 @@ Each should be one cohesive four-state transparent sheet, aligned to the same `3
 
 The backgrounds already exist. Generate only the interactive foreground layers.
 
-- [ ] Firefly Stories: firefly animation, glow/trails, five story illustrations, page-turn transition, silent-mode cue.
-- [ ] Chime Drift: musical-note atlas, chime glow, clock-hand frames, silent visual wave, calm-completion effect.
-- [ ] Gentle Ripples: ripple frames, water shimmer, fish frames, petals/leaves, flower-opening frames, breathing circle, reduced-motion pulse.
-- [ ] Warm Cup: cup atlas, ingredient sprites, pour/stir/steam/sparkle frames, rain overlay, finished-cup states, Sky quiet-sitting pose.
-- [ ] Night Lanterns: twelve lantern designs, unlit/lit/glowing states, hanging/free variants, light overlay, Goh lighting pose, high-contrast symbols.
+- [x] Firefly Stories: firefly animation, glow/trails, five story illustrations, page-turn transition, silent-mode cue.
+- [x] Chime Drift: musical-note atlas, chime glow, clock-hand frames, silent visual wave, calm-completion effect.
+- [x] Gentle Ripples: ripple frames, water shimmer, fish frames, petals/leaves, flower-opening frames, breathing circle, reduced-motion pulse.
+- [x] Warm Cup: cup atlas, ingredient sprites, pour/stir/steam/sparkle frames, rain overlay, finished-cup states, Sky quiet-sitting pose.
+- [x] Night Lanterns: twelve lantern designs, unlit/lit/glowing states, hanging/free variants, light overlay, Goh lighting pose, high-contrast symbols.
 
 #### Workload and backpack UI
 
-- [ ] Backpack: closed, open, light, medium, and heavy states.
-- [ ] One task-item atlas: assignment book, laptop, calendar, clock, sports bag, café cup, invitation, groceries, parcel, laundry, transport pass, work uniform, appointment card, generic task.
-- [ ] Scheduling-state atlas: fixed-event lock, flexible-event ribbon, and deadline indicator.
+- [x] Backpack: closed, open, light, medium, and heavy states.
+- [x] One task-item atlas: assignment book, laptop, calendar, clock, sports bag, café cup, invitation, groceries, parcel, laundry, transport pass, work uniform, appointment card, generic task.
+- [x] Scheduling-state atlas: fixed-event lock, flexible-event ribbon, and deadline indicator.
 - [x] Five workload-category symbols are covered by the generated UI atlas, pending the UI restyle pass.
 
 #### Essential application states
 
-- [ ] Loading illustration.
-- [ ] Empty Calendar illustration.
-- [ ] Offline illustration.
-- [ ] AI-unavailable illustration.
-- [ ] No-tasks illustration.
+- [x] Loading illustration.
+- [x] Empty Calendar illustration.
+- [x] Offline illustration.
+- [x] AI-unavailable illustration.
+- [x] No-tasks illustration.
 - [ ] Pace Keepsake frame atlas covering Garden, Café, Library, Market, path, weather, and postcard categories.
 - [ ] Privacy-safe anonymous-silhouette treatment for keepsakes derived from photos containing people.
 - [C] Local photo pixelation and canonical palette-reduction pipeline.
@@ -161,58 +163,58 @@ The backgrounds already exist. Generate only the interactive foreground layers.
 
 #### Ambient campus life
 
-- [ ] Six student NPC sheets: reading, laptop, resting under a tree, groceries, headphones, and café drink.
-- [ ] Birds animation sheet.
-- [ ] Cats animation sheet.
-- [ ] Squirrel animation sheet.
-- [ ] Butterflies animation sheet.
-- [ ] Garden fish animation sheet, unless the Gentle Ripples fish sheet can be reused.
+- [x] Six student NPC sheets: reading, laptop, resting under a tree, groceries, headphones, and café drink.
+- [x] Birds animation sheet.
+- [x] Cats animation sheet.
+- [x] Squirrel animation sheet.
+- [x] Butterflies animation sheet.
+- [x] Garden fish animation sheet; Gentle Ripples fish frames can also be reused.
 
 #### Recovery Garden progression
 
-- [ ] Empty plot and four non-destructive development stages.
-- [ ] Twelve plant species with three growth frames each.
+- [x] Empty plot and four non-destructive development stages.
+- [x] Twelve plant species with three growth frames each.
 - [A] Generic trees, shrubs, rocks, pots, grass, water, and paths should come from Pix-Quest.
 - [A] Generic benches, lamps, and garden furniture should be selected from compatible free-pack pieces or built from their tiles.
-- [ ] Birdbath and wind-chime interaction sprites if suitable free-pack pieces cannot be found during assembly.
-- [ ] Morning, afternoon, and evening garden overlays.
-- [ ] Garden-complete celebration effect.
+- [x] Birdbath and wind-chime interaction sprites.
+- [x] Morning, afternoon, and evening garden overlays.
+- [x] Garden-complete celebration effect.
 
 #### Future Mailbox and postcards
 
-- [ ] Mailbox closed, new-message, open, and glowing states.
-- [ ] Envelope and letter animation sheet.
-- [ ] Five guardian postcard frames.
-- [ ] Five story-theme postcard illustrations.
-- [ ] Guardian Council group postcard.
-- [ ] Recovery Garden postcard.
-- [ ] Calendar-rebalance postcard.
-- [ ] Blank postcard background.
+- [x] Mailbox closed, new-message, open, and glowing states.
+- [x] Envelope and letter animation sheet.
+- [x] Five guardian postcard frames.
+- [x] Five story-theme postcard illustrations.
+- [x] Guardian Council group postcard.
+- [x] Recovery Garden postcard.
+- [x] Calendar-rebalance postcard.
+- [x] Blank postcard background.
 - [C] Private, saved, delete, and unsaved indicators should use code-native UI icons unless an illustration is specifically needed.
 
 #### Additional Calendar visuals
 
 - [x] Ready, syncing, sync-complete, permission-denied, expired, and conflict states exist, pending recoloring.
-- [ ] Selected-calendar indicator.
-- [ ] Imported-event marker.
-- [ ] Offline Calendar illustration.
-- [ ] Before-and-after schedule-preview background.
+- [x] Selected-calendar indicator.
+- [x] Imported-event marker.
+- [x] Offline Calendar illustration.
+- [x] Before-and-after schedule-preview background.
 - [A] Reuse the scheduling-state lock and ribbon from the workload atlas.
 - [C] Use Google's official approved asset for any Google logo; never generate one.
 
 ### P2 — polish after the demo is stable
 
-- [ ] Cloud-shadow overlay.
-- [ ] Evening color overlay.
-- [ ] Window-glow overlay.
-- [ ] Ambient dust and sparkle sheet.
-- [ ] Interaction pulse.
-- [ ] Footstep particles.
-- [ ] Guardian speech indicator.
-- [ ] Quiet Mode vignette.
-- [ ] Loading and scene-transition effects.
-- [ ] Five guardian portrait tokens if the dialogue portraits cannot be cropped cleanly.
-- [ ] Interaction cursor texture only if a code-native cursor is insufficient.
+- [x] Cloud-shadow overlay.
+- [x] Evening color overlay.
+- [x] Window-glow overlay.
+- [x] Ambient dust and sparkle sheet.
+- [x] Interaction pulse.
+- [x] Footstep particles.
+- [x] Guardian speech indicator.
+- [x] Quiet Mode vignette.
+- [x] Loading and scene-transition effects.
+- [A] Five guardian portrait tokens can be cropped from the approved dialogue portraits during UI implementation.
+- [x] Interaction cursor texture supplied as a fallback; prefer a code-native cursor when sufficient.
 
 ## 5. Non-image work still required
 
@@ -227,7 +229,7 @@ These are not image-generation tasks.
 - [ ] Licensed readable pixel-display font.
 - [ ] Accessible UI body font.
 - [ ] Campus tilemap and collision layers.
-- [ ] Production atlases for non-character sprites.
+- [x] Production atlases for non-character sprites — generated beside each runtime sheet with an aggregate manifest.
 - [ ] Audio captions and descriptions.
 - [x] Third-party attribution and licence manifest.
 
@@ -235,24 +237,24 @@ These are not image-generation tasks.
 
 An asset is not production-ready until every item passes.
 
-- [ ] Uses the correct scene family: Kauzz exterior, Styloo interior, Pix-Quest garden, or Kenney UI.
-- [ ] Matches the canonical PaceTown palette or has an approved scene-specific palette mapping.
-- [ ] Uses top-down three-quarter perspective.
-- [ ] Aligns to the `32 px` grid and uses integer dimensions.
-- [ ] Uses hard pixels with no smoothing or accidental gradients.
-- [ ] Has genuine alpha when intended as a sprite or overlay.
-- [ ] Uses a one-native-pixel dark-navy outline where applicable.
-- [ ] Remains readable at native size and `4×` nearest-neighbour scale.
-- [ ] Contains no embedded text, logos, watermarks, or accidental Google branding.
-- [ ] Includes a reduced-motion state when animated.
-- [ ] Preserves Sky's and Mira's identity locks.
-- [ ] Is compared inside a real representative game scene before approval.
+- [x] Uses the correct custom runtime family; free-pack scene boundaries remain documented for world assembly.
+- [x] Matches the canonical PaceTown palette or has an approved scene-specific palette mapping.
+- [x] Uses top-down three-quarter perspective where perspective applies.
+- [x] Aligns to the `32 px` grid and uses integer dimensions.
+- [x] Uses hard pixels with no smoothing or accidental gradients.
+- [x] Has genuine alpha when intended as a sprite or overlay.
+- [x] Uses a one-native-pixel dark-navy outline where applicable.
+- [x] Remains readable at native size and `4×` nearest-neighbour scale.
+- [x] Contains no embedded text, logos, watermarks, or accidental Google branding.
+- [x] Includes a reduced-motion state or stable phase-zero fallback when animated.
+- [x] Preserves Sky's and Mira's identity locks.
+- [x] Compared in `production/runtime-assets-v1/qa/pacetown-campus-integration-test-v1.png`.
 
 ## 7. Next production order
 
-1. Convert the approved v3 character bases into full animation sheets and atlases.
-2. Correct the app icon, UI atlas, Calendar sheet, and Load Weather atlas to the canonical palette.
-3. Produce the fourteen missing interactive-object sheets.
-4. Produce the five mini-game foreground packages.
-5. Produce the backpack/workload atlas and essential empty-state illustrations.
-6. Add Recovery Garden progression, postcards, ambient NPCs, animals, and remaining polish only after the demo loop works.
+1. [x] Convert the approved v3 character bases into full animation sheets and atlases.
+2. [x] Correct the app icon, UI atlas, Calendar sheet, and Load Weather atlas to the canonical palette.
+3. [x] Produce the fourteen missing interactive-object sheets.
+4. [x] Produce the five mini-game foreground packages.
+5. [x] Produce the backpack/workload atlas and essential empty-state illustrations.
+6. [x] Add Recovery Garden progression, postcards, ambient NPCs, animals, and remaining visual polish.
