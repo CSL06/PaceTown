@@ -87,7 +87,7 @@ The preferred player identity is the glasses-free design in `player-portraits-v2
 1. Use the campus style master and location sheets to assemble the real tilemap from the downloaded third-party tiles.
 2. Slice transparent portrait, icon, Calendar, weather, and Sky sheets into production atlases.
 3. Manually clean and repixel the approved body and object drafts onto transparent canvases; keep the existing silhouettes and states.
-4. Normalize in-world characters to `32 × 48 px` with manual pixel cleanup rather than smooth resampling.
+4. Use the portrait-faithful `64 × 96 px` v3 bases under `assets/production/character-redesign-v3/recommended-64x96/`; retain the older `32 × 48 px` sheets only as animation-layout references.
 5. Use nearest-neighbour scaling and disable image smoothing.
 6. Keep source sheets intact and place sliced frames in `assets/production/`.
 7. Add Phaser atlas JSON, frame coordinates, collision data, and accessible application labels in code.

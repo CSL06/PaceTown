@@ -150,6 +150,10 @@ The backgrounds already exist. Generate only the interactive foreground layers.
 - [ ] Offline illustration.
 - [ ] AI-unavailable illustration.
 - [ ] No-tasks illustration.
+- [ ] Pace Keepsake frame atlas covering Garden, Café, Library, Market, path, weather, and postcard categories.
+- [ ] Privacy-safe anonymous-silhouette treatment for keepsakes derived from photos containing people.
+- [C] Local photo pixelation and canonical palette-reduction pipeline.
+- [C] Private Keepsake collection, preview, placement, download, and deletion UI.
 - [C] PWA icon sizes should be exported from the corrected app-icon master; do not regenerate each size.
 - [C] Focus rings, standard navigation icons, charts, buttons, labels, and body text belong in code/SVG, not image generation.
 

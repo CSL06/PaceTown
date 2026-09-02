@@ -26,14 +26,14 @@ Use a 32×32 top-down grid for the main campus.
 4. Import Pix-Quest nature assets at exact 2× scale; do not resize them fractionally.
 5. Choose one Kenney UI outline family and remove unused variants from the production bundle.
 6. Add input prompts and lighting masks.
-7. Generate the custom PaceTown assets that are not present in these packs:
-   - Player avatar.
-   - Mira, Kai, Sol, Sky, and Goh.
-   - Guardian dialogue portraits.
-   - Five interactive stress-game objects.
-   - Five mini-game backgrounds.
-   - PaceTown icon and splash art.
+7. Use the completed custom PaceTown sources and produce only the missing runtime assets:
+   - Convert the portrait-faithful player, Mira, Kai, Sol, Sky, and Goh v3 bases into complete animation sheets.
+   - Use the completed guardian dialogue portraits.
+   - Rebuild the missing interactive stress-game objects as transparent four-state runtime sheets.
+   - Use the completed mini-game backgrounds and create their missing foreground interaction packages.
+   - Correct the existing PaceTown icon and UI/effect sheets to the canonical palette.
 8. Record every selected third-party file in the production asset manifest.
+9. Add the Pace Keepsake frame atlas and deterministic photo-to-pixel fallback using the same canonical palette; treat user-generated keepsakes as private runtime data, not bundled source assets.
 
 ## Technical rules
 

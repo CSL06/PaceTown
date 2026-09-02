@@ -7,7 +7,7 @@
 Generate an original top-down pixel-art world inspired by the readability of Gather, without copying its characters, maps, buildings, or branding.
 
 - Base tile: `32 × 32 px`.
-- Character footprint: `32 × 48 px`.
+- Character cell: `64 × 96 px` for the portrait-faithful hero cast, bottom-aligned to the `32 px` world grid. Retain older `32 × 48 px` sheets only as deprecated animation-layout references.
 - Perspective: top-down three-quarter view, not isometric.
 - Rendering: crisp pixel clusters, no antialiasing, nearest-neighbour scaling.
 - Palette: calming sage, dusk teal, warm amber, dusty rose, cream, muted plum, and dark navy outlines.
@@ -310,10 +310,14 @@ Each object needs small map, backpack, and panel-size versions.
 - Recovery Garden postcard.
 - Calendar-rebalance postcard.
 - Blank postcard background for generated summaries.
+- Pace Keepsake frames for Garden, Café, Library, Market, path, weather, and general postcard memories.
+- Anonymous-silhouette and privacy-safe crop treatments for photo-derived keepsakes.
 - Private/saved indicator.
 - Delete and unsaved-state illustrations.
 
 No text should be rendered into the images; application text will be placed over them.
+
+Photo-derived Pace Keepsakes are created at runtime from optional user images. Their generation must use the canonical palette, hard-pixel treatment, simplified composition, no embedded text or logos, and no invented or identifiable people unless explicitly approved.
 
 ### Batch 12 — UI and branding assets
 
