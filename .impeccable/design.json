@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-02T00:00:00+08:00",
+  "title": "Design System: PaceTown",
+  "extensions": {
+    "colorMeta": {
+      "amber-action": { "role": "primary", "displayName": "Lantern Amber", "canonical": "#e7a23b", "tonalRamp": ["#2d1c0a", "#5b3712", "#89531f", "#b7702c", "#e7a23b", "#efbd6d", "#f6d99f", "#fff4d5"] },
+      "ink-night": { "role": "neutral", "displayName": "Ink Night", "canonical": "#182738", "tonalRamp": ["#081018", "#101b27", "#182738", "#294158", "#47627a", "#71889d", "#aab9c5", "#edf2f5"] },
+      "cream-paper": { "role": "neutral", "displayName": "Cream Paper", "canonical": "#f7edcf", "tonalRamp": ["#2b281e", "#514a35", "#786f51", "#a29772", "#c9be95", "#e4d9b8", "#f7edcf", "#fffaf0"] },
+      "tea-teal": { "role": "secondary", "displayName": "Tea Teal", "canonical": "#4f9c98", "tonalRamp": ["#0c2524", "#173f3d", "#245b58", "#347873", "#4f9c98", "#7ebbb7", "#afd9d5", "#e6f4f2"] },
+      "garden-moss": { "role": "secondary", "displayName": "Garden Moss", "canonical": "#607d4c", "tonalRamp": ["#14200f", "#28391e", "#3f552f", "#607d4c", "#829e6d", "#a7bd94", "#ceddc1", "#f0f6eb"] },
+      "sky-plum": { "role": "tertiary", "displayName": "Sky Plum", "canonical": "#6d4968", "tonalRamp": ["#241522", "#3b2638", "#55384f", "#6d4968", "#916e8c", "#b798b4", "#dac8d8", "#f5edf4"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Campus Story", "purpose": "Warm, compact headings and character voice." },
+      "body": { "displayName": "Clear Guidance", "purpose": "Instructions, supportive copy, and status." },
+      "label": { "displayName": "Game Control", "purpose": "Buttons, tags, and concise controls." }
+    },
+    "shadows": [
+      { "name": "world-frame", "value": "0 18px 45px rgba(5, 13, 20, 0.34)", "purpose": "Separates the campus stage and focused overlays from the night frame." },
+      { "name": "pixel-lift", "value": "3px 3px 0 #182738", "purpose": "Tactile lift for primary actions and small paper controls." }
+    ],
+    "motion": [
+      { "name": "character-step", "value": "120ms linear", "purpose": "Moves intact character sprites without interpolating pixels." },
+      { "name": "calm-breath", "value": "4s inhale / 2s hold / 6s exhale", "purpose": "One guided cycle; replaced by static progress when reduced motion is active." }
+    ],
+    "breakpoints": [
+      { "name": "town-drawer", "value": "960px" },
+      { "name": "phone-stage", "value": "620px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single clear next action inside a focused panel.",
+      "html": "<button class=\"ds-primary\">STAY A MOMENT</button>",
+      "css": ".ds-primary{min-height:44px;padding:.68rem .92rem;color:#182738;background:#e7a23b;border:2px solid #182738;border-radius:0;box-shadow:3px 3px 0 #182738;font:800 .76rem Verdana,sans-serif;cursor:pointer}.ds-primary:hover{background:#f3b853;transform:translate(-1px,-1px);box-shadow:4px 4px 0 #182738}.ds-primary:focus-visible{outline:3px solid #fff2a8;outline-offset:3px}"
+    },
+    {
+      "name": "Text Action",
+      "kind": "button",
+      "description": "Low-commitment exit or secondary action.",
+      "html": "<button class=\"ds-text-action\">Not right now</button>",
+      "css": ".ds-text-action{min-height:42px;padding:.6rem .4rem;color:#534839;background:transparent;border:0;border-radius:0;text-decoration:underline;text-underline-offset:3px;font:.72rem Verdana,sans-serif;cursor:pointer}.ds-text-action:hover{color:#182738}.ds-text-action:focus-visible{outline:3px solid #e7a23b;outline-offset:2px}"
+    },
+    {
+      "name": "Town Place Card",
+      "kind": "card",
+      "description": "Direct list access to a spatial town activity.",
+      "html": "<button class=\"ds-place-card\"><span class=\"ds-place-icon\"></span><span><strong>Sky’s Tea Corner</strong><small>Talk, breathe, or take a quiet pause</small></span><span>→</span></button>",
+      "css": ".ds-place-card{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.65rem;text-align:left;padding:.8rem .7rem;color:#f7edcf;background:#243a4e;border:1px solid #e7a23b;border-radius:0;font-family:Verdana,sans-serif}.ds-place-card strong,.ds-place-card small{display:block}.ds-place-card small{margin-top:.22rem;color:#c5cfca}.ds-place-card:hover{background:#294357}.ds-place-card:focus-visible{outline:3px solid #fff2a8;outline-offset:3px}.ds-place-icon{width:34px;height:34px;background:#f7edcf;border:2px solid #182738}"
+    },
+    {
+      "name": "Dialogue Panel",
+      "kind": "custom",
+      "refersTo": "panel-paper",
+      "description": "Focused, character-led supportive conversation.",
+      "html": "<section class=\"ds-dialogue\"><h3>Sky</h3><p>You don’t have to solve the whole week right now.</p></section>",
+      "css": ".ds-dialogue{padding:1rem;color:#182738;background:#fff8e4;border:4px solid #182738;border-radius:0;box-shadow:8px 8px 0 rgba(8,17,26,.65);font-family:Georgia,serif}.ds-dialogue h3{margin:0 0 .35rem;color:#6d4968}.ds-dialogue p{margin:0;line-height:1.52}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "description": "A word-labeled example state; never color-only.",
+      "html": "<span class=\"ds-status\"><i></i><span><small>Demo check-in</small>Busy, but here</span></span>",
+      "css": ".ds-status{display:flex;align-items:center;gap:.6rem;padding:.55rem .8rem;background:#203547;border:1px solid rgba(247,237,207,.2);color:#f7edcf;font:.78rem Verdana,sans-serif}.ds-status i{width:10px;height:10px;background:#e7a23b;box-shadow:0 0 0 4px rgba(231,162,59,.18)}.ds-status small{display:block;color:#b9c9c5;font-size:.58rem}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Gentle Campus Pause",
+    "overview": "PaceTown places a detailed, warm university town at the center and lets the interface behave like a quiet frame around it. The visual system is cozy without becoming childish: tactile pixel assets carry the personality, while square cream-and-ink panels keep guidance legible and calm. The world should feel inhabited before it feels instrumented.",
+    "keyCharacteristics": ["A real pixel-art environment is the focal material.", "Ink-night framing gives warm campus colors room to glow.", "Cream paper panels make conversations feel personal and contained.", "Amber marks one available action; teal marks calm progress.", "Whole-body characters remain crisp and uncropped."],
+    "rules": [
+      { "name": "The Lantern Rule", "body": "Amber identifies the clearest next action and should not become general decoration.", "section": "colors" },
+      { "name": "The Two-Voice Rule", "body": "Serif carries warmth and narrative; sans-serif carries controls and status. Do not introduce a third decorative face.", "section": "typography" },
+      { "name": "The Real-Material Rule", "body": "Do not imitate painted scenery with CSS gradients when a pixel-art environment or object should carry the moment.", "section": "elevation" }
+    ],
+    "dos": ["Do let the campus and characters carry most of the visual personality.", "Do keep one obvious amber action per focused panel.", "Do provide list navigation alongside spatial movement.", "Do keep character pixels crisp and entire bodies inside their source frames.", "Do label prototype or synthetic wellbeing states clearly."],
+    "donts": ["Don't turn the experience into a dashboard-first productivity tool.", "Don't use emoji as production game icons; use the pixel-object language.", "Don't use decorative side stripes as card accents.", "Don't add rounded SaaS cards, gradient text, or extra display fonts.", "Don't communicate stress, safety, or completion through color alone."]
+  }
+}

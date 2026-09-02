@@ -17,6 +17,11 @@ AGENTS.md
 tmp/
 temp/
 dist/
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
 *.tmp
 *.log
 __pycache__/
