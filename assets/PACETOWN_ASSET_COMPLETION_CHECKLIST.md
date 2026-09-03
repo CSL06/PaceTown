@@ -98,10 +98,10 @@ These exist, but they are not yet consistent enough to ship.
 - [x] Corrected hard-pixel Load Weather atlas — `production/runtime-assets-v1/effects/load-weather-atlas-production-v2.*`.
 - [x] Five mini-game backgrounds palette-reduced for full-screen use — `production/runtime-assets-v1/minigame-backgrounds/`.
 - [x] Enchanted Storybook, Ripple Fountain, Tea Counter, and Lantern Stall rebuilt as exact four-state transparent sheets.
-- [R] Legacy production body sprites under `production/characters/` — technically valid but visually deprecated because the 16x24 foundation loses the original identities.
-- [x] V3 four-direction standing bases — portrait-faithful, transparent, exact `64 × 96 px` cells under `production/character-redesign-v3/recommended-64x96/`.
+- [R] Legacy production body sprites under `production/characters/` — removed from the tracked asset tree because the 16x24 foundation loses the original identities.
+- [x] V3 four-direction standing bases — portrait-faithful, transparent, exact `64 × 96 px` cells under `production/character-redesign-v3/base-sprites-64x96/`.
 - [x] Convert the v3 player base into the complete 40-frame, 18-animation package with Phaser atlas and preview files.
-- [x] Mira, Kai, Sol, Sky, and Goh use the same 40-frame, 18-animation structure as the player under `production/character-redesign-v3/animated-64x96/`.
+- [x] Mira, Kai, Sol, Sky, and Goh use the same 40-frame, 18-animation structure as the player under `production/character-redesign-v3/game-ready-animations-64x96/`.
 - [R] Guardian portraits — use only in dialogue UI, where their higher detail is intentional. Do not use them as in-world sprites.
 
 ## 4. Custom image assets still required

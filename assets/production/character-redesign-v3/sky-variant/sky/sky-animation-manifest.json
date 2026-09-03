@@ -1,0 +1,18 @@
+{
+  "character": "sky",
+  "package": "sky-variant",
+  "cell": {
+    "width": 64,
+    "height": 96
+  },
+  "frameCount": 40,
+  "animationCount": 18,
+  "identitySource": "assets/generated/references/sky-user-reference.png",
+  "poseSource": "assets/generated/characters/sky/sky-animation-pose-master-clean.png",
+  "cleanup": [
+    "fixed 24-color palette",
+    "binary alpha",
+    "BOX reduction",
+    "consistent pose scale and baseline"
+  ]
+}

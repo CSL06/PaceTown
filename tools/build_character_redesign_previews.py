@@ -125,7 +125,7 @@ def main() -> None:
             sheet.alpha_composite(frame, (index * 32, 0))
         sheet.save(character_dir / f"{name}-direction-preview-v3.png")
 
-        recommended_dir = OUTPUT / "recommended-64x96" / name
+        recommended_dir = OUTPUT / "base-sprites-64x96" / name
         recommended_dir.mkdir(parents=True, exist_ok=True)
         recommended_sheet = Image.new("RGBA", (256, 96), (0, 0, 0, 0))
         for index, (direction, frame) in enumerate(zip(DIRECTIONS, frames_64)):

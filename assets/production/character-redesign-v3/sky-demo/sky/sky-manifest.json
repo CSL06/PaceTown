@@ -1,0 +1,14 @@
+{
+  "character": "sky",
+  "package": "sky-demo",
+  "cell": {
+    "width": 64,
+    "height": 96
+  },
+  "frameCount": 12,
+  "animationCount": 8,
+  "intendedRole": "stationary tea-counter guardian",
+  "movementPolicy": "No walk cycle. Move the complete sprite only if staging requires repositioning.",
+  "source": "assets/generated/characters/sky/sky-animation-pose-master-clean.png",
+  "savings": "Reuses existing art and omits 28 unnecessary directional movement frames."
+}

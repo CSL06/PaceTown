@@ -4,7 +4,7 @@ This redesign replaces the visually generic 16x24-derived character bodies with 
 
 ## Recommended production base
 
-Use `recommended-64x96/<character>/`.
+Use `base-sprites-64x96/<character>/` for clean directional base sprites.
 
 Each character currently has:
 
@@ -33,10 +33,10 @@ Sky also uses `../../generated/references/sky-user-reference.png` as the authori
 
 - Four-direction standing bases: ready.
 - Exact transparent `64x96` cells: ready.
-- Complete animation packages: ready under `animated-64x96/<character>/` for the player, Mira, Kai, Sol, Sky, and Goh.
+- Complete game-ready animation packages: ready under `game-ready-animations-64x96/<character>/` for the player, Mira, Kai, Sol, Sky, and Goh.
 - Every character has 40 transparent `64x96` frames, 18 shared animation definitions, Phaser atlas JSON, a manifest, GIF previews, a review board, and a campus-scale test.
 - Shared states: four-direction idle, walk and talk; front-facing interaction, sitting, phone, breathing, concerned and happy.
-- The older `production/characters/` sheets are retained only for animation-layout reference and should not define the final character appearance.
+- The older `production/characters/` sheets were deprecated and removed; they should not define the final character appearance.
 
 Regenerate the exact-grid previews with the bundled workspace Python runtime:
 

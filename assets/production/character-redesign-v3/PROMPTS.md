@@ -35,6 +35,6 @@ Identity additions:
 - Sky: preserve the supplied face, black centre-parted hair, round glasses, dusty-rose cardigan, cream shirt and sky-blue apron exactly; reassuring tea-counter host.
 - Goh: short dark hair, rust jacket, cream shirt, muted-teal messenger bag and clipboard; practical lantern-stall keeper.
 
-## Sky clean animation pose master v5
+## Sky clean animation pose master
 
-Mode: built-in image generation using the user-supplied Sky face, the approved v3 four-view master, and the v4 pose sheet. The edit preserved identity and pose order while replacing fine shading with large pixel clusters, a maximum of two shading tones per material, consistent head/body scale and a stable baseline. The production pass then applied a fixed 24-colour palette, BOX reduction, binary alpha and exact `64x96` cells. Output: `generated/characters/sky/sky-animation-pose-master-v5-clean.png` and `production/character-redesign-v3/animated-64x96-v5/sky/`.
+Mode: built-in image generation using the user-supplied Sky face, the approved v3 four-view master, and the v4 pose sheet. The edit preserved identity and pose order while replacing fine shading with large pixel clusters, a maximum of two shading tones per material, consistent head/body scale and a stable baseline. The production pass then applied a fixed 24-colour palette, BOX reduction, binary alpha and exact `64x96` cells. Output: `generated/characters/sky/sky-animation-pose-master-clean.png` and `production/character-redesign-v3/sky-variant/sky/`.
