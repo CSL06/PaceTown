@@ -38,16 +38,15 @@ The visual asset-generation milestone is complete, and the repository includes a
 ### Requirements
 
 - [Node.js](https://nodejs.org/) 20.19 or newer
-- [pnpm](https://pnpm.io/) 10 or newer (`corepack enable` can provide it)
+- npm 10 or newer, included with Node.js
 
 ### Setup
 
 ```powershell
 git clone https://github.com/CSL06/PaceTown.git
 cd PaceTown
-corepack enable
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 Open `http://localhost:5173/` in a browser. Vite will print a different address in the terminal if port `5173` is already occupied.
@@ -63,8 +62,8 @@ Open `http://localhost:5173/` in a browser. Vite will print a different address 
 ### Production build
 
 ```powershell
-pnpm build
-pnpm preview
+npm run build
+npm run preview
 ```
 
 The compiled demo is written to `dist/`, which is intentionally excluded from Git.

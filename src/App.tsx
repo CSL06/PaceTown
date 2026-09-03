@@ -5,6 +5,14 @@ type SkyMood = 'idle' | 'talk' | 'tea' | 'breathe' | 'happy'
 
 const SKY = { x: 27, y: 63 }
 const BREATH_SECONDS = 12
+const PLAYER_SPEED = 18
+
+const movementKeys: Record<string, Direction> = {
+  arrowleft: 'left', a: 'left',
+  arrowright: 'right', d: 'right',
+  arrowup: 'up', w: 'up',
+  arrowdown: 'down', s: 'down',
+}
 
 const dialogue = [
   'Hey. You don’t have to solve the whole week right now.',
@@ -25,6 +33,7 @@ function App() {
     window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   )
   const stageRef = useRef<HTMLDivElement>(null)
+  const heldMovementKeys = useRef(new Map<string, Direction>())
 
   const distanceToSky = Math.hypot(player.x - SKY.x, player.y - SKY.y)
   const nearSky = distanceToSky < 13
@@ -53,19 +62,76 @@ function App() {
   }
 
   useEffect(() => {
+    const movementBlocked = dialogueStep !== null || breathingOpen
+    const heldKeys = heldMovementKeys.current
+    heldKeys.clear()
+    if (movementBlocked) return
+
+    let animationFrame = 0
+    let previousTime = performance.now()
+
     const onKeyDown = (event: KeyboardEvent) => {
-      const keyMap: Record<string, Direction> = {
-        ArrowLeft: 'left', a: 'left', A: 'left',
-        ArrowRight: 'right', d: 'right', D: 'right',
-        ArrowUp: 'up', w: 'up', W: 'up',
-        ArrowDown: 'down', s: 'down', S: 'down',
+      const key = event.key.toLowerCase()
+      const nextDirection = movementKeys[key]
+      if (!nextDirection) return
+      event.preventDefault()
+      heldKeys.set(key, nextDirection)
+      setDirection(nextDirection)
+    }
+
+    const onKeyUp = (event: KeyboardEvent) => {
+      heldKeys.delete(event.key.toLowerCase())
+    }
+
+    const stopMoving = () => heldKeys.clear()
+
+    const updatePlayer = (time: number) => {
+      const elapsedSeconds = Math.min((time - previousTime) / 1000, 0.05)
+      previousTime = time
+
+      if (heldKeys.size > 0) {
+        let horizontal = 0
+        let vertical = 0
+        let activeFacing: Direction | null = null
+        for (const activeDirection of heldKeys.values()) {
+          activeFacing = activeDirection
+          if (activeDirection === 'left') horizontal -= 1
+          if (activeDirection === 'right') horizontal += 1
+          if (activeDirection === 'up') vertical -= 1
+          if (activeDirection === 'down') vertical += 1
+        }
+
+        const magnitude = Math.hypot(horizontal, vertical)
+        if (magnitude > 0 && activeFacing) {
+          const distance = PLAYER_SPEED * elapsedSeconds
+          setDirection(activeFacing)
+          setPlayer((current) => ({
+            x: Math.min(92, Math.max(8, current.x + (horizontal / magnitude) * distance)),
+            y: Math.min(82, Math.max(39, current.y + (vertical / magnitude) * distance)),
+          }))
+        }
       }
-      const nextDirection = keyMap[event.key]
-      if (nextDirection) {
-        event.preventDefault()
-        move(nextDirection)
-      }
-      if ((event.key === 'e' || event.key === 'E' || event.key === 'Enter') && nearSky && dialogueStep === null) {
+
+      animationFrame = window.requestAnimationFrame(updatePlayer)
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('blur', stopMoving)
+    animationFrame = window.requestAnimationFrame(updatePlayer)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('blur', stopMoving)
+      heldKeys.clear()
+    }
+  }, [breathingOpen, dialogueStep])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.key === 'e' || event.key === 'E' || event.key === 'Enter') && nearSky && dialogueStep === null && !breathingOpen) {
         event.preventDefault()
         setDialogueStep(0)
       }
@@ -77,7 +143,7 @@ function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  })
+  }, [breathingOpen, dialogueStep, nearSky])
 
   useEffect(() => {
     if (!breathing) return
@@ -106,7 +172,10 @@ function App() {
 
   const skyMood: SkyMood = completed ? 'happy' : breathingOpen ? 'breathe' : dialogueStep !== null ? (dialogueStep === 0 ? 'talk' : 'tea') : 'idle'
   const skyFrame = skyMood === 'happy' ? '/game/sky/happy-0.png' : `/game/sky/${skyMood}-${frame}.png`
-  const playerFrame = direction === 'down' ? `/game/player/idle-down-${frame}.png` : `/game/player/idle-${direction}-0.png`
+  const playerSpriteDirection = direction === 'left' ? 'right' : direction === 'right' ? 'left' : direction
+  const playerFrame = playerSpriteDirection === 'down'
+    ? `/game/player/idle-down-${frame}.png`
+    : `/game/player/idle-${playerSpriteDirection}-0.png`
 
   const visitSky = () => {
     setPlayer({ x: 39, y: 67 })

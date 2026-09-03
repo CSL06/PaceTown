@@ -80,7 +80,8 @@ h1 { margin-bottom: 0; color: var(--cream); font-family: Georgia, 'Times New Rom
 .cafe-label { left: 16%; top: 46%; }
 .tea-counter { position: absolute; left: 23.5%; top: 70%; z-index: 5; width: 64px; height: 64px; image-rendering: pixelated; background: url('/game/objects/tea-counter.png') 0 0 / auto 64px no-repeat; filter: drop-shadow(3px 5px 2px rgba(18,25,28,.35)); transform: translate(-50%, -50%) scale(.92); }
 
-.character { position: absolute; z-index: 8; width: 64px; height: 96px; transform: translate(-50%, -84%); transition: left 120ms linear, top 120ms linear; }
+.character { position: absolute; z-index: 8; width: 64px; height: 96px; transform: translate(-50%, -84%); }
+.player { will-change: left, top; }
 .character img { width: 64px; height: 96px; object-fit: contain; image-rendering: pixelated; position: relative; z-index: 2; filter: drop-shadow(2px 4px 1px rgba(17,23,27,.4)); }
 .character-shadow { position: absolute; z-index: 1; left: 14px; bottom: 8px; width: 38px; height: 11px; border-radius: 50%; background: rgba(16,24,25,.35); filter: blur(1px); }
 .name-tag { position: absolute; z-index: 3; left: 50%; top: -4px; transform: translate(-50%, -100%); padding: .23rem .46rem; color: var(--ink); background: var(--cream); border: 2px solid var(--ink); font-size: .62rem; font-weight: 900; white-space: nowrap; }
