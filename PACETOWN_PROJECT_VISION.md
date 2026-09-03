@@ -672,26 +672,23 @@ Audio includes campus ambience, district loops, mini-game ambience, footsteps, i
 
 ## 21. Asset strategy and current state
 
-The repository currently contains planning, generated art, third-party source packs, deterministic asset tools, and production references. The application has not yet been scaffolded.
+The repository currently contains the planning suite, generated art, third-party source packs, deterministic asset tools, production references, and a mentor-review React/Vite vertical slice with campus movement, a Sky interaction, a guided breathing activity, a semantic Town List, and reduced-motion support.
 
 Ready or substantially covered:
 
 - Campus composition and style reference.
 - Player and five guardian dialogue portraits.
 - Portrait-faithful v3 four-direction `64 × 96 px` bases.
-- Five mini-game background compositions.
-- Splash art, UI/category icons, Calendar states, and Load Weather concepts.
-- Kai's Musical Clock states.
-- Generic terrain, interiors, UI panels, input prompts, and lighting sources.
+- Complete v4 animation packages for the player and five guardians: 240 frames and 108 Phaser animation definitions.
+- A 62-sheet production-formatted runtime library covering interactive objects, all five mini-games, workload UI, application states, ambient life, Recovery Garden progression, postcards, Calendar art, overlays, effects, and PWA icons.
+- Aggregate and per-sheet manifests, atlas metadata, visual review boards, a campus integration scene, and a passing validation report.
+- Generic terrain, interiors, UI panels, input prompts, and lighting sources from documented third-party packs.
 
 Still required for the core experience:
 
-- Complete v3 character animations.
-- Transparent runtime sheets for the remaining interactive objects.
-- Foreground interaction packages for the five mini-games.
-- Backpack and scheduling-state atlases.
-- Essential loading, empty, offline, and AI-unavailable states.
-- Campus tilemap, collision, non-character atlases, and audio.
+- Connect the completed character, object, mini-game, workload, scheduling, and application-state assets to the React runtime.
+- Assemble the production Campus Grove tilemap and collision data from the approved sources.
+- Add the required audio and muted visual equivalents.
 - Pace Keepsake frames, category treatments, local stylization presets, and private collection states.
 
 Preferred third-party sources are Styloo for campus interiors, Kauzz for selected 32 px exterior pieces, Pix-Quest at exact 2× for the Recovery Garden, Kenney Pixel Adventure for UI, Kenney Input Prompts, and Kenney Light Masks. Tiny Town is for minimaps and prototypes only. Ghost Data's CC BY-SA pack remains excluded unless the project owner explicitly accepts its obligations.

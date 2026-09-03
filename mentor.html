@@ -29,6 +29,13 @@
   }
   h1, h2, h3, .serif { font-family: Georgia, "Times New Roman", serif; }
   a { color: inherit; }
+  a:focus-visible { outline: 3px solid var(--amber-bright); outline-offset: 3px; }
+  .skip-link {
+    position: fixed; top: .5rem; left: .5rem; z-index: 100; padding: .6rem .8rem;
+    color: var(--ink); background: var(--cream); border: 3px solid var(--ink);
+    transform: translateY(-150%);
+  }
+  .skip-link:focus { transform: translateY(0); }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.1rem; }
   .pixel { border: 4px solid var(--ink); box-shadow: 6px 6px 0 rgba(8,17,26,.6); }
   .tag {
@@ -47,13 +54,12 @@
     background: rgba(17,30,43,.97); border-bottom: 1px solid var(--line);
     backdrop-filter: blur(4px);
   }
-  nav .wrap { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; padding: .55rem 1.1rem; }
-  .nav-brand { font-family: Georgia, serif; font-weight: 700; font-size: 1.05rem; color: var(--cream); margin-right: auto; }
-  .nav-brand b { color: var(--amber); }
-  nav a { text-decoration: none; font-size: .68rem; font-weight: 800; padding: .35rem .5rem; color: #cfc6ab; border: 1px solid transparent; }
+  nav .wrap { display: flex; align-items: center; gap: .35rem; flex-wrap: nowrap; overflow-x: auto; padding: .55rem 1.1rem; scrollbar-width: thin; }
+  nav a { flex: 0 0 auto; }
+  nav a { text-decoration: none; font-size: .68rem; font-weight: 800; padding: .35rem .3rem; color: #cfc6ab; border: 1px solid transparent; }
   nav a:hover { color: var(--cream); border-color: var(--line); }
 
-  section { padding: 3.2rem 0; border-bottom: 1px solid var(--line); }
+  section { padding: 3.2rem 0; border-bottom: 1px solid var(--line); scroll-margin-top: 4.5rem; }
   .eyebrow { color: var(--amber); font-weight: 800; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .5rem; }
   h2.section-title { font-size: clamp(1.5rem, 3vw, 2.1rem); color: var(--cream); margin: 0 0 .6rem; line-height: 1.05; }
   .lede { max-width: 60ch; color: #d9cba8; font-size: .92rem; }
@@ -121,11 +127,12 @@
   .guardians { display: grid; grid-template-columns: repeat(5, 1fr); gap: .8rem; margin-top: 1.6rem; }
   .guardian { background: rgba(36,58,78,.55); border: 1px solid var(--line); padding: 1rem .8rem; text-align: center; }
   .avatar {
-    width: 64px; height: 96px; margin: 0 auto .6rem; background: var(--ink);
+    width: 70px; height: 102px; margin: 0 auto .6rem; background: var(--ink);
     border: 3px solid var(--cream); display: grid; place-items: center;
     font-family: Georgia, serif; font-weight: 900; font-size: 1.8rem; color: var(--cream);
     image-rendering: pixelated;
   }
+  .avatar img { display: block; width: 64px; height: 96px; object-fit: contain; image-rendering: pixelated; }
   .guardian h4 { margin: 0; font-size: 1rem; font-family: Georgia, serif; }
   .guardian .role { color: var(--amber); font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
   .guardian p { font-size: .72rem; color: #cfc6ab; margin: .5rem 0 0; }
@@ -179,7 +186,26 @@
   .flow-fig { margin: 2rem 0; }
   .flow-fig h3 { font-family: Georgia, serif; color: var(--cream); font-size: 1.08rem; margin: 0 0 .35rem; }
   .flow-fig p { color: #b9c9c5; font-size: .8rem; margin: 0 0 .8rem; max-width: 70ch; }
-  .flow-img { width: 100%; height: auto; display: block; background: #fff8e4; border: 1px solid var(--line); margin: 0 0 1.2rem; }
+  .flow-scroll { max-height: min(72vh, 720px); overflow: auto; background: #fff8e4; border: 2px solid var(--line); margin: 0 0 1.2rem; scrollbar-color: var(--teal) var(--paper); }
+  .flow-scroll:focus-visible { outline: 3px solid var(--amber-bright); outline-offset: 3px; }
+  .flow-img { max-width: none; height: auto; display: block; background: #fff8e4; }
+  .flow-img[src*="/01-"] { width: 1710px; }
+  .flow-img[src*="/02-"] { width: 1345px; }
+  .flow-img[src*="/03-"] { width: 3125px; }
+  .flow-img[src*="/04-"] { width: 4090px; }
+  .flow-img[src*="/05-"] { width: 2004px; }
+  .flow-img[src*="/06-"] { width: 1641px; }
+  .flow-img[src*="/07-"] { width: 3053px; }
+  .flow-img[src*="/08-"] { width: 1577px; }
+  .flow-img[src*="/09-"] { width: 2195px; }
+  .flow-img[src*="/10-"] { width: 1166px; }
+  .flow-img[src*="/11-"] { width: 2025px; }
+  .flow-img[src*="/12-"] { width: 2206px; }
+  .flow-img[src*="/13-"] { width: 1676px; }
+  .flow-img[src*="/14-"] { width: 1285px; }
+  .flow-img[src*="/15-"] { width: 1340px; }
+  .flow-img[src*="/16-"] { width: 6850px; }
+  .flow-img[src*="/17-"] { width: 1146px; }
   .flow-group { margin-top: 2.4rem; }
   .flow-group > h3 { font-family: Georgia, serif; color: var(--amber); font-size: 1.25rem; border-bottom: 1px solid var(--line); padding-bottom: .4rem; }
 
@@ -188,13 +214,17 @@
     .flow-step::after { display: none; }
     .grid-3, .grid-2, .recovery, .reward, .townmap, .hero-cards { grid-template-columns: 1fr; }
   }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
 </style>
 </head>
 <body>
 
-<nav>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<nav aria-label="Mentor walkthrough sections">
   <div class="wrap">
-    <span class="nav-brand"><b>Pace</b>Town · Mentor Walkthrough</span>
     <a href="#concept">Concept</a>
     <a href="#workflow">Workflow</a>
     <a href="#pillars">Pillars</a>
@@ -203,10 +233,14 @@
     <a href="#load">Daily Load</a>
     <a href="#recovery">Recovery</a>
     <a href="#session">Pace Session</a>
-    <a href="#flows">Detailed flows</a>
+    <a href="#progression">Progression</a>
+    <a href="#access">Accessibility</a>
     <a href="#status">Build Status</a>
+    <a href="#flows">Detailed flows</a>
   </div>
 </nav>
+
+<main id="main-content">
 
 <!-- HERO -->
 <header class="hero">
@@ -214,7 +248,7 @@
     <div class="eyebrow">Mentor walkthrough · complete concept at a glance</div>
     <h1>PaceTown</h1>
     <p class="tagline">“Find your pace. Grow your place.”</p>
-    <p class="lede">A cozy, pixel-art <b>guided-work and recovery game</b> for university students. PaceTown helps students see accumulated pressure, turn intimidating work into one manageable checkpoint, work alongside supportive guardians, regulate stress through short activities, and preserve a clear next action — without ever shaming, diagnosing, or gamifying productivity.</p>
+    <p class="lede">A cozy, pixel-art <b>guided-work and recovery game</b> for university students. PaceTown helps students see accumulated pressure, turn intimidating work into one manageable checkpoint, work alongside supportive guardians, regulate stress through short activities, and preserve a clear next action — without ever shaming or diagnosing. It gamifies sustainable pacing, not greater output.</p>
 
     <div class="hero-cards">
       <div class="is-card is">
@@ -264,11 +298,11 @@
       <circle cx="220" cy="230" r="150" fill="none" stroke="#4f9c98" stroke-width="4" />
       <!-- directional arrowheads at arc midpoints, rotated to tangent -->
       <g fill="#e7a23b">
-        <path d="M-12,0 L9,-8 L9,8 z" transform="translate(308.2,108.7) rotate(36)" />
-        <path d="M-12,0 L9,-8 L9,8 z" transform="translate(362.7,276.4) rotate(108)" />
-        <path d="M-12,0 L9,-8 L9,8 z" transform="translate(220,380) rotate(180)" />
-        <path d="M-12,0 L9,-8 L9,8 z" transform="translate(77.3,276.4) rotate(252)" />
-        <path d="M-12,0 L9,-8 L9,8 z" transform="translate(131.8,108.7) rotate(324)" />
+        <path d="M12,0 L-9,-8 L-9,8 z" transform="translate(308.2,108.7) rotate(36)" />
+        <path d="M12,0 L-9,-8 L-9,8 z" transform="translate(362.7,276.4) rotate(108)" />
+        <path d="M12,0 L-9,-8 L-9,8 z" transform="translate(220,380) rotate(180)" />
+        <path d="M12,0 L-9,-8 L-9,8 z" transform="translate(77.3,276.4) rotate(252)" />
+        <path d="M12,0 L-9,-8 L-9,8 z" transform="translate(131.8,108.7) rotate(324)" />
       </g>
 
       <!-- center -->
@@ -368,7 +402,7 @@
     <h2 class="section-title">Campus Grove — the first &amp; only required world</h2>
     <p class="lede">The town is not decoration. It is the playable interface for deciding what to do, beginning real work, getting unstuck, and preserving progress. Every spatial interaction has a parallel <b>semantic Town List</b> for accessibility.</p>
     <!-- Town map illustration -->
-    <svg class="diagram wide" viewBox="0 0 720 360" role="img" aria-label="Top-down map of Campus Grove: Library, Town Hall, Clock Tower and Recovery Garden across the top; Garden, Rebalance Workshop, Market and Café across the bottom, joined by a central cross of paths with the player at the crossroads.">
+    <svg class="diagram wide" viewBox="0 0 720 360" role="img" aria-label="Top-down overview of eight Campus Grove anchor locations: Library, Town Hall, Clock Tower and Recovery Garden across the top; Garden, Rebalance Workshop, Market and Café across the bottom, joined by a central cross of paths with the player at the crossroads. Supporting destinations are listed below.">
       <defs>
         <pattern id="grass" width="24" height="24" patternUnits="userSpaceOnUse">
           <rect width="24" height="24" fill="#6f8253" />
@@ -418,7 +452,7 @@
       <!-- player token at the crossroads -->
       <circle cx="360" cy="180" r="10" fill="#d7f1e2" stroke="#182738" stroke-width="3" />
     </svg>
-    <p style="text-align:center;font-size:13px;color:#cfc6ab;max-width:760px;margin:.5rem auto 0;">Eight places, one small town. Walk to a building (or use the matching Town List) to do that kind of task — the map is just the <b>menu</b>.</p>
+    <p style="text-align:center;font-size:13px;color:#cfc6ab;max-width:760px;margin:.5rem auto 0;">Eight anchor locations are shown in the compact map. Five supporting destinations complete the core town. Walk to a place—or use the matching Town List—to open that action; the map is the <b>menu</b>, not decoration.</p>
 
     <div class="townmap">
       <div class="zone"><span class="dot"></span><h4>Library · Mira</h4><p>Understand, study, Firefly Stories.</p></div>
@@ -429,8 +463,13 @@
       <div class="zone"><span class="dot"></span><h4>Town Hall</h4><p>Task intake, briefs, work-plan review.</p></div>
       <div class="zone"><span class="dot"></span><h4>Rebalance Workshop</h4><p>Consent-based movement of flexible tasks.</p></div>
       <div class="zone"><span class="dot"></span><h4>Recovery Garden</h4><p>Persistent, non-destructive growth.</p></div>
+      <div class="zone"><span class="dot"></span><h4>Home</h4><p>Energy, sleep, Quiet Mode, and session closure.</p></div>
+      <div class="zone"><span class="dot"></span><h4>Post Office</h4><p>Journal, history, private reflections, and postcards.</p></div>
+      <div class="zone"><span class="dot"></span><h4>Guardian Council plaza</h4><p>One foregrounded recommendation when pressures compete.</p></div>
+      <div class="zone"><span class="dot"></span><h4>Future Mailbox</h4><p>Saved next actions and notes for a future session.</p></div>
+      <div class="zone"><span class="dot"></span><h4>Calm Corner</h4><p>Direct recovery access without prerequisites.</p></div>
     </div>
-    <p class="lede" style="margin-top:1.2rem;"><b>Load Weather</b> makes pressure visible without depicting damage: Library fog for mental load, faster Clock Tower for time pressure, parcels at the Market for errands, softer light for low energy. Every effect also has a text &amp; icon equivalent.</p>
+    <p class="lede" style="margin-top:1.2rem;"><b>Load Weather</b> makes all five demand areas visible without depicting damage: Library fog for mental load, faster Clock Tower movement for time pressure, avatar pacing and Garden cues for physical demands, Café activity for social load, and Market parcels for errands. Softer light can reflect optional low energy without confusing it with physical demand. Every effect also has a text &amp; icon equivalent.</p>
   </div>
 </section>
 
@@ -440,11 +479,11 @@
     <div class="eyebrow">Functional companions</div>
     <h2 class="section-title">Five guardians — each changes what the student can do</h2>
     <div class="guardians">
-      <div class="guardian"><div class="avatar" style="border-color:var(--plum);">M</div><div class="role">Understand</div><h4>Mira</h4><p>Library. Interprets briefs, explains concepts, builds study checkpoints.</p></div>
-      <div class="guardian"><div class="avatar" style="border-color:var(--amber);">K</div><div class="role">Plan</div><h4>Kai</h4><p>Clock Tower. Priorities, time estimates, rebalancing.</p></div>
-      <div class="guardian"><div class="avatar" style="border-color:var(--moss);">S</div><div class="role">Sustain</div><h4>Sol</h4><p>Garden. Reduces scope, protects breaks, recovery.</p></div>
-      <div class="guardian"><div class="avatar" style="border-color:var(--teal);">S</div><div class="role">Accompany</div><h4>Sky</h4><p>Café. Quiet body-doubling presence, gentle check-ins.</p></div>
-      <div class="guardian"><div class="avatar" style="border-color:var(--cream);">G</div><div class="role">Complete</div><h4>Goh</h4><p>Market. Gathers materials, errands, final checks.</p></div>
+      <div class="guardian"><div class="avatar" style="border-color:var(--plum);"><img src="assets/production/character-redesign-v3/recommended-64x96/mira/idle_down_0.png" alt="" /></div><div class="role">Understand</div><h4>Mira</h4><p>Library. Interprets briefs, explains concepts, builds study checkpoints.</p></div>
+      <div class="guardian"><div class="avatar" style="border-color:var(--amber);"><img src="assets/production/character-redesign-v3/recommended-64x96/kai/idle_down_0.png" alt="" /></div><div class="role">Plan</div><h4>Kai</h4><p>Clock Tower. Priorities, time estimates, rebalancing.</p></div>
+      <div class="guardian"><div class="avatar" style="border-color:var(--moss);"><img src="assets/production/character-redesign-v3/recommended-64x96/sol/idle_down_0.png" alt="" /></div><div class="role">Sustain</div><h4>Sol</h4><p>Garden. Reduces scope, protects breaks, recovery.</p></div>
+      <div class="guardian"><div class="avatar" style="border-color:var(--teal);"><img src="assets/production/character-redesign-v3/recommended-64x96/sky/idle_down_0.png" alt="" /></div><div class="role">Accompany</div><h4>Sky</h4><p>Café. Quiet body-doubling presence, gentle check-ins.</p></div>
+      <div class="guardian"><div class="avatar" style="border-color:var(--cream);"><img src="assets/production/character-redesign-v3/recommended-64x96/goh/idle_down_0.png" alt="" /></div><div class="role">Complete</div><h4>Goh</h4><p>Market. Gathers materials, errands, final checks.</p></div>
     </div>
     <p class="lede" style="margin-top:1.3rem;">When several pressures compete, the <b>Guardian Council</b> gives one short interpretation per guardian and foregrounds a single recommendation: <i>do one checkpoint · make space · recover first · gather what's missing · choose for myself</i>. The Council proposes; the student decides.</p>
   </div>
@@ -461,7 +500,7 @@
       <code>Daily Load %</code> = Total Weighted Demand ÷ Personalized Available Minutes × 100
     </div>
     <!-- Load gauge -->
-    <svg class="diagram" viewBox="0 0 420 230" role="img" aria-label="Semicircle gauge of Daily Load bands from Open at 0 percent through Unsustainable above 110 percent, with a needle at the Overloaded band.">
+    <svg class="diagram" viewBox="0 0 420 230" role="img" aria-label="Semicircle gauge of Daily Load bands from Open at 0 percent through Overloaded at 110 percent, with a needle at 108 percent. The separate band key below defines Unsustainable above 110 percent.">
       <defs>
         <marker id="needle" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <circle cx="5" cy="5" r="4" fill="#182738" />
@@ -535,7 +574,7 @@
 
       <rect x="500" y="85" width="130" height="60" fill="#fff8e4" stroke="#182738" stroke-width="3" />
       <text x="565" y="110" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#182738">Lighter /</text>
-      <text x="565" y="128" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#182738">Same / Unsure</text>
+      <text x="565" y="128" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#182738">The same / Not sure</text>
     </svg>
     <p style="text-align:center;font-size:13px;color:#cfc6ab;max-width:640px;margin:.5rem auto 0;">Two ways to rest — on screen or in real life. Neither is "better"; both just help you feel a little lighter.</p>
 
@@ -597,7 +636,12 @@
       <text x="475" y="45" text-anchor="middle" font-family="Verdana" font-size="10" fill="#f7edcf">Scope reduced</text>
 
       <!-- Active to end states (separate column, no overlap) -->
-      <line x1="260" y1="135" x2="573" y2="135" stroke="#e7a23b" stroke-width="3" marker-end="url(#ar3)" />
+      <line x1="260" y1="135" x2="550" y2="135" stroke="#e7a23b" stroke-width="3" />
+      <line x1="550" y1="40" x2="550" y2="190" stroke="#e7a23b" stroke-width="3" />
+      <line x1="550" y1="40" x2="573" y2="40" stroke="#e7a23b" stroke-width="3" marker-end="url(#ar3)" />
+      <line x1="550" y1="90" x2="573" y2="90" stroke="#e7a23b" stroke-width="3" marker-end="url(#ar3)" />
+      <line x1="550" y1="140" x2="573" y2="140" stroke="#e7a23b" stroke-width="3" marker-end="url(#ar3)" />
+      <line x1="550" y1="190" x2="573" y2="190" stroke="#e7a23b" stroke-width="3" marker-end="url(#ar3)" />
       <g font-family="Georgia, serif" font-size="11" fill="#182738" text-anchor="middle">
         <rect x="575" y="20" width="150" height="40" fill="#7fa466" stroke="#182738" stroke-width="2" /><text x="650" y="44">Done</text>
         <rect x="575" y="70" width="150" height="40" fill="#a9c47a" stroke="#182738" stroke-width="2" /><text x="650" y="94">Partial</text>
@@ -657,7 +701,7 @@
      <ul class="status-list">
        <li><span class="mk status-done">✓</span><div><b>Asset milestone complete</b> — character bases, v4 animation packages (player + 5 guardians), 62-sheet runtime library, manifests &amp; validation.</div></li>
        <li><span class="mk status-done">✓</span><div><b>Interactive demo slice</b> — campus movement (keyboard + touch), Sky proximity dialogue, one guided breathing activity, Town List, reduced-motion.</div></li>
-       <li><span class="mk status-done">✓</span><div><b>Vision &amp; diagram suite</b> — 17 Mermaid flow diagrams (this page's “Detailed flows”) and an asset-handoff spec (<code>assets/NEXT_IMPLEMENTATION.md</code>) added by a collaborator, covering the full loop, workload, rebalancing, Pace Sessions, recovery, Keepsakes, safeguards, and architecture.</div></li>
+       <li><span class="mk status-done">✓</span><div><b>Vision &amp; diagram suite</b> — 17 Mermaid flow diagrams (this page's “Detailed flows”) plus an asset-handoff specification (<code>assets/NEXT_IMPLEMENTATION.md</code>), covering the full loop, workload, rebalancing, Pace Sessions, recovery, Keepsakes, safeguards, and architecture.</div></li>
        <li><span class="mk status-todo">▢</span><div><b>Next product milestone</b> — load explanation, rebalancing, task intake, one Pace Session, Gentle Ripples, Pocket of Green IRL quest, photo→Keepsake flow, saved progress, one visible town response.</div></li>
        <li><span class="mk status-todo">▢</span><div><b>Planned later</b> — full planner, remaining mini-games, Recovery Garden catalog, Journal/Collection, shop, profiles, cloud &amp; Android.</div></li>
      </ul>
@@ -669,19 +713,20 @@
   <div class="wrap">
     <div class="eyebrow">Detailed flow reference</div>
     <h2 class="section-title">How PaceTown works, diagram by diagram</h2>
-    <p class="lede">These 17 diagrams (rendered from <code>PACETOWN_VISION_MERMAID.md</code>) are the authoritative reference for mentors who want the mechanics in full. The at-a-glance graphics earlier on this page summarise the same flows.</p>
+    <p class="lede">These 17 diagrams are rendered from the visual companion <code>PACETOWN_VISION_MERMAID.md</code>. They summarize the authoritative product intent in <code>PACETOWN_PROJECT_VISION.md</code> and the behavior specified in <code>PaceTown_Hackathon_Implementation_Plan.md</code>. The graphics earlier on this page provide the at-a-glance version.</p>
+    <p class="lede" style="margin-top:1rem;">Each detailed diagram keeps its original readable label size. Scroll inside a diagram with a pointer, touch gesture, trackpad, or arrow keys after focusing it.</p>
 
     <div class="flow-group">
       <h3>The big picture</h3>
       <div class="flow-fig">
         <h3>1 · Track problem → PaceTown response → student outcomes</h3>
         <p>Five demand areas become explainable signals and concrete responses that lead to understood pressure, reduced load, real progress, intentional recovery, and a comforting tool the student keeps.</p>
-        <img class="flow-img" src="mentor-diagrams/01-1-track-problem-to-pacetown-outcome.svg" alt="Track problem to PaceTown outcome flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable track problem to PaceTown outcome diagram"><img class="flow-img" src="mentor-diagrams/01-1-track-problem-to-pacetown-outcome.svg" alt="Track problem to PaceTown outcome flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>2 · Complete player experience loop</h3>
         <p>From opening PaceTown through entry, commitments, Daily Load, and the primary-response choice, to saving progress, rewards, town growth, and returning later.</p>
-        <img class="flow-img" src="mentor-diagrams/02-2-complete-player-experience-loop.svg" alt="Complete player experience loop flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable complete player experience loop diagram"><img class="flow-img" src="mentor-diagrams/02-2-complete-player-experience-loop.svg" alt="Complete player experience loop flowchart" /></div>
       </div>
     </div>
 
@@ -690,12 +735,12 @@
       <div class="flow-fig">
         <h3>3 · Workload understanding &amp; primary-response selection</h3>
         <p>Demand model (time, mental, physical, social, errands) plus optional check-in feeds a deterministic Daily Load, then PaceTown ranks Make space / Handle what remains / Recover first.</p>
-        <img class="flow-img" src="mentor-diagrams/03-3-workload-understanding-and-primary-response-selection.svg" alt="Workload understanding and primary-response selection flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable workload understanding and response diagram"><img class="flow-img" src="mentor-diagrams/03-3-workload-understanding-and-primary-response-selection.svg" alt="Workload understanding and primary-response selection flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>4 · Consent-based rebalancing</h3>
         <p>Flexible work is tested against deadline, availability, and minimum-session rules; fixed commitments stay locked. A preview with before/after values is shown, and every change requires explicit approval.</p>
-        <img class="flow-img" src="mentor-diagrams/04-4-consent-based-rebalancing.svg" alt="Consent-based rebalancing flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable consent-based rebalancing diagram"><img class="flow-img" src="mentor-diagrams/04-4-consent-based-rebalancing.svg" alt="Consent-based rebalancing flowchart" /></div>
       </div>
     </div>
 
@@ -704,12 +749,12 @@
       <div class="flow-fig">
         <h3>5 · Guided Pace Session lifecycle</h3>
         <p>One real task → blocker → editable plan → one checkpoint → guardian → start or regulate. Help, scope reduction, and pause stay available; every outcome records a next action.</p>
-        <img class="flow-img" src="mentor-diagrams/05-5-guided-pace-session-lifecycle.svg" alt="Guided Pace Session lifecycle flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable Guided Pace Session lifecycle diagram"><img class="flow-img" src="mentor-diagrams/05-5-guided-pace-session-lifecycle.svg" alt="Guided Pace Session lifecycle flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>6 · Guardian assistance routing</h3>
         <p>Each guardian maps to specific actions; the student always reviews and owns the output before it is saved as an accepted plan and next action.</p>
-        <img class="flow-img" src="mentor-diagrams/06-6-guardian-assistance-routing.svg" alt="Guardian assistance routing flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable guardian assistance routing diagram"><img class="flow-img" src="mentor-diagrams/06-6-guardian-assistance-routing.svg" alt="Guardian assistance routing flowchart" /></div>
       </div>
     </div>
 
@@ -717,18 +762,18 @@
       <h3>Regulate &amp; recover</h3>
       <div class="flow-fig">
         <h3>7 · Recovery activity choice</h3>
-        <p>Digital and IRL paths are equal; constraints and preferences pick suitable options, with replace/decline always available, then a private Lighter / Same / Unsure response.</p>
-        <img class="flow-img" src="mentor-diagrams/07-7-recovery-activity-choice.svg" alt="Recovery activity choice flowchart" />
+        <p>Digital and IRL paths are equal; constraints and preferences pick suitable options, with replace/decline always available, then a private Lighter / The same / Not sure response.</p>
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable recovery activity choice diagram"><img class="flow-img" src="mentor-diagrams/07-7-recovery-activity-choice.svg" alt="Recovery activity choice flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>8 · Digital mini-game behavior</h3>
         <p>Firefly Stories, Chime Drift, Gentle Ripples, Warm Cup, and Night Lanterns share one contract: no score, failure, or forced duration, with muted and reduced-motion variants that restore Pace Session state.</p>
-        <img class="flow-img" src="mentor-diagrams/08-8-digital-mini-game-behavior.svg" alt="Digital mini-game behavior flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable digital mini-game behavior diagram"><img class="flow-img" src="mentor-diagrams/08-8-digital-mini-game-behavior.svg" alt="Digital mini-game behavior flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>9 · Detailed IRL quest catalogue</h3>
         <p>Ten IRL micro-quests (Pocket of Green, Look Up Find the Sky, One Gentle Loop, Make the Warm Cup, and more) with self-confirm or optional photo, equal rewards, and flexible completion.</p>
-        <img class="flow-img" src="mentor-diagrams/09-9-detailed-irl-quest-catalogue.svg" alt="Detailed IRL quest catalogue flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable detailed IRL quest catalogue diagram"><img class="flow-img" src="mentor-diagrams/09-9-detailed-irl-quest-catalogue.svg" alt="Detailed IRL quest catalogue flowchart" /></div>
       </div>
     </div>
 
@@ -737,12 +782,12 @@
       <div class="flow-fig">
         <h3>10 · Photo verification &amp; Pace Keepsake pipeline</h3>
         <p>Optional photo → strip metadata → privacy scan → verify visible criteria only (uncertain/fail allow manual confirm) → choose a photo policy → generate pixel art (AI or local fallback) → approve → place privately. Rewards never change.</p>
-        <img class="flow-img" src="mentor-diagrams/10-10-photo-verification-and-pace-keepsake-pipeline.svg" alt="Photo verification and Pace Keepsake pipeline flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable photo verification and Pace Keepsake diagram"><img class="flow-img" src="mentor-diagrams/10-10-photo-verification-and-pace-keepsake-pipeline.svg" alt="Photo verification and Pace Keepsake pipeline flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>11 · Keepsake collection &amp; placement</h3>
         <p>Approved keepsakes are sorted by category into a private collection and placed in Journal, Recovery Garden, town, or Future Mailbox — with no rarity, trading, feed, or completion pressure.</p>
-        <img class="flow-img" src="mentor-diagrams/11-11-keepsake-collection-and-placement.svg" alt="Keepsake collection and placement flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable Keepsake collection and placement diagram"><img class="flow-img" src="mentor-diagrams/11-11-keepsake-collection-and-placement.svg" alt="Keepsake collection and placement flowchart" /></div>
       </div>
     </div>
 
@@ -751,17 +796,17 @@
       <div class="flow-fig">
         <h3>12 · Town locations &amp; mechanics</h3>
         <p>Campus Grove districts (work, recovery, continuity) reached by spatial travel or the semantic Town List, opening contextual panels and Quiet Mode.</p>
-        <img class="flow-img" src="mentor-diagrams/12-12-town-locations-and-mechanics.svg" alt="Town locations and mechanics flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable town locations and mechanics diagram"><img class="flow-img" src="mentor-diagrams/12-12-town-locations-and-mechanics.svg" alt="Town locations and mechanics flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>13 · Game progression without punishment</h3>
         <p>Meaningful actions grant XP, coins, and category growth that feed level, cosmetics, building upgrades, garden, and postcards — with no decay, streak loss, or pay advantage.</p>
-        <img class="flow-img" src="mentor-diagrams/13-13-game-progression-without-punishment.svg" alt="Game progression without punishment flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable game progression without punishment diagram"><img class="flow-img" src="mentor-diagrams/13-13-game-progression-without-punishment.svg" alt="Game progression without punishment flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>14 · Accessibility, privacy &amp; safety gates</h3>
         <p>Every feature must pass the accessibility, privacy, and safety gates (no diagnosis, no punishment, student control, local-first, separate consent) before it ships.</p>
-        <img class="flow-img" src="mentor-diagrams/14-14-accessibility-privacy-and-safety-gates.svg" alt="Accessibility, privacy and safety gates flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable accessibility, privacy, and safety gates diagram"><img class="flow-img" src="mentor-diagrams/14-14-accessibility-privacy-and-safety-gates.svg" alt="Accessibility, privacy and safety gates flowchart" /></div>
       </div>
     </div>
 
@@ -770,21 +815,23 @@
       <div class="flow-fig">
         <h3>15 · Local-first product architecture</h3>
         <p>Experience layer → deterministic domain engines → provider adapters, all backed by IndexedDB, with a local-fallback engine covering every AI-assisted path.</p>
-        <img class="flow-img" src="mentor-diagrams/15-15-local-first-product-architecture.svg" alt="Local-first product architecture flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable local-first product architecture diagram"><img class="flow-img" src="mentor-diagrams/15-15-local-first-product-architecture.svg" alt="Local-first product architecture flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>16 · Hackathon vertical slice (Aina story)</h3>
         <p>The three-minute judging story: five demand areas, Thursday at 108%, one rebalance, one Pace Session with Mira, Gentle Ripples, Pocket of Green, and a private Garden Keepsake.</p>
-        <img class="flow-img" src="mentor-diagrams/16-16-hackathon-vertical-slice.svg" alt="Hackathon vertical slice flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable hackathon vertical slice diagram"><img class="flow-img" src="mentor-diagrams/16-16-hackathon-vertical-slice.svg" alt="Hackathon vertical slice flowchart" /></div>
       </div>
       <div class="flow-fig">
         <h3>17 · Delivery priorities &amp; expansion path</h3>
         <p>Foundation → core vertical slice → acceptance, then full games, quest/garden/collection expansion, shop, new environments, and production adapters.</p>
-        <img class="flow-img" src="mentor-diagrams/17-17-delivery-priorities-and-expansion-path.svg" alt="Delivery priorities and expansion path flowchart" />
+        <div class="flow-scroll" tabindex="0" role="region" aria-label="Scrollable delivery priorities and expansion path diagram"><img class="flow-img" src="mentor-diagrams/17-17-delivery-priorities-and-expansion-path.svg" alt="Delivery priorities and expansion path flowchart" /></div>
       </div>
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
   PaceTown — “Find your pace. Grow your place.” · Mentor walkthrough generated from the project vision, product &amp; implementation plans, the Mermaid diagram suite, and the asset-handoff spec.
