@@ -33,6 +33,46 @@ This repository currently contains the planning and asset-production milestone:
 
 The visual asset-generation milestone is complete, and the repository includes a mentor-ready React vertical slice with campus movement, Sky dialogue, and a guided breathing activity. The next product task is expanding that slice toward load explanation, rebalancing, task intake, one guided Pace Session, Gentle Ripples, the fully specified Pocket of Green IRL quest, an optional private photo-to-Keepsake flow, saved partial progress, and one visible town response. The production campus still needs to be assembled from the approved free packs.
 
+## Run the mentor demo
+
+### Requirements
+
+- [Node.js](https://nodejs.org/) 20.19 or newer
+- [pnpm](https://pnpm.io/) 10 or newer (`corepack enable` can provide it)
+
+### Setup
+
+```powershell
+git clone https://github.com/CSL06/PaceTown.git
+cd PaceTown
+corepack enable
+pnpm install
+pnpm dev
+```
+
+Open `http://localhost:5173/` in a browser. Vite will print a different address in the terminal if port `5173` is already occupied.
+
+### Demo walkthrough
+
+1. Move the player with the arrow keys or `W`, `A`, `S`, and `D`. On a phone, use the on-screen direction buttons.
+2. Walk near Sky and press `E` or `Enter`, or open **Town List** and choose **Sky's Tea Corner**.
+3. Continue Sky's conversation and select **Try one calming breath**.
+4. Complete the guided inhale, hold, and exhale cycle, then return to campus.
+5. Use **Motion on/off** to demonstrate the reduced-motion experience.
+
+### Production build
+
+```powershell
+pnpm build
+pnpm preview
+```
+
+The compiled demo is written to `dist/`, which is intentionally excluded from Git.
+
+### Demo scope
+
+This is a mentor-review vertical slice, not the complete PaceTown product. It demonstrates the intended visual direction, responsive campus exploration, an accessible list alternative, a supportive Sky interaction, and one stress-reduction activity. Google Calendar, generative NPC conversations, the remaining guardians, workload rebalancing, Keepsakes, and additional games are planned but are not connected to this demo yet.
+
 ## Start here
 
 - `PACETOWN_PROJECT_VISION.md`
