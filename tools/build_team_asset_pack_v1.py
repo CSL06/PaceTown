@@ -27,7 +27,7 @@ def copy_tree(source: Path, destination: Path) -> None:
 
 
 def build_characters() -> None:
-    source_root = ROOT / "assets" / "production" / "character-redesign-v3" / "animated-64x96"
+    source_root = ROOT / "assets" / "production" / "character-redesign-v3" / "game-ready-animations-64x96"
     runtime_root = PACK / "runtime" / "characters"
     preview_root = PACK / "previews" / "characters"
     for name in CHARACTERS:

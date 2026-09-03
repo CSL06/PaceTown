@@ -196,7 +196,8 @@ kbd, .key-cluster { min-width: 28px; padding: .2rem .34rem; text-align: center; 
   .interaction-prompt { left: 35%; top: 46%; }
   .world-hint { display: none; }
   .mobile-controls { position: absolute; z-index: 16; left: 1rem; bottom: 1rem; display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(2, 44px); gap: 4px; }
-  .mobile-controls button { display: grid; place-items: center; color: var(--cream); background: rgba(24,39,56,.92); border: 1px solid rgba(247,237,207,.55); font-weight: 900; touch-action: manipulation; }
+  .mobile-controls button { display: grid; place-items: center; color: var(--cream); background: rgba(24,39,56,.92); border: 1px solid rgba(247,237,207,.55); font-weight: 900; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .mobile-controls button:active { background: rgba(71, 101, 112, .96); transform: translateY(1px); }
   .mobile-controls button:nth-child(1) { grid-column: 2; }
   .mobile-controls button:nth-child(2) { grid-column: 1; grid-row: 2; }
   .mobile-controls button:nth-child(3) { grid-column: 2; grid-row: 2; }

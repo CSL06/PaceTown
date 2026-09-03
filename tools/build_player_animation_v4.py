@@ -236,8 +236,8 @@ def main() -> None:
     parser.add_argument("--character", default="player", choices=("player", "mira", "kai", "sol", "sky", "goh"))
     args = parser.parse_args()
     CHARACTER = args.character
-    BASE_DIR = PROJECT / "assets" / "production" / "character-redesign-v3" / "recommended-64x96" / CHARACTER
-    OUTPUT = PROJECT / "assets" / "production" / "character-redesign-v3" / "animated-64x96" / CHARACTER
+    BASE_DIR = PROJECT / "assets" / "production" / "character-redesign-v3" / "base-sprites-64x96" / CHARACTER
+    OUTPUT = PROJECT / "assets" / "production" / "character-redesign-v3" / "game-ready-animations-64x96" / CHARACTER
     POSE_MASTER = PROJECT / "assets" / "generated" / "characters" / CHARACTER / f"{CHARACTER}-animation-pose-master-v4.png"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     frames_dir = OUTPUT / "frames"

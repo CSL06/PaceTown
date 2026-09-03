@@ -8,7 +8,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNTIME = ROOT / "assets" / "production" / "runtime-assets-v1"
-CHAR_ROOT = ROOT / "assets" / "production" / "character-redesign-v3" / "animated-64x96"
+CHAR_ROOT = ROOT / "assets" / "production" / "character-redesign-v3" / "game-ready-animations-64x96"
 
 
 def main() -> None:

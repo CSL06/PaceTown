@@ -2,7 +2,7 @@
 
 Generated with the built-in image-generation workflow on 2026-09-01. This folder contains approved raster assets and clearly labelled composition drafts.
 
-Production character sprites now live in `../production/characters/`. Those exact-grid sheets supersede every body-sprite draft listed below.
+Production character sprites now live in `../production/character-redesign-v3/`. The portrait-faithful `base-sprites-64x96/` bases and `game-ready-animations-64x96/` packages supersede every body-sprite draft listed below.
 
 ## Technically usable source assets
 
@@ -44,7 +44,7 @@ Files ending in `-draft.png` are approved for identity, pose, state, architectur
 
 ### Body sheets
 
-The following are retained only as visual concept references. Use `assets/production/characters/` in the application.
+The following are retained only as visual concept references. Use `assets/production/character-redesign-v3/` in the application.
 
 - `characters/player/player-sprites-v2-draft.png` — preferred glasses-free player body design.
 - `characters/mira/mira-sprites-v1-draft.png`
@@ -87,7 +87,7 @@ The preferred player identity is the glasses-free design in `player-portraits-v2
 1. Use the campus style master and location sheets to assemble the real tilemap from the downloaded third-party tiles.
 2. Slice transparent portrait, icon, Calendar, weather, and Sky sheets into production atlases.
 3. Manually clean and repixel the approved body and object drafts onto transparent canvases; keep the existing silhouettes and states.
-4. Use the portrait-faithful `64 × 96 px` v3 bases under `assets/production/character-redesign-v3/recommended-64x96/`; retain the older `32 × 48 px` sheets only as animation-layout references.
+4. Use the portrait-faithful `64 × 96 px` v3 bases under `assets/production/character-redesign-v3/base-sprites-64x96/`; the superseded `32 × 48 px` base folders have been removed.
 5. Use nearest-neighbour scaling and disable image smoothing.
 6. Keep source sheets intact and place sliced frames in `assets/production/`.
 7. Add Phaser atlas JSON, frame coordinates, collision data, and accessible application labels in code.

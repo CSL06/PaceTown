@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from 'react'
 
 type Direction = 'down' | 'up' | 'left' | 'right'
 type SkyMood = 'idle' | 'talk' | 'tea' | 'breathe' | 'happy'
@@ -7,6 +8,7 @@ type SkyMood = 'idle' | 'talk' | 'tea' | 'breathe' | 'happy'
 const SKY = { x: 27, y: 63 }
 const BREATH_SECONDS = 12
 const PLAYER_SPEED = 18
+const PLAYER_NUDGE_DISTANCE = 2.2
 
 const movementKeys: Record<string, Direction> = {
   arrowleft: 'left', a: 'left',
@@ -39,6 +41,12 @@ function App() {
   const distanceToSky = Math.hypot(player.x - SKY.x, player.y - SKY.y)
   const nearSky = distanceToSky < 13
 
+  const horizontalMovementScale = () => {
+    const stage = stageRef.current
+    if (!stage || stage.clientWidth === 0) return 1
+    return stage.clientHeight / stage.clientWidth
+  }
+
   useEffect(() => {
     if (reducedMotion) return
     const id = window.setInterval(() => setFrame((value) => (value + 1) % 2), 620)
@@ -49,17 +57,33 @@ function App() {
     if (dialogueStep !== null || breathingOpen) return
     setDirection(nextDirection)
     setPlayer((current) => {
-      const step = 2.2
       const next = { ...current }
-      if (nextDirection === 'left') next.x -= step
-      if (nextDirection === 'right') next.x += step
-      if (nextDirection === 'up') next.y -= step
-      if (nextDirection === 'down') next.y += step
+      const horizontalStep = PLAYER_NUDGE_DISTANCE * horizontalMovementScale()
+      if (nextDirection === 'left') next.x -= horizontalStep
+      if (nextDirection === 'right') next.x += horizontalStep
+      if (nextDirection === 'up') next.y -= PLAYER_NUDGE_DISTANCE
+      if (nextDirection === 'down') next.y += PLAYER_NUDGE_DISTANCE
       return {
         x: Math.min(92, Math.max(8, next.x)),
         y: Math.min(82, Math.max(39, next.y)),
       }
     })
+  }
+
+  const beginPointerMovement = (event: PointerEvent<HTMLButtonElement>, nextDirection: Direction) => {
+    if (dialogueStep !== null || breathingOpen) return
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    heldMovementKeys.current.set(`pointer:${event.pointerId}`, nextDirection)
+    setDirection(nextDirection)
+  }
+
+  const endPointerMovement = (event: PointerEvent<HTMLButtonElement>) => {
+    heldMovementKeys.current.delete(`pointer:${event.pointerId}`)
+  }
+
+  const nudgeFromKeyboard = (event: MouseEvent<HTMLButtonElement>, nextDirection: Direction) => {
+    if (event.detail === 0) move(nextDirection)
   }
 
   useEffect(() => {
@@ -85,6 +109,9 @@ function App() {
     }
 
     const stopMoving = () => heldKeys.clear()
+    const stopMovingWhenHidden = () => {
+      if (document.visibilityState === 'hidden') stopMoving()
+    }
 
     const updatePlayer = (time: number) => {
       const elapsedSeconds = Math.min((time - previousTime) / 1000, 0.05)
@@ -105,9 +132,10 @@ function App() {
         const magnitude = Math.hypot(horizontal, vertical)
         if (magnitude > 0 && activeFacing) {
           const distance = PLAYER_SPEED * elapsedSeconds
+          const horizontalDistance = distance * horizontalMovementScale()
           setDirection(activeFacing)
           setPlayer((current) => ({
-            x: Math.min(92, Math.max(8, current.x + (horizontal / magnitude) * distance)),
+            x: Math.min(92, Math.max(8, current.x + (horizontal / magnitude) * horizontalDistance)),
             y: Math.min(82, Math.max(39, current.y + (vertical / magnitude) * distance)),
           }))
         }
@@ -119,6 +147,7 @@ function App() {
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
     window.addEventListener('blur', stopMoving)
+    document.addEventListener('visibilitychange', stopMovingWhenHidden)
     animationFrame = window.requestAnimationFrame(updatePlayer)
 
     return () => {
@@ -126,6 +155,7 @@ function App() {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       window.removeEventListener('blur', stopMoving)
+      document.removeEventListener('visibilitychange', stopMovingWhenHidden)
       heldKeys.clear()
     }
   }, [breathingOpen, dialogueStep])
@@ -249,10 +279,21 @@ function App() {
             </div>
 
             <div className="mobile-controls" aria-label="Movement controls">
-              <button type="button" aria-label="Move up" onClick={() => move('up')}>↑</button>
-              <button type="button" aria-label="Move left" onClick={() => move('left')}>←</button>
-              <button type="button" aria-label="Move down" onClick={() => move('down')}>↓</button>
-              <button type="button" aria-label="Move right" onClick={() => move('right')}>→</button>
+              {(['up', 'left', 'down', 'right'] as const).map((moveDirection) => (
+                <button
+                  key={moveDirection}
+                  type="button"
+                  aria-label={`Move ${moveDirection}`}
+                  onPointerDown={(event) => beginPointerMovement(event, moveDirection)}
+                  onPointerUp={endPointerMovement}
+                  onPointerCancel={endPointerMovement}
+                  onLostPointerCapture={endPointerMovement}
+                  onClick={(event) => nudgeFromKeyboard(event, moveDirection)}
+                  onContextMenu={(event) => event.preventDefault()}
+                >
+                  {{ up: '↑', left: '←', down: '↓', right: '→' }[moveDirection]}
+                </button>
+              ))}
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "production" / "runtime-assets-v1"
-CHAR_ROOT = ROOT / "assets" / "production" / "character-redesign-v3" / "animated-64x96"
+CHAR_ROOT = ROOT / "assets" / "production" / "character-redesign-v3" / "game-ready-animations-64x96"
 P = {
     "navy": "#172638", "sage": "#6D8052", "teal": "#1F6170", "amber": "#D9A234",
     "rose": "#92566A", "cream": "#EFE3CC", "plum": "#503D62", "stone": "#C7B89B",
