@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 type Direction = 'down' | 'up' | 'left' | 'right'
 type SkyMood = 'idle' | 'talk' | 'tea' | 'breathe' | 'happy'
@@ -209,6 +210,7 @@ function App() {
             <span className="pace-dot" aria-hidden="true" />
             <span><small>Demo check-in</small> Busy, but here</span>
           </div>
+          <Link className="icon-button" to="/game">Campus Grove</Link>
           <button className="icon-button" type="button" aria-pressed={reducedMotion} onClick={() => setReducedMotion((value) => !value)}>
             {reducedMotion ? 'Motion off' : 'Motion on'}
           </button>
