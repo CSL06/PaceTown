@@ -1,0 +1,561 @@
+/**
+ * The town's other destinations. Each is small on purpose — a place you enter,
+ * do one thing, and leave.
+ */
+
+import {
+  EFFORT_WEIGHT, PRIORITY_WEIGHT, REWARDS, guidedPercentage, questReward,
+  wakingMinutes, weightedDemand,
+} from '../../domain'
+import { PLACES, doorstep } from '../layout'
+import { clearState, grow, record } from '../state'
+import { loadWeather, pressureByArea } from '../Campus'
+import { Guardian } from './Guardian'
+import type { PanelProps } from './types'
+
+const fmt = (n: number) => n.toFixed(1)
+const AREA_LABEL = {
+  time: 'Time', mental: 'Mental', physical: 'Physical', social: 'Social', errands: 'Errands',
+} as const
+
+/* -------------------------------------------------------- daily load */
+
+export function LoadPanel({ state, load, go }: PanelProps) {
+  const areas = pressureByArea(state.tasks, 'thu')
+  const fixedBy: Record<string, number> = {}
+  for (const t of state.tasks) {
+    if (t.day !== 'thu' || t.flexibility !== 'fixed') continue
+    fixedBy[t.category] = (fixedBy[t.category] ?? 0) + t.estimatedMinutes
+  }
+  const peak = Math.max(1, ...Object.values(areas))
+  const top = load.contributors.slice(0, 2).map((c) => c.task.title)
+
+  return (
+    <>
+      <div className="card">
+        <div className="eyebrow">Thursday</div>
+        <div className="load-head">
+          <span className="load-num">{fmt(load.percentage)}%</span>
+          <span className="band" style={{ background: `var(--${load.band.key})` }}>{load.band.label}</span>
+        </div>
+        <div className="capacity">
+          <div><span>Waking day</span><span>{load.wakingMinutes} min</span></div>
+          <div><span>Fixed commitments</span><span>−{load.fixedMinutes} min</span></div>
+          <div className="rule"><span>Available</span><span>{load.availableMinutes} min</span></div>
+          <div><span>Weighted demand</span><span>{fmt(load.weightedDemand)} min</span></div>
+        </div>
+        {top.length > 0 && (
+          <p className="lede">
+            Thursday is <b>{fmt(load.percentage)}%</b> because {load.fixedMinutes} minutes are already
+            committed, leaving <b>{load.availableMinutes} minutes</b> for {load.contributors.length}{' '}
+            flexible tasks. The largest contributors are <b>{top.join('</b> and <b>')}</b>.
+          </p>
+        )}
+        {state.capacity.energy && (
+          <p className="note" style={{ marginTop: 10 }}>
+            Adjusted for today’s energy: <b>{fmt(guidedPercentage(load, state.capacity.energy))}%</b> —
+            guidance only, the raw figure above is unchanged.
+          </p>
+        )}
+        <p className="disclaimer">
+          This is schedule guidance, not a health assessment. It describes your calendar, not you.
+        </p>
+        <div className="actions">
+          <button className="primary" type="button" onClick={() => go('understand')}>Show the arithmetic</button>
+          <button className="secondary" type="button" onClick={() => go('briefing')}>Check in</button>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3 style={{ fontSize: 14 }}>Where the pressure is</h3>
+        <div className="areas">
+          {(Object.keys(AREA_LABEL) as (keyof typeof AREA_LABEL)[]).map((k) => {
+            const fixed = fixedBy[k] ?? 0
+            const total = areas[k]
+            return (
+              <div className="area" key={k}>
+                <span>{AREA_LABEL[k]}</span>
+                <span className="bar">
+                  <i className="locked" style={{ width: `${(fixed / peak) * 100}%`, background: `var(--${k})` }} />
+                  <i style={{ width: `${((total - fixed) / peak) * 100}%`, background: `var(--${k})` }} />
+                </span>
+                <span className="val">{Math.round(total)}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="card">
+        <h3 style={{ fontSize: 14 }}>Load Weather</h3>
+        <p className="note">Every effect has a text equivalent — nothing depends on colour alone.</p>
+        {loadWeather(state.tasks, 'thu').map((w) => (
+          <div className="wrow" key={w.place}>
+            <span aria-hidden="true">{w.icon}</span>
+            <span>{w.place}</span>
+            <span className="st">{w.states[w.level]}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+/* ---------------------------------------------------------- briefing */
+
+export function Briefing({ state, load, update, go, toast }: PanelProps) {
+  const scale = (field: 'energy' | 'stress', label: string, lo: string, hi: string) => (
+    <div style={{ marginTop: 16 }}>
+      <div className="eyebrow">{label}</div>
+      <div className="outcomes">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button key={n} type="button" aria-pressed={state.capacity[field] === n}
+            onClick={() => update((s) => ({
+              ...s, capacity: { ...s.capacity, [field]: s.capacity[field] === n ? null : n },
+            }))}>{n}</button>
+        ))}
+      </div>
+      <div className="note" style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
+        <span>{lo}</span><span>{hi}</span>
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="card">
+      <h2>Today</h2>
+      <p className="lede">
+        Defaults you can change at any time. Nothing here is a health measurement, and every field
+        can be skipped.
+      </p>
+      <div className="field">
+        <label htmlFor="wake">Usually awake from</label>
+        <input id="wake" type="number" min={4} max={12} value={state.capacity.wakeHour}
+          onChange={(e) => update((s) => ({
+            ...s, capacity: { ...s.capacity, wakeHour: Math.max(4, Math.min(12, Number(e.target.value) || 8)) },
+          }))} />
+      </div>
+      <div className="field">
+        <label htmlFor="sleep">Usually asleep by</label>
+        <input id="sleep" type="number" min={18} max={26} value={state.capacity.sleepHour}
+          onChange={(e) => update((s) => ({
+            ...s, capacity: { ...s.capacity, sleepHour: Math.max(18, Math.min(26, Number(e.target.value) || 23)) },
+          }))} />
+      </div>
+      <p className="note">
+        That is <b className="mono">{wakingMinutes(state.capacity)} minutes</b> of waking day before
+        any commitments are subtracted.
+      </p>
+
+      {scale('energy', 'Energy today — optional', 'Running on empty', 'Full tank')}
+      {scale('stress', 'Stress today — optional', 'Settled', 'Wound up')}
+
+      <div className="capacity">
+        <div><span>Raw calculation</span><span>{fmt(load.percentage)}% · {load.band.label}</span></div>
+        <div><span>Adjusted for energy</span><span>{fmt(guidedPercentage(load, state.capacity.energy))}%</span></div>
+      </div>
+      <p className="disclaimer">
+        Energy bends the guidance within a bounded range. It never rewrites the time calculation.
+      </p>
+      <div className="actions">
+        <button className="primary" type="button" onClick={() => {
+          update((s) => record(s, 'Checked in',
+            `${wakingMinutes(s.capacity)} waking minutes` +
+            (s.capacity.energy ? ` · energy ${s.capacity.energy}/5` : '') +
+            '. Optional self-report, not a health measurement.'))
+          toast('Capacity saved')
+          go(null)
+        }}>Save</button>
+        <button className="secondary" type="button" onClick={() => go(null)}>Skip for now</button>
+      </div>
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------- council */
+
+export function Council({ state, load, go }: PanelProps) {
+  const areas = pressureByArea(state.tasks, 'thu')
+  const voices = ([
+    ['kai', 'time', `Thursday holds ${Math.round(areas.time)} minutes of fixed time. That is the part I cannot argue with.`],
+    ['mira', 'mental', `Most of what is left is cognitive. ${Math.round(areas.mental)} weighted minutes of it.`],
+    ['sol', 'physical', 'You have been at this a while. A smaller checkpoint is not a lesser one.'],
+    ['sky', 'social', 'There is one fixed social commitment. I would not move it — you chose it.'],
+    ['goh', 'errands', 'The errands are small and they group well. They are not the problem today.'],
+  ] as const)
+    .slice()
+    .sort((a, b) => areas[b[1]] - areas[a[1]])
+    .slice(0, 3)
+
+  const recommendation = load.percentage > 95
+    ? 'Make space'
+    : state.outcome && !state.questOutcome ? 'Recover first' : 'Do one checkpoint'
+
+  return (
+    <div className="card">
+      <div className="eyebrow">Guardian Council</div>
+      <h2>Three guardians, one recommendation</h2>
+      <p className="lede">
+        The Council reads the same numbers you can see. It proposes; you decide. Ringing the bell
+        never applies a schedule change.
+      </p>
+      {voices.map(([who, , says]) => <Guardian key={who} who={who} says={says} />)}
+      <div className="card">
+        <div className="eyebrow">Foregrounded</div>
+        <h3 style={{ fontSize: 18, marginTop: 5, color: 'var(--accent)' }}>{recommendation}</h3>
+        <div className="opts">
+          {([['Do one checkpoint', 'work'], ['Make space', 'rebalance'], ['Recover first', 'recover'],
+            ['Gather what is missing', 'backpack'], ['Choose for myself', null]] as const).map(([label, view]) => (
+            <button key={label} className="opt" type="button" aria-pressed={label === recommendation}
+              onClick={() => go(view)}>
+              <span className="k">{label === recommendation ? '▸' : '○'}</span><span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------- recover */
+
+export function Recover({ state, update, go, toast }: PanelProps) {
+  if (state.questOutcome) {
+    return (
+      <div className="card">
+        <h2>Recovery recorded</h2>
+        <p className="lede">
+          Self-confirmation and photo confirmation earn identically. Photo use grants no XP, coins,
+          rarity, or progression advantage.
+        </p>
+        <div className="actions">
+          <button className="primary" type="button" onClick={() => go('journal')}>See the Journal</button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card">
+      <div className="eyebrow">Recover</div>
+      <h2>Two ways to pause</h2>
+      <Guardian who="sol" says="Would you rather pause here with Gentle Ripples, or step away from the screen for a short reset? Neither is worth more than the other." />
+      <div className="opts">
+        <button className="opt" type="button" onClick={() => {
+          update((s) => grow(record({ ...s, rippleTaps: s.rippleTaps + 1, questOutcome: 'done' },
+            'Used Gentle Ripples as a transition',
+            'Returned to the same checkpoint. A preference, not a health measurement.',
+            REWARDS.recovery)))
+          toast(`Recovery recorded · +${REWARDS.recovery.xp} XP`)
+        }}>
+          <span className="k">◎</span>
+          <span>Do something here<small>Gentle Ripples · 45–120 seconds · no score, no failure state</small></span>
+        </button>
+        <button className="opt" type="button" onClick={() => {
+          const reward = questReward('done', 'self')
+          update((s) => grow(record({ ...s, questOutcome: 'done' },
+            'Pocket of Green — done',
+            'Confirmed by self-report. Outdoor access is never assumed; indoor alternatives earn the same.',
+            reward)))
+          toast(`Quest complete · +${reward.xp} XP`)
+        }}>
+          <span className="k">☀</span>
+          <span>Do something away from the screen<small>Pocket of Green · IRL-01 · Sol</small></span>
+        </button>
+      </div>
+      <div className="actions">
+        <button className="secondary" type="button" onClick={() => go(null)}>Not now</button>
+        <span className="note">Declining costs nothing and removes no progress.</span>
+      </div>
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------- journal */
+
+export function Journal({ state }: PanelProps) {
+  return (
+    <div className="card">
+      <div className="eyebrow">Post Office</div>
+      <h2>What Thursday actually held</h2>
+      <p className="lede">
+        Written automatically from real events. No mood score, no streak, and no missed-day
+        messaging when you come back.
+      </p>
+      {state.journal.length === 0
+        ? <p className="empty">Nothing recorded yet.</p>
+        : [...state.journal].reverse().map((e) => {
+          const d = new Date(e.at)
+          return (
+            <div className="entry" key={e.at + e.text}>
+              <span className="when">
+                {String(d.getHours()).padStart(2, '0')}:{String(d.getMinutes()).padStart(2, '0')}
+              </span>
+              <div>
+                <strong>
+                  {e.text}
+                  {e.reward && <span className="reward">+{e.reward.xp} XP · +{e.reward.coins}</span>}
+                </strong>
+                {e.detail && <p>{e.detail}</p>}
+              </div>
+            </div>
+          )
+        })}
+      {state.outcome && (
+        <div className="next-action">
+          <div className="eyebrow">Waiting for you next time</div>
+          <p>{state.nextAction}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ---------------------------------------------------------- backpack */
+
+export function Backpack({ state, go }: PanelProps) {
+  const today = state.tasks.filter((t) => t.day === 'thu')
+  return (
+    <div className="card">
+      <div className="eyebrow">Backpack inspection point</div>
+      <h2>What you are carrying</h2>
+      <p className="lede">
+        Workload shown as something carried, not something you are. It gets lighter when work is
+        done or safely rescheduled — it never bursts.
+      </p>
+      <div className="scroll">
+        <table>
+          <thead><tr><th>Item</th><th>Area</th><th>State</th><th className="num">Min</th><th className="num">Weighted</th></tr></thead>
+          <tbody>
+            {today.map((t) => (
+              <tr key={t.id}>
+                <td><strong>{t.title}</strong></td>
+                <td>{AREA_LABEL[t.category]}</td>
+                <td>{t.flexibility === 'fixed' ? '🔒 locked' : '🎗 flexible'}</td>
+                <td className="num">{t.estimatedMinutes}</td>
+                <td className="num">{t.flexibility === 'fixed' ? '—' : fmt(weightedDemand(t))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="actions">
+        <button className="primary" type="button" onClick={() => go('work')}>Bring one into a session</button>
+        <button className="secondary" type="button" onClick={() => go('rebalance')}>Move one through rebalancing</button>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------ garden */
+
+export function Garden({ state, go }: PanelProps) {
+  const stages = ['Nothing planted yet', 'A shoot', 'Leaves opening', 'Standing tall', 'In bloom']
+  const glyphs = ['🟫', '🌱', '🌿', '🌳', '🌸']
+  return (
+    <div className="card">
+      <div className="eyebrow">Recovery Garden</div>
+      <h2>{stages[state.gardenGrowth]}</h2>
+      <p className="lede">
+        Growth comes from work progress, intentional recovery, realistic rescheduling and asking for
+        help. There are no dead or wilted states, and being away never removes anything.
+      </p>
+      <div style={{ fontSize: 26 + state.gardenGrowth * 14, textAlign: 'center', padding: '24px 0' }}
+        aria-hidden="true">
+        {glyphs[state.gardenGrowth]}
+      </div>
+      <p className="note">Growth: {state.gardenGrowth} of 4 · persists across refreshes.</p>
+      <div className="actions">
+        <button className="secondary" type="button" onClick={() => go('recover')}>Recover again</button>
+      </div>
+    </div>
+  )
+}
+
+/* -------------------------------------------------------- future mailbox */
+
+export function Mailbox({ state, update, toast }: PanelProps) {
+  return (
+    <div className="card">
+      <div className="eyebrow">Future Mailbox</div>
+      <h2>Send something to your future self</h2>
+      <p className="lede">
+        It surfaces at the next relevant moment rather than arriving as a reminder you have to dismiss.
+      </p>
+      <div className="field">
+        <label htmlFor="mailtext">A next action, or a note</label>
+        <input id="mailtext" defaultValue={state.nextAction} />
+      </div>
+      <div className="actions">
+        <button className="primary" type="button" onClick={() => {
+          const el = document.getElementById('mailtext') as HTMLInputElement | null
+          const text = el?.value.trim() || state.nextAction
+          update((s) => record({ ...s, mailbox: [...s.mailbox, { at: Date.now(), text }] },
+            'Sent a note to your future self', text, { xp: 10, coins: 5 }))
+          toast('Saved to the Future Mailbox')
+        }}>Put it in the mailbox</button>
+      </div>
+      {state.mailbox.length > 0 && (
+        <>
+          <div className="eyebrow" style={{ marginTop: 18 }}>Waiting</div>
+          {[...state.mailbox].reverse().map((m) => (
+            <div className="next-action" key={m.at}>
+              <div className="eyebrow">{new Date(m.at).toLocaleString()}</div>
+              <p>{m.text}</p>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  )
+}
+
+/* -------------------------------------------------------------- home */
+
+export function Home({ state, update, go, toast }: PanelProps) {
+  return (
+    <div className="card">
+      <div className="eyebrow">Home</div>
+      <h2>Stopping is a valid outcome</h2>
+      <div className="opts">
+        <button className="opt" type="button" aria-pressed={state.quiet}
+          onClick={() => update((s) => ({ ...s, quiet: !s.quiet }))}>
+          <span className="k">◑</span>
+          <span>Quiet Mode{state.quiet ? ' — on' : ''}
+            <small>Reduces motion, ambient life and effects. Every core action stays available.</small></span>
+        </button>
+        <button className="opt" type="button" aria-pressed={state.contrast}
+          onClick={() => update((s) => ({ ...s, contrast: !s.contrast }))}>
+          <span className="k">◐</span>
+          <span>High contrast{state.contrast ? ' — on' : ''}
+            <small>Stronger edges and text. Status is never carried by colour alone.</small></span>
+        </button>
+        <button className="opt" type="button" onClick={() => go('briefing')}>
+          <span className="k">⚙</span>
+          <span>Capacity and check-in<small>Waking hours, and today’s optional energy and stress.</small></span>
+        </button>
+      </div>
+
+      <div className="card">
+        <div className="eyebrow">Exit Quest</div>
+        <h3 style={{ fontSize: 17, marginTop: 5 }}>Close the day on purpose</h3>
+        <p className="lede">
+          Record what changed, keep the next action, and leave. No guilt message, no streak, and
+          nothing is lost by being away.
+        </p>
+        <div className="actions">
+          <button className="primary" type="button" onClick={() => {
+            update((s) => record(s, 'Closed the day with the Exit Quest',
+              `Next action kept: ${s.nextAction}.`, REWARDS.savedNextAction))
+            toast('Day closed')
+            go('journal')
+          }}>Save and stop here</button>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="eyebrow">Your data</div>
+        <div className="capacity">
+          <div><span>Store</span><span>localStorage · versioned and migrated</span></div>
+          <div><span>Journal entries</span><span>{state.journal.length}</span></div>
+          <div><span>Commitments</span><span>{state.tasks.length}</span></div>
+        </div>
+        <div className="actions">
+          <button className="secondary" type="button" onClick={() => {
+            clearState()
+            window.location.reload()
+          }}>Delete local data</button>
+          <span className="note">Local-first. Nothing has left this browser.</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* --------------------------------------------------------- town list */
+
+export function TownList({ update, go }: PanelProps) {
+  return (
+    <div className="card">
+      <h2>Town List</h2>
+      <p className="lede">
+        Every spatial interaction has an equivalent here. Nothing on the map is reachable only by
+        pointing at it.
+      </p>
+      <div className="townlist">
+        {PLACES.map((p) => (
+          <button key={p.id} type="button" onClick={() => {
+            const at = doorstep(p)
+            update((s) => ({ ...s, avatar: at, facing: 'down' }))
+            go(p.view)
+          }}>
+            {p.name}<small>{p.blurb}</small>
+          </button>
+        ))}
+      </div>
+      <div className="eyebrow" style={{ marginTop: 20 }}>Not on the map</div>
+      <div className="townlist">
+        <button type="button" onClick={() => go('load')}>
+          Daily Load<small>The full calculation and Load Weather</small>
+        </button>
+        <button type="button" onClick={() => go('briefing')}>
+          Daily Briefing<small>Capacity, energy and today’s check-in</small>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* ----------------------------------------------- calm corner + previews */
+
+const PREVIEWS = [
+  ['Firefly Stories', 'mira', 'Fireflies reveal five short illustrated fragments about rest, uncertainty, loneliness, persistence, and self-kindness.'],
+  ['Chime Drift', 'kai', 'Slow notes arrive at a predictable pace. Tap, press a key, or simply watch as each passes the clock hand.'],
+  ['Warm Cup', 'sky', 'Choose a drink base, pour, stir, and sit by the window. The sequence is unhurried and cannot be ruined.'],
+  ['Night Lanterns', 'goh', 'Choose a symbol for a concern, light a lantern, and place it in the evening scene.'],
+] as const
+
+export function Calm({ go }: PanelProps) {
+  return (
+    <div className="card">
+      <div className="eyebrow">Calm Corner</div>
+      <h2>Regulation without prerequisites</h2>
+      <p className="lede">
+        No load score, active task, or permission needed. Audio starts muted and every cue has a
+        visual equivalent.
+      </p>
+      <div className="opts">
+        <button className="opt" type="button" onClick={() => go('recover')}>
+          <span className="k">◉</span>
+          <span>Gentle Ripples<small>The one fully interactive activity for this slice</small></span>
+        </button>
+        {PREVIEWS.map(([name, , play]) => (
+          <button key={name} className="opt" type="button" disabled>
+            <span className="k">○</span>
+            <span>{name}<small>Preview · {play.slice(0, 64)}…</small></span>
+          </button>
+        ))}
+      </div>
+      <p className="note" style={{ marginTop: 14 }}>
+        Gentle Ripples is the required interactive activity; the other four are implemented after
+        the core loop passes acceptance.
+      </p>
+    </div>
+  )
+}
+
+export function Preview({ go }: PanelProps) {
+  return (
+    <div className="card">
+      <h2>Not yet playable</h2>
+      <p className="lede">
+        This district has a defined return path but its activity is a preview. Gentle Ripples at the
+        Garden Pavilion is the one fully interactive activity in this slice.
+      </p>
+      <div className="actions">
+        <button className="primary" type="button" onClick={() => go('recover')}>Go to Gentle Ripples</button>
+        <button className="secondary" type="button" onClick={() => go(null)}>Return to the campus</button>
+      </div>
+    </div>
+  )
+}
