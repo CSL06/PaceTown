@@ -76,6 +76,7 @@ This is a mentor-review vertical slice, not the complete PaceTown product. It de
 ## Start here
 
 - `PACETOWN_PROJECT_VISION.md`
+- `PACETOWN_VISION_MERMAID.md`
 - `PaceTown_Hackathon_Implementation_Plan.md`
 - `assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md`
 - `assets/production/character-redesign-v3/README.md`

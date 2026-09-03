@@ -2,6 +2,8 @@
 
 > **Find your pace. Grow your place.**
 
+Visual companion: [`PACETOWN_VISION_MERMAID.md`](PACETOWN_VISION_MERMAID.md)
+
 ## 1. Vision
 
 PaceTown is a cozy pixel-art guided-work and recovery game for university students. It helps a student move from:
