@@ -17,11 +17,6 @@ For a clean run, reset first: **Home → Delete local data** (or a fresh private
 window). Reloading mid-demo is safe — saves are versioned and you return to the
 title screen with progress intact.
 
-> Prefer showing over telling? Press **Take the guided tour** on the title
-> screen (or the **Tour** button in the bottom-right HUD). It coaches each step
-> below inside the app — every input is prefilled, the visitor only picks
-> choices, and the real system runs underneath.
-
 ## The prefixed inputs (already in the app)
 
 Town Hall opens with this schedule text prefilled:

@@ -363,28 +363,6 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 .sprout.s3 { height: 62px; box-shadow: -14px 10px 0 -1px var(--open), 14px 18px 0 -1px var(--open) }
 .sprout.s4 { height: 70px; box-shadow: -14px 10px 0 -1px var(--open), 14px 18px 0 -1px var(--open), 0 -14px 0 2px #B4677E }
 
-/* ---------- guided tour ---------- */
-.tour-float { position: absolute; left: 50%; bottom: 118px; transform: translateX(-50%);
-  width: min(430px, calc(100vw - 26px)); z-index: 30; background: rgba(16,27,37,.96);
-  border: 1px solid var(--accent); padding: 13px 15px;
-  box-shadow: 0 14px 40px rgba(6,12,20,.6); max-height: 46vh; overflow: auto }
-.tour-banner { background: var(--sunk); border: 1px solid var(--accent);
-  border-left: 3px solid var(--accent); padding: 12px 14px; margin-bottom: 16px }
-.tour-float h3, .tour-banner h3 { font-size: 14px; margin: 5px 0 0; color: var(--cream) }
-.tour-float .eyebrow, .tour-banner .eyebrow { color: var(--accent) }
-.tour-choices { margin: 8px 0 0; padding-left: 20px; font-size: 12.5px; color: var(--dim);
-  display: flex; flex-direction: column; gap: 4px }
-.tour-payoff { margin: 8px 0 0; font-size: 11.5px; color: var(--faint);
-  border-left: 2px solid var(--edge-hi); padding-left: 9px }
-.tour-progress { display: flex; gap: 5px; margin-top: 10px }
-.tour-progress span { height: 4px; flex: 1; background: var(--edge) }
-.tour-progress .past { background: var(--open) }
-.tour-progress .now { background: var(--accent) }
-.tour-float .qa, .tour-banner .qa { margin-top: 10px }
-@media (hover: none) and (pointer: coarse) {
-  .tour-float { bottom: 186px }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .title-art, .cast.idle, .avatar.walking, .marker .ring, .dlg-caret { animation: none !important }
 }

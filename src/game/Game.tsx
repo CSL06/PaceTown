@@ -19,7 +19,6 @@ import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
 import { Chime, Firefly, Lanterns, WarmCup } from './panels/Minis'
 import { Collection, Keepsakes } from './panels/Keepsakes'
-import { TourCard } from './panels/Tour'
 import { Pocket } from './panels/Pocket'
 import { Ripples } from './panels/Ripples'
 import {
@@ -76,7 +75,6 @@ export default function Game() {
   const [toasts, setToasts] = useState<{ id: number; text: string }[]>([])
   const [moved, setMoved] = useState(false)
   const [live, setLive] = useState('')
-  const [tourOpen, setTourOpen] = useState(false)
 
   const stage = useRef<HTMLDivElement>(null)
   const world = useRef<HTMLDivElement>(null)
@@ -224,12 +222,6 @@ export default function Game() {
               <button className="primary big" type="button" onClick={start}>
                 {state.journal.length ? 'Continue your week' : 'Enter Campus Grove'}
               </button>
-              <button className="secondary big" type="button" onClick={() => {
-                start()
-                update((s) => ({ ...s, tourStep: 0 }))
-                setTourOpen(true)
-                go('intake')
-              }}>Take the guided tour</button>
               <Link className="secondary" to="/">Mentor demo</Link>
             </div>
             <p className="title-note">A cozy campus for the week you actually have</p>
@@ -309,8 +301,6 @@ export default function Game() {
       </div>
 
       <div className="hud hud-tools">
-        <button className="tool" type="button" onClick={() => setTourOpen((v) => !v)}
-          aria-pressed={tourOpen}>⛳ Tour</button>
         <button className="tool" type="button" onClick={() => go('townlist')}>☰ Town List</button>
       </div>
 
@@ -344,20 +334,13 @@ export default function Game() {
               <button className="iconbtn" type="button" aria-label="Back to campus"
                 onClick={() => go(null)}>✕</button>
             </div>
-            <div className="sheet-body">
-              {tourOpen && <TourCard state={state} update={update} go={go} onClose={() => setTourOpen(false)} banner />}
-              <Panel {...panelProps} />
-            </div>
+            <div className="sheet-body"><Panel {...panelProps} /></div>
           </div>
         </>
       )}
 
       {script && (
         <Dialogue script={script} reducedMotion={reducedMotion} onClose={() => setScript(null)} />
-      )}
-
-      {tourOpen && !panelOpen && (
-        <TourCard state={state} update={update} go={go} onClose={() => setTourOpen(false)} />
       )}
 
       <div className="toasts">

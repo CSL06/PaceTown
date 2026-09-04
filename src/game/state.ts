@@ -14,7 +14,7 @@ import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 4
+export const SAVE_VERSION = 3
 
 const store = localStorageAdapter(SAVE_KEY)
 
@@ -98,9 +98,6 @@ export interface GameState {
 
   skippedQuestKinds: string[]
 
-  /** Guided-tour progress: index into TOUR_STEPS, or past the end when done. */
-  tourStep: number
-
   xp: number
   coins: number
   gardenGrowth: number
@@ -158,7 +155,6 @@ export function initialState(): GameState {
     keepsakes: [],
     regulationSessions: [],
     skippedQuestKinds: [],
-    tourStep: 0,
 
     xp: 0,
     coins: 0,
@@ -209,11 +205,6 @@ const MIGRATIONS: Migration[] = [
     ...s,
     version: 3,
     activeTaskId: typeof s.activeTaskId === 'string' ? s.activeTaskId : null,
-  }),
-  (s) => ({
-    ...s,
-    version: 4,
-    tourStep: typeof s.tourStep === 'number' ? s.tourStep : 0,
   }),
 ]
 
