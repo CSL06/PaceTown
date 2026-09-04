@@ -13,6 +13,7 @@ import {
 } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
+import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
 const AREA_LABEL = {
@@ -23,7 +24,7 @@ const fmt = (n: number) => n.toFixed(1)
 
 /* ------------------------------------------------------------- intake */
 
-export function Intake({ state, update, go, toast }: PanelProps) {
+export function Intake({ state, load, update, go, toast }: PanelProps) {
   const parsed = parseSchedule(state.scheduleText)
   // An editable copy of the parse result. Null means "showing the live parse".
   const [draft, setDraft] = useState<Task[] | null>(null)
@@ -38,7 +39,7 @@ export function Intake({ state, update, go, toast }: PanelProps) {
     <>
       <div className="card">
         <div className="eyebrow">Town Hall · intake</div>
-        <h2>Say what your week holds</h2>
+        <h2>Say what your week holds <HelpDot view="intake" state={state} load={load} /></h2>
         <p className="lede">
           Typed in plain language. A deterministic local parser turns it into editable commitments —
           nothing is saved until you approve it, and nothing is interpreted silently.
@@ -178,7 +179,7 @@ export function Understand({ state, load, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Understand</div>
-      <h2>Thursday is at {fmt(load.percentage)}%</h2>
+      <h2>Thursday is at {fmt(load.percentage)}% <HelpDot view="understand" state={state} load={load} /></h2>
       <p className="lede">
         Every number is computed, not written in. The formula is{' '}
         <span className="mono">estimated minutes × priority × mental effort × urgency</span>, divided
@@ -243,7 +244,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     return (
       <div className="card">
         <div className="eyebrow">Rebalance Workshop</div>
-        <h2>Thursday is now {fmt(load.percentage)}%</h2>
+        <h2>Thursday is now {fmt(load.percentage)}% <HelpDot view="rebalance" state={state} load={load} /></h2>
         <Guardian who="kai" says="That is as far as moving things will take you. What is left is real work, and it still has to be done. Shall we make it smaller?" />
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('work')}>Handle what remains</button>
@@ -256,7 +257,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     return (
       <div className="card">
         <div className="eyebrow">Rebalance Workshop</div>
-        <h2>Nothing can safely move</h2>
+        <h2>Nothing can safely move <HelpDot view="rebalance" state={state} load={load} /></h2>
         <p className="lede">Every flexible task is either due too soon or already placed well.</p>
         <div className="actions">
           <button className="primary" type="button"
@@ -286,7 +287,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Rebalance Workshop</div>
-      <h2>Kai has a proposal</h2>
+      <h2>Kai has a proposal <HelpDot view="rebalance" state={state} load={load} /></h2>
       <Guardian who="kai" says={`I can move ${proposal.moves.length} things. I will not touch anything with a fixed time, and I will not push work past its deadline. Nothing has moved yet.`} />
 
       {proposal.moves.map((m) => {
@@ -349,7 +350,7 @@ export function Work({ state, load, update, go }: PanelProps) {
   if (!task) {
     return (
       <div className="card">
-        <h2>No flexible work left on Thursday</h2>
+        <h2>No flexible work left on Thursday <HelpDot view="work" state={state} load={load} /></h2>
         <p className="lede">Everything is locked, moved, or done. Review the week to add more.</p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('intake')}>Review commitments</button>
@@ -377,7 +378,7 @@ export function Work({ state, load, update, go }: PanelProps) {
           </select>
         </div>
       )}
-      <h2>{task.title}</h2>
+      <h2>{task.title} <HelpDot view="work" state={state} load={load} /></h2>
       <p className="lede">
         {task.estimatedMinutes} estimated minutes · the largest single contributor to Thursday.
         Before it becomes a plan, PaceTown asks what is actually in the way.
@@ -546,7 +547,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
   if (!active || !state.blocker) {
     return (
       <div className="card">
-        <h2>Pick a checkpoint first</h2>
+        <h2>Pick a checkpoint first <HelpDot view="session" state={state} load={load} /></h2>
         <p className="lede">Sessions attach to one concrete checkpoint with a definition of done.</p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('work')}>Choose the work</button>
@@ -571,7 +572,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Pace Session</div>
-      <h2>One checkpoint at a time</h2>
+      <h2>One checkpoint at a time <HelpDot view="session" state={state} load={load} /></h2>
 
       <div className="capacity" style={{ borderColor: 'var(--accent)' }}>
         <div><span>Current checkpoint</span><span>{active.estimatedMinutes} min planned</span></div>
