@@ -179,7 +179,7 @@ never read from `game/`.
 npm test
 ```
 
-112 cases across nine files. They cover the arithmetic, but they also pin the
+122 cases across ten files. They cover the arithmetic, but they also pin the
 product promises so those cannot quietly rot:
 
 - Self-confirmation and photo confirmation earn **identically**

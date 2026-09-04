@@ -33,7 +33,7 @@ in the browser with no cloud, AI provider, or Google Calendar required.
   with local pixel filter and symbolic fallback, quests, XP/coins, Recovery Garden,
   Journal, Future Mailbox, Backpack, Guardian Council, Quiet Mode, Exit Quest,
   versioned saves, export, and an offline PWA shell
-- 112 automated domain tests (`npm test`)
+- 122 automated domain tests (`npm test`)
 
 ## Run the mentor demo
 
@@ -77,7 +77,7 @@ npm test
 npm run test:watch
 ```
 
-112 cases across nine files. They cover the arithmetic, and they pin the product
+122 cases across ten files. They cover the arithmetic, and they pin the product
 promises so those cannot quietly rot: self/photo confirmation parity, no
 timer/mini-game/AI academic completion, rebalance previews never mutating tasks,
 bounded energy guidance, and the seeded 108% Thursday.
