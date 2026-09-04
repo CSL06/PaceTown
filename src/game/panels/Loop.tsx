@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react'
 import {
   BLOCKERS, DEMO_DESTINATION, DEMO_DESTINATION_CAPACITY, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
-  extractDeliverables, guardianFor, parseSchedule, proposeRebalance, REWARDS, sessionReward,
-  wakingMinutes, weightedDemand, type Task,
+  extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS, sessionReward,
+  wakingMinutes, weightedDemand, type HelpMode, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
@@ -376,7 +376,9 @@ export function Work({ state, load, update, go }: PanelProps) {
         {BLOCKERS.map((b, i) => (
           <button key={b.id} className="opt" type="button" aria-pressed={state.blocker === b.id}
             onClick={() => update((s) => ({
-              ...s, blocker: b.id, checkpoints: buildCheckpoints(b.id), activeCheckpointId: null,
+              ...s, blocker: b.id, activeTaskId: task.id,
+              checkpoints: buildCheckpoints(b.id, { taskTitle: task.title, deliverables: s.deliverables }),
+              activeCheckpointId: null,
             }))}>
             <span className="k">{String.fromCharCode(65 + i)}</span>
             <span>{b.label}<small>{b.hint}</small></span>
@@ -477,6 +479,7 @@ export function Work({ state, load, update, go }: PanelProps) {
             <button className="primary" type="button" onClick={() => {
               update((s) => record({
                 ...s,
+                activeTaskId: task.id,
                 session: { ...s.session, elapsedSec: 0, pausedFrom: null },
               }, 'Began a planned Pace Session',
               `Checkpoint: ${active.title} · blocker identified before starting.`,
@@ -493,26 +496,14 @@ export function Work({ state, load, update, go }: PanelProps) {
 
 /* -------------------------------------------------------- pace session */
 
-const HELP_MODES = ['Plan', 'Explain', 'Brainstorm', 'Review', 'Debug', 'What next?'] as const
-
-const GUIDANCE: Record<string, string[]> = {
-  Plan: ['Start with the nouns in the brief. Every noun that has to be stored is a candidate entity.'],
-  Explain: [
-    'A many-to-many relationship means a row on each side can match many rows on the other. A student takes many courses; a course holds many students.',
-    'A relational table cannot store that directly. You introduce a junction entity that holds one row per pairing.',
-  ],
-  Brainstorm: ['Candidates: Student, Course, Enrolment, Lecturer, Department, Semester, Assessment. Cross out any your brief never mentions.'],
-  Review: ['Check each relationship for direction and cardinality. Any many-to-many still drawn as a direct line is the thing to fix next.'],
-  Debug: ['If two entities both seem to own the same attribute, it usually belongs to the relationship between them. Enrolment date belongs to Enrolment.'],
-  'What next?': ['You have listed the entities. The smallest next action is to name the junction entity between Student and Course.'],
-}
+const HELP_MODES: readonly HelpMode[] = ['Plan', 'Explain', 'Brainstorm', 'Review', 'Debug', 'What next?']
 
 const fmtClock = (totalSec: number) => {
   const s = Math.max(0, Math.floor(totalSec))
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 }
 
-export function Session({ state, update, go, toast }: PanelProps) {
+export function Session({ state, load, update, go, toast }: PanelProps) {
   const active = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
   const [ticking, setTicking] = useState(false)
 
@@ -536,9 +527,17 @@ export function Session({ state, update, go, toast }: PanelProps) {
     return <div className="card"><h2>Pick a checkpoint first</h2></div>
   }
   const guardian = guardianFor(state.blocker)
-  const help = state.session.helpMode
+  const help = state.session.helpMode as HelpMode | null
   const ses = state.session
   const remaining = ses.timerLenSec - ses.elapsedSec
+  const sessionTask = state.tasks.find((t) => t.id === state.activeTaskId)
+    ?? load.contributors[0]?.task ?? null
+  const guideCtx = {
+    taskTitle: sessionTask?.title,
+    checkpointTitle: active.title,
+    definitionOfDone: active.definitionOfDone,
+    deliverables: state.deliverables,
+  }
 
   return (
     <div className="card">
@@ -550,6 +549,9 @@ export function Session({ state, update, go, toast }: PanelProps) {
       </div>
       <h3 style={{ fontSize: 17, marginTop: 10 }}>{active.title}</h3>
       <p className="dod"><b>Done when:</b> {active.definitionOfDone}</p>
+      {sessionTask && (
+        <p className="note" style={{ marginTop: 6 }}>Working on: <b>{sessionTask.title}</b></p>
+      )}
 
       <div className="eyebrow" style={{ marginTop: 18 }}>Timer — optional, never decisive</div>
       <div className="capacity">
@@ -615,10 +617,10 @@ export function Session({ state, update, go, toast }: PanelProps) {
           </button>
         ))}
       </div>
-      {help && GUIDANCE[help] && (
+      {help && (
         <div className="capacity" style={{ borderLeft: '2px solid var(--mental)' }}>
-          <div><span>{guardian} · local guidance, no AI provider connected</span></div>
-          {GUIDANCE[help].map((p) => (
+          <div><span>{guardian} · local guidance for this task, no AI provider connected</span></div>
+          {guideLines(state.blocker, help, guideCtx).map((p) => (
             <div key={p} style={{ display: 'block', color: 'var(--dim)', marginTop: 6 }}>{p}</div>
           ))}
         </div>

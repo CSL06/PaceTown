@@ -68,3 +68,38 @@ describe('generated checkpoints', () => {
     expect(buildCheckpoints('other')[0].title).toMatch(/your own/i)
   })
 })
+
+describe('task-aware checkpoints', () => {
+  const ctx = { taskTitle: 'Weekly groceries', deliverables: [] as string[] }
+
+  it('names the student’s task in every generated checkpoint', () => {
+    for (const id of ['unclear_start', 'too_large', 'missing_knowledge'] as BlockerKind[]) {
+      const text = buildCheckpoints(id, ctx).map((c) => `${c.title} ${c.definitionOfDone}`).join(' ')
+      expect(text).toContain('Weekly groceries')
+    }
+  })
+
+  it('never falls back to the seeded example assignment', () => {
+    for (const id of ALL) {
+      const text = buildCheckpoints(id, ctx).map((c) => `${c.title} ${c.definitionOfDone}`).join(' ')
+      expect(text).not.toMatch(/many-to-many|junction entity|ERD/i)
+    }
+  })
+
+  it('grounds the first checkpoint in the brief deliverable when one exists', () => {
+    const first = buildCheckpoints('unclear_start', {
+      taskTitle: 'ERD assignment', deliverables: ['Write a short data dictionary'],
+    })[0]
+    expect(`${first.title} ${first.definitionOfDone}`).toContain('Write a short data dictionary')
+  })
+
+  it('keeps every task-aware checkpoint inside one sitting with a definition of done', () => {
+    for (const id of ALL) {
+      for (const c of buildCheckpoints(id, ctx)) {
+        expect(c.definitionOfDone.length).toBeGreaterThan(10)
+        expect(c.estimatedMinutes).toBeGreaterThanOrEqual(5)
+        expect(c.estimatedMinutes).toBeLessThanOrEqual(30)
+      }
+    }
+  })
+})

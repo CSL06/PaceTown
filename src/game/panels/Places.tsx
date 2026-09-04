@@ -176,9 +176,12 @@ export function Briefing({ state, load, update, go, toast }: PanelProps) {
 
 export function Council({ state, load, go }: PanelProps) {
   const areas = pressureByArea(state.tasks, 'thu')
+  const top = load.contributors[0]?.task.title ?? null
   const voices = ([
     ['kai', 'time', `Thursday holds ${Math.round(areas.time)} minutes of fixed time. That is the part I cannot argue with.`],
-    ['mira', 'mental', `Most of what is left is cognitive. ${Math.round(areas.mental)} weighted minutes of it.`],
+    ['mira', 'mental', top
+      ? `Most of what is left is cognitive — ${Math.round(areas.mental)} weighted minutes, and “${top}” is the largest piece.`
+      : `Most of what is left is cognitive. ${Math.round(areas.mental)} weighted minutes of it.`],
     ['sol', 'physical', 'You have been at this a while. A smaller checkpoint is not a lesser one.'],
     ['sky', 'social', 'There is one fixed social commitment. I would not move it — you chose it.'],
     ['goh', 'errands', 'The errands are small and they group well. They are not the problem today.'],

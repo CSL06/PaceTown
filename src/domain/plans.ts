@@ -103,14 +103,68 @@ export const PLAN_TEMPLATES: Record<BlockerKind, PlanTemplate> = {
 
 let counter = 0
 
-/** Build an editable plan. Every checkpoint can be rewritten, shortened, or removed. */
-export function buildCheckpoints(blocker: BlockerKind): Checkpoint[] {
-  const template = PLAN_TEMPLATES[blocker] ?? PLAN_TEMPLATES.other
-  return template.checkpoints.map((c) => ({
-    ...c,
-    id: `c${counter++}`,
-    status: 'pending' as const,
-  }))
+export interface PlanContext {
+  /** The student's own task title, used so checkpoints read as theirs. */
+  taskTitle?: string
+  /** Extracted brief deliverables, used to ground the first checkpoint. */
+  deliverables?: string[]
+}
+
+const named = (ctx: PlanContext | undefined) =>
+  ctx?.taskTitle?.trim() ? `“${ctx.taskTitle.trim()}”` : 'this task'
+
+/**
+ * Checkpoints that follow the student's actual task and brief rather than a
+ * single seeded example. Defaults keep every existing caller working.
+ */
+export function buildCheckpoints(blocker: BlockerKind, ctx?: PlanContext): Checkpoint[] {
+  const t = named(ctx)
+  const firstDeliverable = ctx?.deliverables?.find((d) => d.trim().length > 0)?.trim()
+  const list: Omit<Checkpoint, 'id' | 'status'>[] = (() => {
+    switch (blocker) {
+      case 'unclear_start':
+        return [
+          ...(firstDeliverable
+            ? [cp(`Read the first deliverable for ${t}`, 15,
+              `Can say what “${firstDeliverable}” is asking, in your own words.`)]
+            : [cp(`List the visible pieces of ${t}`, 15,
+              'Every piece written down. Nothing has to be done yet.')]),
+          cp(`Do the smallest piece of ${t} roughly`, 20,
+            'One rough piece exists. Quality does not count yet.'),
+          cp(`Define what done means for ${t}`, 10,
+            'One sentence saying what finished looks like.'),
+        ]
+      case 'too_large':
+        return [
+          cp(`List what ${t} actually requires`, 15,
+            'Each requirement written down, nothing interpreted or added.'),
+          cp(`Choose which single part of ${t} is today’s`, 10,
+            'One part marked as today’s scope; the others dated.'),
+          cp('Do that one part only', 25, 'The chosen part exists in rough form.'),
+        ]
+      case 'missing_knowledge':
+        return [
+          ...(firstDeliverable
+            ? [cp(`Name what ${firstDeliverable} assumes you know`, 10,
+              'One sentence naming the concept, not the whole topic.')]
+            : [cp(`Write the one question about ${t} you cannot answer`, 10,
+              'One sentence naming the concept, not the whole topic.')]),
+          cp('Work one solved example of that concept', 20,
+            'One worked example you can explain back in your own words.'),
+          cp(`Apply it once to ${t}`, 20, 'The concept used once, however roughly.'),
+        ]
+      case 'missing_materials':
+        return (PLAN_TEMPLATES.missing_materials.checkpoints)
+      case 'low_capacity':
+        return (PLAN_TEMPLATES.low_capacity.checkpoints)
+      case 'perfection_pressure':
+        return (PLAN_TEMPLATES.perfection_pressure.checkpoints)
+      case 'other':
+      default:
+        return (PLAN_TEMPLATES.other.checkpoints)
+    }
+  })()
+  return list.map((c) => ({ ...c, id: `c${counter++}`, status: 'pending' as const }))
 }
 
 export function guardianFor(blocker: BlockerKind): GuardianId {

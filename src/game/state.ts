@@ -14,7 +14,7 @@ import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 2
+export const SAVE_VERSION = 3
 
 const store = localStorageAdapter(SAVE_KEY)
 
@@ -43,6 +43,8 @@ export interface GameState {
   blocker: BlockerKind | null
   checkpoints: Checkpoint[]
   activeCheckpointId: string | null
+  /** The task the active plan and session belong to. */
+  activeTaskId: string | null
   notes: string
   outcome: 'completed' | 'partial' | 'blocked' | 'rescheduled' | null
   progressNote: string
@@ -128,6 +130,7 @@ export function initialState(): GameState {
     blocker: null,
     checkpoints: [],
     activeCheckpointId: null,
+    activeTaskId: null,
     notes: '',
     outcome: null,
     progressNote: 'Listed 6 entities. Mapped Student–Course as many-to-many.',
@@ -197,6 +200,11 @@ const MIGRATIONS: Migration[] = [
     keepsakes: Array.isArray(s.keepsakes) ? s.keepsakes : [],
     regulationSessions: Array.isArray(s.regulationSessions) ? s.regulationSessions : [],
     skippedQuestKinds: Array.isArray(s.skippedQuestKinds) ? s.skippedQuestKinds : [],
+  }),
+  (s) => ({
+    ...s,
+    version: 3,
+    activeTaskId: typeof s.activeTaskId === 'string' ? s.activeTaskId : null,
   }),
 ]
 
