@@ -4,8 +4,8 @@
  */
 
 import {
-  EFFORT_WEIGHT, PRIORITY_WEIGHT, REWARDS, guidedPercentage, questReward,
-  wakingMinutes, weightedDemand,
+  DEMO_DESTINATION, EFFORT_WEIGHT, PRIORITY_WEIGHT, REWARDS, guidedPercentage, proposeRebalance,
+  questReward, wakingMinutes, weightedDemand,
 } from '../../domain'
 import { PLACES, doorstep } from '../layout'
 import { clearState, grow, record } from '../state'
@@ -34,7 +34,7 @@ export function LoadPanel({ state, load, go }: PanelProps) {
   return (
     <>
       <div className="card">
-        <div className="eyebrow">Thursday</div>
+        <div className="eyebrow">Thursday <HelpDot view="load" state={state} load={load} /></div>
         <div className="load-head">
           <span className="load-num">{fmt(load.percentage)}%</span>
           <span className="band" style={{ background: `var(--${load.band.key})` }}>{load.band.label}</span>
@@ -191,7 +191,12 @@ export function Council({ state, load, go }: PanelProps) {
     .sort((a, b) => areas[b[1]] - areas[a[1]])
     .slice(0, 3)
 
-  const recommendation = load.percentage > 95
+  // 'Make space' only while a rebalance is still undecided — afterwards the
+  // Council agrees with the HUD: recover if work was banked, else one checkpoint.
+  const waking = wakingMinutes(state.capacity)
+  const rebalanceOpen = !state.rebalanceSeen &&
+    proposeRebalance(state.tasks, { day: 'thu', destination: DEMO_DESTINATION, waking }).moves.length > 0
+  const recommendation = rebalanceOpen
     ? 'Make space'
     : state.outcome && !state.questOutcome ? 'Recover first' : 'Do one checkpoint'
 
@@ -265,15 +270,6 @@ export function Recover({ state, load, update, go }: PanelProps) {
       <div className="eyebrow">Recover</div>
       <h2>Two ways to pause <HelpDot view="recover" state={state} load={load} /></h2>
       <Guardian who="sol" says="Two equal pauses: Ripples here, or a short reset away from the screen. Neither earns more." />
-      {state.session.pausedFrom ? (
-        <div className="actions" style={{ marginTop: 12 }}>
-          <button className="primary" type="button" onClick={() => {
-            update((s) => ({ ...s, session: { ...s.session, pausedFrom: null } }))
-            go('session')
-          }}>Resume Pace Session</button>
-          <span className="note">Your checkpoint, notes and timer are held exactly as you left them.</span>
-        </div>
-      ) : null}
       <div className="opts">
         <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◎</span>
@@ -416,9 +412,11 @@ export function Mailbox({ state, load, update, toast }: PanelProps) {
         <button className="primary" type="button" onClick={() => {
           const el = document.getElementById('mailtext') as HTMLInputElement | null
           const text = el?.value.trim() || state.nextAction
+          // The same note twice is one note: record history, but pay only once.
+          const duplicate = state.mailbox.length > 0 && state.mailbox[state.mailbox.length - 1].text === text
           update((s) => record({ ...s, mailbox: [...s.mailbox, { at: Date.now(), text }] },
-            'Sent a note to your future self', text, { xp: 10, coins: 5 }))
-          toast('Saved to the Future Mailbox')
+            'Sent a note to your future self', text, duplicate ? undefined : { xp: 10, coins: 5 }))
+          toast(duplicate ? 'Already in the mailbox — no extra reward' : 'Saved to the Future Mailbox')
         }}>Put it in the mailbox</button>
       </div>
       {state.mailbox.length > 0 && (
@@ -471,8 +469,14 @@ export function Home({ state, load, update, go, toast }: PanelProps) {
         </p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => {
-            update((s) => record(s, 'Closed the day with the Exit Quest',
-              `Next action kept: ${s.nextAction}.`, REWARDS.savedNextAction))
+            // Closing twice with the same next action records history, but pays once.
+            update((s) => {
+              const detail = `Next action kept: ${s.nextAction}.`
+              const already = s.journal.some((e) =>
+                e.text === 'Closed the day with the Exit Quest' && e.detail === detail)
+              return record(s, 'Closed the day with the Exit Quest',
+                detail, already ? undefined : REWARDS.savedNextAction)
+            })
             toast('Day closed')
             go('journal')
           }}>Save and stop here</button>
@@ -583,22 +587,6 @@ export function Calm({ state, load, go }: PanelProps) {
         All five activities are playable. Each has muted and reduced-motion variants, and leaving
         early is always valid.
       </p>
-    </div>
-  )
-}
-
-export function Preview({ state, load, go }: PanelProps) {
-  return (
-    <div className="card">
-      <h2>Not yet playable <HelpDot view="preview" state={state} load={load} /></h2>
-      <p className="lede">
-        This district has a defined return path but its activity is a preview. Gentle Ripples at the
-        Garden Pavilion is the one fully interactive activity in this slice.
-      </p>
-      <div className="actions">
-        <button className="primary" type="button" onClick={() => go('ripples')}>Go to Gentle Ripples</button>
-        <button className="secondary" type="button" onClick={() => go(null)}>Return to the campus</button>
-      </div>
     </div>
   )
 }

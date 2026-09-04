@@ -89,9 +89,12 @@ stay in charge of every change.*
      result is a *preview*: your real schedule is untouched until you approve.
    - Uncheck one move and watch Thursday's after-value change live — that's the
      preview recalculating. Re-check it and click **Approve these 2 moves**.
-   - **Say it:** Thursday **108% → 91.5% (Heavy)**, Saturday 15.4% → 22.4% and
-     stays Open. *"Nothing moved until I approved it. Reject would have left my
-     week exactly as it was."*
+    - **Say it:** Thursday **108% → 91.5% (Heavy)**, Saturday 15.4% → 22.4% and
+      stays Open. *"Nothing moved until I approved it. Reject would have left my
+      week exactly as it was."*
+    - Numbers assume the seeded week, unedited. If you edited anything at Town
+      Hall, expect different figures — that is the parser working live, not the
+      demo breaking.
    - Optional glance: open the **Backpack** — your load shown as carried items
      with locked/flexible badges — and notice it got lighter. Workload as
      luggage you can set down, not a grade.
@@ -124,10 +127,12 @@ company.*
 6. Select **Partial progress**, keep *"Add the enrolment junction entity"* as
    the next action, click **Save and leave**.
    - **What just happened (the logic):** partial progress earns 20 XP because in
-     this town, naming the next action *is* the success condition — completed,
-     partial, blocked, and rescheduled are all valid endings. Watch the HUD
-     quest card flip to *Recover first*: with work banked, the system now
-     foregrounds exactly one next thing instead of five equal buttons.
+      this town, naming the next action *is* the success condition — completed,
+      partial, blocked, and rescheduled are all valid endings. Watch the HUD
+      quest card flip to *Recover first*: Thursday sits at 91.5% after the
+      rebalance, so with work banked the system foregrounds exactly one next
+      thing instead of five equal buttons. (If Thursday is still over 95%, the
+      card keeps foregrounding making space instead — same rule, honest numbers.)
 
 ## Act 4 — Recover both ways (1 min)
 

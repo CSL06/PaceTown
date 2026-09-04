@@ -31,7 +31,7 @@ export type ViewId =
   | 'recover' | 'ripples' | 'pocket' | 'firefly' | 'chime' | 'warmcup' | 'lanterns'
   | 'keepsakes' | 'collection'
   | 'journal' | 'council' | 'mailbox' | 'calm' | 'home'
-  | 'backpack' | 'garden' | 'load' | 'townlist' | 'briefing' | 'preview'
+  | 'backpack' | 'garden' | 'load' | 'townlist' | 'briefing'
 
 export const PLACES: readonly Place[] = [
   { id: 'library', name: 'Library', px: 22.9, py: 20.6, view: 'work', who: 'mira',

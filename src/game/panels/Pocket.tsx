@@ -86,7 +86,7 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
     update((s) => grow(record({
       ...s,
       questOutcome: outcome === 'changed' ? 'changed' : outcome,
-      recoveryDone: true,
+      recoveryDone: outcome === 'changed' ? s.recoveryDone : true,
       pocket: {
         path,
         outcome: outcome === 'changed' ? 'changed' : outcome,
@@ -129,8 +129,10 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
               <span>Turn it into a Keepsake<small>Private pixel-art memory. The original photo is handled exactly as you choose.</small></span>
             </button>
           )}
-          <button className="opt" type="button" onClick={() => go(state.activeCheckpointId ? 'session' : null)}>
-            <span className="k">→</span><span>Resume checkpoint<small>The same notes and next action.</small></span>
+          <button className="opt" type="button" onClick={() => go(state.activeCheckpointId ? 'session' : 'work')}>
+            <span className="k">→</span>{state.activeCheckpointId
+              ? <span>Resume checkpoint<small>The same notes and next action.</small></span>
+              : <span>Choose the work<small>Pick a checkpoint in the Library first.</small></span>}
           </button>
           <button className="opt" type="button" onClick={() => go('mailbox')}>
             <span className="k">→</span><span>Schedule the next action<small>Send it to the Future Mailbox.</small></span>
@@ -219,7 +221,7 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
                       </div>
                     ))}
                     <p style={{ color: 'var(--dim)' }}>{verification.explanation}</p>
-                    {verification.overall === 'uncertain' && !manual && (
+                    {(verification.overall === 'uncertain' || verification.overall === 'fail') && !manual && (
                       <button className="secondary" type="button" onClick={() => setManual(true)}>
                         This was my Pocket of Green — confirm manually
                       </button>
@@ -242,7 +244,7 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
               disabled={!method || (method === 'photo' && !verification && !manual)}
               onClick={() => setStep('outcome')}>Continue</button>
           </div>
-          <p className="note">A photo is never required. Uncertain results always allow manual correction.</p>
+          <p className="note">A photo is never required. Uncertain or failed results always allow manual correction.</p>
         </>
       )}
 

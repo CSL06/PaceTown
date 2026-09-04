@@ -148,9 +148,11 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
 
   const approve = () => {
     if (!preview || !policy || !decision) return
+    // verify_and_discard verifies only: no keepsake is stored, per photoDecision.
+    const keeps = policy !== 'verify_and_discard'
     update((s) => grow(record({
       ...s,
-      keepsakes: [...s.keepsakes, {
+      keepsakes: keeps ? [...s.keepsakes, {
         id: `k${Date.now()}`,
         category,
         imageURL: preview,
@@ -159,7 +161,7 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
         retainsOriginal: decision.retainsOriginal,
         name: name.trim() || 'Untitled memory',
         at: Date.now(),
-      }],
+      }] : s.keepsakes,
     },
       policy === 'verify_and_discard'
         ? 'Verified a quest photo and discarded it'
@@ -298,8 +300,12 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
               : `Placed privately${decision?.retainsOriginal ? ', original retained privately' : ', original discarded'}. No extra rewards were granted for using a photo.`}
           </p>
           <div className="actions">
-            <button className="primary" type="button" onClick={() => go('collection')}>Open the Collection</button>
-            <button className="secondary" type="button" onClick={() => go('journal')}>See the Journal</button>
+            {policy !== 'verify_and_discard'
+              ? <>
+                  <button className="primary" type="button" onClick={() => go('collection')}>Open the Collection</button>
+                  <button className="secondary" type="button" onClick={() => go('journal')}>See the Journal</button>
+                </>
+              : <button className="primary" type="button" onClick={() => go('journal')}>See the Journal</button>}
           </div>
         </>
       )}

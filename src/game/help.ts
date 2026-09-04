@@ -38,7 +38,7 @@ export const HELP: Record<ViewId, HelpContent> = {
   },
   understand: {
     title: 'Understand',
-    what: 'Why Thursday reads the way it does: every flexible task with its maths.',
+    what: 'Why Thursday reads the way it does: every flexible task with its math.',
     how: 'Read the rows, then choose “See what can move”. Nothing has changed yet.',
     guardian: { who: 'kai', why: 'Kai reads these numbers. He will say what can move.' },
     adaptive: (_s, load) => `Thursday reads ${load.percentage.toFixed(1)}%. Over 100 means more planned than fits — never a grade.`,
@@ -197,12 +197,6 @@ export const HELP: Record<ViewId, HelpContent> = {
     what: 'Waking hours plus an optional check-in: energy and stress, 1–5, skippable.',
     how: 'Set what you know, skip the rest. This is preference, never diagnosis.',
     guardian: { who: 'sol', why: 'Sol reads capacity gently. Low energy gets smaller plans.' },
-  },
-  preview: {
-    title: 'Preview district',
-    what: 'A district that is not yet playable, with a clear return path.',
-    how: 'Follow the return path to Gentle Ripples or back to campus.',
-    guardian: { who: 'sol', why: 'Sol hosts Gentle Ripples, the fully playable pause this points to.' },
   },
 }
 

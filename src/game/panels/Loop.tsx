@@ -133,7 +133,16 @@ export function Intake({ state, load, update, go, toast }: PanelProps) {
         <div className="actions">
           <button className="primary" type="button" onClick={() => {
             const saving = (draft ?? parsed.tasks).filter((t) => t.title.trim().length > 0)
-            update((s) => record({ ...s, tasks: saving, rebalanceSeen: false, rebalanceApproved: false },
+            update((s) => record({
+              ...s, tasks: saving, rebalanceSeen: false, rebalanceApproved: false,
+              // A new week means a new loop: drop plan, session and recovery
+              // progress tied to the old tasks. Journal and earnings stay.
+              blocker: null, checkpoints: [], activeCheckpointId: null, activeTaskId: null,
+              outcome: null, savedSessionKey: null, questOutcome: null, recoveryDone: false,
+              rippleTaps: 0, pocket: { path: null, outcome: null, confirmation: null, verification: null },
+              ripples: { taps: 0, response: null, lastAt: null },
+              session: { ...s.session, elapsedSec: 0, pausedFrom: null },
+            },
               'Saved parsed commitments',
               `${saving.length} commitments reviewed and approved before saving.`))
             setDraft(null)
@@ -146,7 +155,7 @@ export function Intake({ state, load, update, go, toast }: PanelProps) {
 
       <div className="card">
         <div className="eyebrow">Assignment brief — optional</div>
-        <h2 style={{ fontSize: 17 }}>Paste a brief, keep the plan</h2>
+        <h2 style={{ fontSize: 17 }}>Paste a brief, keep the plan <HelpDot view="intake" state={state} load={load} /></h2>
         <p className="lede">
           You never have to upload anything. Deliverables are pulled out with plain pattern matching,
           and every one stays editable — extracted text never becomes your work.
@@ -370,7 +379,18 @@ export function Work({ state, load, update, go }: PanelProps) {
         <div className="field">
           <label htmlFor="workTask">Which commitment</label>
           <select id="workTask" value={task.id}
-            onChange={(e) => setTaskId(e.target.value)}>
+            onChange={(e) => {
+              const id = e.target.value
+              setTaskId(id)
+              // A new commitment means a new plan: rebuild checkpoints for it
+              // instead of showing the old task's plan under the new header.
+              const next = candidates.find((t) => t.id === id)
+              update((s) => s.blocker && next ? {
+                ...s, activeTaskId: next.id,
+                checkpoints: buildCheckpoints(s.blocker, { taskTitle: next.title, deliverables: s.deliverables }),
+                activeCheckpointId: null, outcome: null, savedSessionKey: null,
+              } : s)
+            }}>
             {candidates.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.title} · {t.estimatedMinutes} min
@@ -502,6 +522,7 @@ export function Work({ state, load, update, go }: PanelProps) {
                 ...s,
                 activeTaskId: task.id,
                 outcome: null,
+                savedSessionKey: null,
                 session: { ...s.session, elapsedSec: 0, pausedFrom: null },
               }, 'Began a planned Pace Session',
               `Checkpoint: ${active.title} · blocker identified before starting.`,
@@ -672,7 +693,10 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
           toast('Scope reduced — the rest keeps its place in the week.')
         }}>Reduce the scope</button>
         <button className="secondary" type="button"
-          onClick={() => update((s) => ({ ...s, outcome: 'rescheduled' }))}>Reschedule</button>
+          onClick={() => {
+            update((s) => ({ ...s, outcome: 'rescheduled' }))
+            toast('Marked rescheduled — Save and leave to record it.')
+          }}>Reschedule</button>
       </div>
 
       <div className="eyebrow" style={{ marginTop: 20 }}>End the session — every outcome is valid</div>
@@ -697,7 +721,8 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
       </div>
 
       <div className="actions">
-        <button className="primary" type="button" disabled={!state.outcome} onClick={() => {
+        <button className="primary" type="button"
+          disabled={!state.outcome || state.savedSessionKey === `${active.id}:${state.outcome}`} onClick={() => {
           const outcome = state.outcome!
           const label = { completed: 'Completed', partial: 'Made partial progress on',
             blocked: 'Identified a blocker on', rescheduled: 'Rescheduled' }[outcome]
@@ -705,6 +730,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
           update((s) => {
             const withStatus = {
               ...s, checkpoints: resolveCheckpoint(s.checkpoints, active.id, outcome),
+              savedSessionKey: `${active.id}:${outcome}`,
             }
             return grow(record(
               record(withStatus, `${label} “${active.title}”`, s.progressNote, sessionReward(outcome)),

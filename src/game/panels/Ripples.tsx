@@ -63,10 +63,12 @@ export function Ripples({ state, load, update, go, toast }: PanelProps) {
 
   const finish = (choice: 'resume' | 'reduce' | 'rest') => {
     const resp = response ?? 'not_sure'
+    const firstTime = !state.recoveryDone
     update((s) => grow(record({
       ...s,
       rippleTaps: s.rippleTaps + taps,
       questOutcome: 'done',
+      recoveryDone: true,
       ripples: { taps: s.ripples.taps + taps, response: resp, lastAt: Date.now() },
       regulationSessions: [...s.regulationSessions, {
         at: Date.now(), activity: 'gentle_ripples',
@@ -76,8 +78,8 @@ export function Ripples({ state, load, update, go, toast }: PanelProps) {
     },
       'Used Gentle Ripples as a transition',
       'Returned to the same checkpoint. A preference, not a health measurement.',
-      REWARDS.recovery)))
-    toast(`Recovery recorded · +${REWARDS.recovery.xp} XP`)
+      firstTime ? REWARDS.recovery : undefined)))
+    if (firstTime) toast(`Recovery recorded · +${REWARDS.recovery.xp} XP`)
     setPhase('done')
     if (choice === 'resume') go(state.activeCheckpointId ? 'session' : null)
     else if (choice === 'reduce') go('work')

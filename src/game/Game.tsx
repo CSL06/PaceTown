@@ -23,7 +23,7 @@ import { Pocket } from './panels/Pocket'
 import { Ripples } from './panels/Ripples'
 import {
   Backpack, Briefing, Calm, Council, Garden, Home, Journal, LoadPanel, Mailbox,
-  Preview, Recover, TownList,
+  Recover, TownList,
 } from './panels/Places'
 import type { PanelProps } from './panels/types'
 import type { ReactElement } from 'react'
@@ -36,8 +36,8 @@ const VIEW_TITLE: Record<ViewId, string> = {
   firefly: 'Firefly Stories', chime: 'Chime Drift', warmcup: 'Warm Cup', lanterns: 'Night Lanterns',
   keepsakes: 'Pace Keepsakes', collection: 'Keepsake Collection',
   journal: 'Journal', council: 'Guardian Council', mailbox: 'Future Mailbox',
-  calm: 'Calm Corner', home: 'Home', backpack: 'Backpack', garden: 'Recovery Garden',
-  load: 'Daily Load', townlist: 'Town List', briefing: 'Daily Briefing', preview: 'Preview',
+  calm: 'Calm Corner', home: 'Home',   backpack: 'Backpack', garden: 'Recovery Garden',
+  load: 'Daily Load', townlist: 'Town List', briefing: 'Daily Briefing',
 }
 
 const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
@@ -46,7 +46,7 @@ const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
   warmcup: WarmCup, lanterns: Lanterns, keepsakes: Keepsakes, collection: Collection,
   journal: Journal, council: Council, mailbox: Mailbox, calm: Calm,
   home: Home, backpack: Backpack, garden: Garden, load: LoadPanel, townlist: TownList,
-  briefing: Briefing, preview: Preview,
+  briefing: Briefing,
 }
 
 /** Greetings fire once per place, then never again. */
@@ -172,11 +172,11 @@ export default function Game() {
 
   const stepsDone = LOOP_STEPS.filter(([, done]) => done(state)).length
   const level = levelOf(state.xp)
+  // Title hook counts the live week, never a hardcoded script.
+  const lockedCount = state.tasks.filter((t) => t.day === 'thu' && t.flexibility === 'fixed').length
+  const moverCount = proposeRebalance(state.tasks,
+    { day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(state.capacity) }).moves.length
   const activeCheckpoint = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
-  const leadView: ViewId = load.percentage > 95
-    ? 'rebalance'
-    : state.outcome && !state.questOutcome ? 'recover' : 'work'
-  const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
 
   const waking = wakingMinutes(state.capacity)
   const rebalanceOpen = !state.rebalanceSeen &&
@@ -190,10 +190,19 @@ export default function Game() {
       : state.checkpoints.some((c) => c.status !== 'completed'),
     rebalanceAvailable: rebalanceOpen,
     taskTitle: load.contributors[0]?.task.title ?? null,
-    nextAction: state.nextAction || null,
+    // The saved next action is offered only after a session banked it —
+    // never the seeded sentence on a fresh week.
+    nextAction: state.outcome ? state.nextAction || null : null,
   }
   const questList = selectQuests(questCtx, state.skippedQuestKinds)
   const foreground = foregroundQuest(questList, questCtx)
+  // One agreed direction: rebalance while undecided, else recovery if work was
+  // banked, else wherever the foregrounded quest points. Map, HUD and Council
+  // follow this same rule, so the three never disagree.
+  const leadView: ViewId = rebalanceOpen ? 'rebalance'
+    : state.outcome && !state.questOutcome ? 'recover'
+    : (foreground?.view as ViewId | undefined) ?? 'work'
+  const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
 
   const panelProps: PanelProps = { state, load, update, go, toast }
   const Panel = state.view ? PANELS[state.view] : null
@@ -214,8 +223,10 @@ export default function Game() {
             </div>
             <p className="title-hook">
               Thursday is at <b style={{ color: 'var(--accent)' }}>{load.percentage.toFixed(0)}%</b>.
-              Four commitments are already locked in. Kai thinks two things can move — and the
-              assignment you have been avoiding still needs twenty honest minutes.
+              {' '}{lockedCount} commitment{lockedCount === 1 ? ' is' : 's are'} already locked in.
+              {moverCount > 0
+                ? <> Kai thinks {moverCount} thing{moverCount === 1 ? '' : 's'} can move — pick one checkpoint to begin.</>
+                : ' Nothing can move safely — pick one checkpoint to begin.'}
             </p>
             <div className="title-cast" aria-hidden="true">
               {(Object.keys(GUARDIANS) as GuardianId[]).map((id) => (

@@ -47,6 +47,8 @@ export interface GameState {
   activeTaskId: string | null
   notes: string
   outcome: 'completed' | 'partial' | 'blocked' | 'rescheduled' | null
+  /** Last checkpoint+outcome saved — an exact re-save is skipped, never re-paid. */
+  savedSessionKey: string | null
   progressNote: string
   nextAction: string
 
@@ -135,6 +137,7 @@ export function initialState(): GameState {
     activeTaskId: null,
     notes: '',
     outcome: null,
+    savedSessionKey: null,
     progressNote: 'Listed 6 entities. Mapped Student–Course as many-to-many.',
     nextAction: 'Add the enrolment junction entity.',
 
