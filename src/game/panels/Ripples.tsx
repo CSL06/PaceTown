@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import { REWARDS } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
+import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
 interface Drop {
@@ -23,7 +24,7 @@ let dropId = 0
 
 type Phase = 'play' | 'respond' | 'done'
 
-export function Ripples({ state, update, go, toast }: PanelProps) {
+export function Ripples({ state, load, update, go, toast }: PanelProps) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const [drops, setDrops] = useState<Drop[]>([])
   const [taps, setTaps] = useState(0)
@@ -86,7 +87,7 @@ export function Ripples({ state, update, go, toast }: PanelProps) {
   if (phase === 'done') {
     return (
       <div className="card">
-        <h2>Water settling</h2>
+        <h2>Water settling <HelpDot view="ripples" state={state} load={load} /></h2>
         <p className="lede">Recovery recorded. Your checkpoint is held exactly as you left it.</p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('journal')}>See the Journal</button>
@@ -99,7 +100,7 @@ export function Ripples({ state, update, go, toast }: PanelProps) {
     return (
       <div className="card">
         <div className="eyebrow">Gentle Ripples</div>
-        <h2>How does the water feel?</h2>
+        <h2>How does the water feel? <HelpDot view="ripples" state={state} load={load} /></h2>
         <p className="lede">Optional. This tunes suggestions — it is never a health score.</p>
         <div className="outcomes">
           {(['lighter', 'same', 'not_sure'] as const).map((r) => (
@@ -137,7 +138,7 @@ export function Ripples({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Garden Pavilion · Gentle Ripples</div>
-      <h2>A paced sensory pause</h2>
+      <h2>A paced sensory pause <HelpDot view="ripples" state={state} load={load} /></h2>
       <Guardian who="sol" says="No score here. Tap the water when you like, watch what answers, and leave whenever you are ready." />
       <div
         ref={pondRef}

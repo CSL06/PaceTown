@@ -14,6 +14,7 @@ import {
 } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
+import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
 type Path = 'outdoor' | 'window' | 'indoor' | 'image'
@@ -33,7 +34,7 @@ const ALTERNATIVES = [
   'Try Gentle Ripples at the Garden Pavilion instead.',
 ]
 
-export function Pocket({ state, update, go, toast }: PanelProps) {
+export function Pocket({ state, load, update, go, toast }: PanelProps) {
   const [step, setStep] = useState<Step>('path')
   const [path, setPath] = useState<Path | null>(state.pocket.path)
   const [method, setMethod] = useState<'self' | 'photo' | null>(null)
@@ -116,7 +117,7 @@ export function Pocket({ state, update, go, toast }: PanelProps) {
     return (
       <div className="card">
         <div className="eyebrow">Park · Pocket of Green</div>
-        <h2>{lastOutcome === 'changed' ? 'Changed mind — no penalty' : 'Recovery recorded'}</h2>
+        <h2>{lastOutcome === 'changed' ? 'Changed mind — no penalty' : 'Recovery recorded'} <HelpDot view="pocket" state={state} load={load} /></h2>
         <p className="lede">
           Self-confirmation and photo confirmation earn identically. Photo use grants no XP, coins,
           rarity, or progression advantage.
@@ -148,7 +149,7 @@ export function Pocket({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Park · Pocket of Green · Sol</div>
-      <h2>A short reset, your way</h2>
+      <h2>A short reset, your way <HelpDot view="pocket" state={state} load={load} /></h2>
       <Guardian who="sol" says="Five to ten minutes with something green, given light, or simply calming. Outside, at a window, beside a plant, or with an image — all four count the same." />
 
       {step === 'path' && (

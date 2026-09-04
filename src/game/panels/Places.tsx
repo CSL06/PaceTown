@@ -68,7 +68,7 @@ export function LoadPanel({ state, load, go }: PanelProps) {
       </div>
 
       <div className="card">
-        <h3 style={{ fontSize: 14 }}>Where the pressure is</h3>
+        <h3 style={{ fontSize: 14 }}>Where the pressure is <HelpDot view="load" state={state} load={load} /></h3>
         <div className="areas">
           {(Object.keys(AREA_LABEL) as (keyof typeof AREA_LABEL)[]).map((k) => {
             const fixed = fixedBy[k] ?? 0
@@ -400,11 +400,11 @@ export function Garden({ state, load, go }: PanelProps) {
 
 /* -------------------------------------------------------- future mailbox */
 
-export function Mailbox({ state, update, toast }: PanelProps) {
+export function Mailbox({ state, load, update, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Future Mailbox</div>
-      <h2>Send something to your future self</h2>
+      <h2>Send something to your future self <HelpDot view="mailbox" state={state} load={load} /></h2>
       <p className="lede">
         It surfaces at the next relevant moment rather than arriving as a reminder you have to dismiss.
       </p>
@@ -438,11 +438,11 @@ export function Mailbox({ state, update, toast }: PanelProps) {
 
 /* -------------------------------------------------------------- home */
 
-export function Home({ state, update, go, toast }: PanelProps) {
+export function Home({ state, load, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Home</div>
-      <h2>Stopping is a valid outcome</h2>
+      <h2>Stopping is a valid outcome <HelpDot view="home" state={state} load={load} /></h2>
       <div className="opts">
         <button className="opt" type="button" aria-pressed={state.quiet}
           onClick={() => update((s) => ({ ...s, quiet: !s.quiet }))}>
@@ -511,10 +511,10 @@ export function Home({ state, update, go, toast }: PanelProps) {
 
 /* --------------------------------------------------------- town list */
 
-export function TownList({ update, go }: PanelProps) {
+export function TownList({ state, load, update, go }: PanelProps) {
   return (
     <div className="card">
-      <h2>Town List</h2>
+      <h2>Town List <HelpDot view="townlist" state={state} load={load} /></h2>
       <p className="lede">
         Every spatial interaction has an equivalent here. Nothing on the map is reachable only by
         pointing at it.
@@ -558,11 +558,11 @@ const PREVIEWS = [
   ['Night Lanterns', 'lanterns', 'Choose a symbol for a concern, light a lantern, and place it in the evening scene.'],
 ] as const
 
-export function Calm({ go }: PanelProps) {
+export function Calm({ state, load, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Calm Corner</div>
-      <h2>Regulation without prerequisites</h2>
+      <h2>Regulation without prerequisites <HelpDot view="calm" state={state} load={load} /></h2>
       <p className="lede">
         No load score, active task, or permission needed. Audio starts muted and every cue has a
         visual equivalent.
@@ -587,10 +587,10 @@ export function Calm({ go }: PanelProps) {
   )
 }
 
-export function Preview({ go }: PanelProps) {
+export function Preview({ state, load, go }: PanelProps) {
   return (
     <div className="card">
-      <h2>Not yet playable</h2>
+      <h2>Not yet playable <HelpDot view="preview" state={state} load={load} /></h2>
       <p className="lede">
         This district has a defined return path but its activity is a preview. Gentle Ripples at the
         Garden Pavilion is the one fully interactive activity in this slice.
