@@ -42,15 +42,15 @@ export interface WeatherRow {
 export function loadWeather(tasks: readonly Task[], day: string): WeatherRow[] {
   const by = pressureByArea(tasks, day)
   return [
-    { icon: '📚', place: 'Library', level: level(by.mental, 120, 220),
+    { icon: '▤', place: 'Library', level: level(by.mental, 120, 220),
       states: ['clear', 'light fog', 'fog and drifting pages'] },
-    { icon: '🕑', place: 'Clock Tower', level: level(by.time, 200, 360),
+    { icon: '◷', place: 'Clock Tower', level: level(by.time, 200, 360),
       states: ['steady', 'quickening', 'fast, wind rising'] },
-    { icon: '🌿', place: 'Garden', level: level(by.physical, 80, 140),
+    { icon: '❧', place: 'Garden', level: level(by.physical, 80, 140),
       states: ['bright', 'softening', 'shaded and slow'] },
-    { icon: '☕', place: 'Café', level: level(by.social, 45, 90),
+    { icon: '⌾', place: 'Café', level: level(by.social, 45, 90),
       states: ['quiet', 'filling', 'busy'] },
-    { icon: '📦', place: 'Market', level: level(by.errands, 40, 80),
+    { icon: '▦', place: 'Market', level: level(by.errands, 40, 80),
       states: ['tidy', 'parcels arriving', 'parcels stacked'] },
   ]
 }

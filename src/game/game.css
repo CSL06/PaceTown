@@ -350,6 +350,19 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 @keyframes bin { from { transform: scale(.7) } to { transform: scale(1.1) } }
 @keyframes bout { from { transform: scale(1.1) } to { transform: scale(.7) } }
 
+.plot { margin: 14px auto 4px; width: 200px; height: 120px; position: relative;
+  background: linear-gradient(180deg, transparent 62%, #4a3a28 62%, #3a2d1f);
+  border: 1px solid var(--edge) }
+.plot::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: 12%;
+  height: 3px; background: rgba(239,227,204,.25) }
+.sprout { position: absolute; left: 50%; bottom: 34%; transform: translateX(-50%);
+  width: 8px; border-radius: 4px 4px 0 0; background: var(--open); transition: height .8s ease }
+.sprout.s0 { height: 0 }
+.sprout.s1 { height: 22px }
+.sprout.s2 { height: 42px; box-shadow: -12px 8px 0 -2px var(--open), 12px 14px 0 -2px var(--open) }
+.sprout.s3 { height: 62px; box-shadow: -14px 10px 0 -1px var(--open), 14px 18px 0 -1px var(--open) }
+.sprout.s4 { height: 70px; box-shadow: -14px 10px 0 -1px var(--open), 14px 18px 0 -1px var(--open), 0 -14px 0 2px #B4677E }
+
 @media (prefers-reduced-motion: reduce) {
   .title-art, .cast.idle, .avatar.walking, .marker .ring, .dlg-caret { animation: none !important }
 }

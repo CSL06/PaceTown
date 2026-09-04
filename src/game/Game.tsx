@@ -8,7 +8,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  PLAN_TEMPLATES, dailyLoad, levelOf, wakingMinutes, type GuardianId,
+  DEMO_DESTINATION, PLAN_TEMPLATES, dailyLoad, foregroundQuest, levelOf, proposeRebalance,
+  selectQuests, wakingMinutes, type GuardianId,
 } from '../domain'
 import { Campus, daylight } from './Campus'
 import { Dialogue, type DialogueScript } from './Dialogue'
@@ -175,6 +176,21 @@ export default function Game() {
   const leadView: ViewId = load.percentage > 95 ? 'rebalance' : state.outcome ? 'recover' : 'work'
   const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
 
+  const waking = wakingMinutes(state.capacity)
+  const rebalanceOpen = !state.rebalanceSeen &&
+    proposeRebalance(state.tasks, { day: 'thu', destination: DEMO_DESTINATION, waking }).moves.length > 0
+  const questCtx = {
+    loadPercentage: load.percentage,
+    hasOutcome: !!state.outcome,
+    hasRecovery: !!state.questOutcome,
+    hasCheckpoint: !!state.activeCheckpointId,
+    rebalanceAvailable: rebalanceOpen,
+    taskTitle: load.contributors[0]?.task.title ?? null,
+    nextAction: state.nextAction || null,
+  }
+  const questList = selectQuests(questCtx, state.skippedQuestKinds)
+  const foreground = foregroundQuest(questList, questCtx)
+
   const panelProps: PanelProps = { state, load, update, go, toast }
   const Panel = state.view ? PANELS[state.view] : null
 
@@ -255,17 +271,27 @@ export default function Game() {
               <button type="button" onClick={() => go('recover')}>Recover instead</button>
             </div>
           </>
-        ) : (
+        ) : foreground ? (
           <>
             <div className="eyebrow">
               {load.percentage > 95 ? 'Over capacity · one action foregrounded' : 'Recommended'}
             </div>
+            <h3>{foreground.title}</h3>
+            <p>{foreground.detail}</p>
+            <div className="qa">
+              <button className="go" type="button" onClick={() => go(foreground.view as ViewId)}>Go there</button>
+              <button type="button" onClick={() => {
+                update((s) => ({ ...s, skippedQuestKinds: [...s.skippedQuestKinds, foreground.id] }))
+                toast('Quest replaced — nothing lost')
+              }}>Choose another</button>
+              <button type="button" onClick={() => go('council')}>Ask the Council</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="eyebrow">Recommended</div>
             <h3>{VIEW_TITLE[leadView]}</h3>
-            <p>
-              {load.percentage > 95
-                ? 'Kai only proposes moves that respect every deadline.'
-                : 'One checkpoint. Partial progress counts.'}
-            </p>
+            <p>One checkpoint. Partial progress counts.</p>
             <div className="qa">
               <button className="go" type="button" onClick={() => go(leadView)}>Go there</button>
               <button type="button" onClick={() => go('council')}>Ask the Council</button>

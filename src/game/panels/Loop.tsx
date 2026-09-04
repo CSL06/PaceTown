@@ -311,7 +311,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
 
       <div className="locked-note">
         <b>Locked, not moved:</b>
-        {locked.map((t) => <span key={t.id}>🔒 {t.title}</span>)}
+        {locked.map((t) => <span key={t.id}>· {t.title} (locked)</span>)}
       </div>
 
       <div className="actions">

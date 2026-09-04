@@ -327,7 +327,9 @@ export function Backpack({ state, go }: PanelProps) {
               <tr key={t.id}>
                 <td><strong>{t.title}</strong></td>
                 <td>{AREA_LABEL[t.category]}</td>
-                <td>{t.flexibility === 'fixed' ? '🔒 locked' : '🎗 flexible'}</td>
+                <td>{t.flexibility === 'fixed'
+                  ? <span className="band" style={{ background: 'var(--time)' }}>locked</span>
+                  : <span className="band" style={{ background: 'var(--steady)' }}>flexible</span>}</td>
                 <td className="num">{t.estimatedMinutes}</td>
                 <td className="num">{t.flexibility === 'fixed' ? '—' : fmt(weightedDemand(t))}</td>
               </tr>
@@ -347,7 +349,6 @@ export function Backpack({ state, go }: PanelProps) {
 
 export function Garden({ state, go }: PanelProps) {
   const stages = ['Nothing planted yet', 'A shoot', 'Leaves opening', 'Standing tall', 'In bloom']
-  const glyphs = ['🟫', '🌱', '🌿', '🌳', '🌸']
   return (
     <div className="card">
       <div className="eyebrow">Recovery Garden</div>
@@ -356,9 +357,8 @@ export function Garden({ state, go }: PanelProps) {
         Growth comes from work progress, intentional recovery, realistic rescheduling and asking for
         help. There are no dead or wilted states, and being away never removes anything.
       </p>
-      <div style={{ fontSize: 26 + state.gardenGrowth * 14, textAlign: 'center', padding: '24px 0' }}
-        aria-hidden="true">
-        {glyphs[state.gardenGrowth]}
+      <div className="plot" aria-hidden="true">
+        <span className={`sprout s${state.gardenGrowth}`} />
       </div>
       <p className="note">Growth: {state.gardenGrowth} of 4 · persists across refreshes.</p>
       <div className="actions">
@@ -458,6 +458,17 @@ export function Home({ state, update, go, toast }: PanelProps) {
         </div>
         <div className="actions">
           <button className="secondary" type="button" onClick={() => {
+            const raw = localStorage.getItem('pacetown.game') ?? '{}'
+            const blob = new Blob([raw], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'pacetown-save.json'
+            a.click()
+            URL.revokeObjectURL(url)
+            toast('Save exported as JSON')
+          }}>Export save (JSON)</button>
+          <button className="secondary" type="button" onClick={() => {
             clearState()
             window.location.reload()
           }}>Delete local data</button>
@@ -496,6 +507,12 @@ export function TownList({ update, go }: PanelProps) {
         </button>
         <button type="button" onClick={() => go('briefing')}>
           Daily Briefing<small>Capacity, energy and today’s check-in</small>
+        </button>
+        <button type="button" onClick={() => go('keepsakes')}>
+          Pace Keepsakes<small>Turn a quest photo into private pixel art</small>
+        </button>
+        <button type="button" onClick={() => go('collection')}>
+          Collection<small>Your private keepsake grid</small>
         </button>
       </div>
     </div>
