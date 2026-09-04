@@ -41,74 +41,145 @@ and every number I show is calculated from it."*
 
 ## Act 1 — The week, understood (1 min)
 
-1. Press **Enter Campus Grove**. Kai opens: *"Thursday is at 108 percent… Four
-   things are locked in… Two of the flexible ones can move."*
-   - **Point out:** 108% is computed — 570 fixed minutes leave 330 of 900 waking
-     minutes for 5 flexible tasks. Say: *"This is schedule guidance, not a
-     judgement — the app says so on screen."*
-2. Open **Town Hall** (map or Town List). The parse preview shows **9 commitments,
-   confidence 1.00, 3 visible assumptions** (e.g. assumed 30 minutes).
-   - Click **Review as editable list**, change one row (e.g. laundry 30 → 45),
-     delete nothing, click **Save these commitments**.
-   - **Point out:** the parser never invents commitments and every assumption is
-     shown, not hidden. Your edit is what gets saved.
+*Goal: you're a student opening the app for the first time, and within a minute
+you can see your whole week as one honest number.*
+
+**How to move around (first-timer basics):** walk with `W` `A` `S` `D` or arrow
+keys, press `E` next to a glowing place to enter it, `Esc` to step back out. On
+a phone, use the on-screen direction pad. Lost? Open the **Town List** — every
+single place in town is listed there, so you never have to find things by
+walking.
+
+1. Press **Enter Campus Grove**. Kai, the keeper of the Clock Tower, greets you:
+   *"Thursday is at 108 percent… Four things are locked in… Two of the flexible
+   ones can move."*
+   - **What just happened (the logic):** the app parsed the seeded week into 9
+     commitments, sorted them into fixed (lectures, commute, shift, club — 570
+     minutes that consume your day directly) and flexible (everything else), and
+     computed Thursday: 570 fixed minutes leave 330 of your 900 waking minutes
+     for 5 flexible tasks, whose weighted demand lands at 108%. Over 100% simply
+     means "more planned than fits" — it is schedule guidance, and the app says
+     so on screen. It never calls it stress, and never calls *you* anything.
+2. Open **Town Hall** (walk there or Town List). The parse preview shows
+   **9 commitments, confidence 1.00, and 3 visible assumptions** (for example,
+   "assumed 30 minutes" where you gave no duration).
+   - **What just happened:** a small local parser — no AI, no cloud — split your
+     sentences on commas, recognized keywords ("lecture" → time/fixed,
+     "groceries" → errands/flexible), read clock ranges and durations, and
+     guessed deadlines from words like "tomorrow" and "next week". Every guess
+     is listed as an assumption instead of being hidden.
+   - Click **Review as editable list**, change one row (try laundry 30 → 45
+     minutes), then click **Save these commitments**. Notice the numbers
+     downstream would shift with your edit.
+   - **Say it:** *"The parser never invents commitments, every assumption is
+     shown, and what I edited is what got saved — nothing happens silently."*
 
 ## Act 2 — Make space, with consent (1 min)
 
-3. Open the **Clock Tower**. Kai proposes moving low-priority flexible tasks to
-   Saturday. Fixed lectures, the shift, the club meeting stay visibly **locked**;
-   the ERD assignment (due tomorrow) is never offered.
-   - Uncheck one move. Watch Thursday's after-value change live.
-   - Re-check it and click **Approve these 2 moves**.
-   - **Point out:** Thursday **108% → 91.5% (Heavy)**, Saturday 15.4% → 22.4%
-     and stays Open. *"Nothing moved until I approved it — reject leaves the
+*Goal: you're overloaded, so the town offers to rearrange the week — but you
+stay in charge of every change.*
+
+3. Open the **Clock Tower**. Kai shows a proposal: move low-priority flexible
+   tasks with slack to Saturday. Your fixed lectures, the café shift, and the
+   club meeting appear visibly **locked**; the ERD assignment is never offered
+   because it's due tomorrow and moving it would break its deadline.
+   - **What just happened (the logic):** the rebalancing engine ranked your
+     flexible tasks — lowest priority first, most deadline-slack first — and
+     simulated moving them until Thursday drops out of the Overloaded band. The
+     result is a *preview*: your real schedule is untouched until you approve.
+   - Uncheck one move and watch Thursday's after-value change live — that's the
+     preview recalculating. Re-check it and click **Approve these 2 moves**.
+   - **Say it:** Thursday **108% → 91.5% (Heavy)**, Saturday 15.4% → 22.4% and
+     stays Open. *"Nothing moved until I approved it. Reject would have left my
      week exactly as it was."*
+   - Optional glance: open the **Backpack** — your load shown as carried items
+     with locked/flexible badges — and notice it got lighter. Workload as
+     luggage you can set down, not a grade.
 
 ## Act 3 — One checkpoint, one session (1.5 min)
 
-4. Open the **Library**. Choose ***I do not know where to begin***.
-   - **Point out:** the plan follows the blocker, and the first checkpoint is
-     grounded in *your brief's first deliverable* — paste or keep the seeded
-     brief, click **Extract deliverables**, and the checkpoints reference it.
-     Pick the ~20-minute checkpoint; rewrite its title if you like.
-5. Click **Start a Pace Session**. Show the three workspace tools in 20 seconds:
-   - **Timer** (untimed by default — *"a timer running out never completes
-     work here"*), **scratchpad**, and **Ask Mira → Explain**.
-   - **Point out:** the answer talks about *your* task and checkpoint, not a
-     canned example. Every help mode (Plan, Explain, Brainstorm, Review, Debug,
-     What next?) answers from your task, blocker, and brief.
-6. Select **Partial progress**, keep *"Add the enrolment junction entity"* as the
-   next action, click **Save and leave**.
-   - **Point out:** partial progress earns rewards (20 XP) because naming the
-     next action *is* the success condition. The HUD quest card now says
-     *Recover first* — the system foregrounds one action.
+*Goal: one scary assignment becomes one small step, and you take it with
+company.*
+
+4. Open the **Library**. First the app asks what's *actually* in the way —
+   choose ***I do not know where to begin***.
+   - **What just happened (the logic):** instead of generic advice, the plan
+     follows your blocker to the right guardian — Mira, who understands study
+     tangles. Because your brief is pasted in, the first checkpoint is grounded
+     in your brief's first deliverable, not an example from someone else's
+     course. Pick the ~20-minute checkpoint; rewrite its title if you like —
+     every word stays editable.
+   - Click **Extract deliverables** to show the brief turning into a checklist
+     (pattern matching, local, editable — extracted text never becomes your
+     submitted work).
+5. Click **Start a Pace Session**. Tour the workspace in 20 seconds:
+   - **One checkpoint** with its definition of done — the only thing on your
+     plate.
+   - **Timer**, untimed by default. *"A timer running out never completes work
+     here — only you can."*
+   - **Scratchpad** for messy notes, links, and half-thoughts.
+   - **Ask Mira → Explain**. **Say it:** *"Listen — she's talking about my
+     task and my checkpoint, not a canned example. All six help modes answer
+     from my task, my blocker, and my brief."*
+6. Select **Partial progress**, keep *"Add the enrolment junction entity"* as
+   the next action, click **Save and leave**.
+   - **What just happened (the logic):** partial progress earns 20 XP because in
+     this town, naming the next action *is* the success condition — completed,
+     partial, blocked, and rescheduled are all valid endings. Watch the HUD
+     quest card flip to *Recover first*: with work banked, the system now
+     foregrounds exactly one next thing instead of five equal buttons.
 
 ## Act 4 — Recover both ways (1 min)
 
-7. Click **Pause & regulate** path or go to the **Garden Pavilion**: tap the pond
-   a few times — flowers bloom, the breathing guide is toggleable — then
-   **Done for now → Lighter → Resume checkpoint**.
-   - **Point out:** no score, no failure, leaving early is valid, and the session
-     resumes with notes and timer intact.
+*Goal: rest is part of the loop, on screen and off it — and pausing never
+costs you your place.*
+
+7. Go to the **Garden Pavilion** (or via **Pause & regulate** mid-session): tap
+   the pond a few times. Ripples spread, petals drift, a fish swims, flowers
+   bloom as you participate. Toggle the breathing guide (inhale 4, hold 2,
+   exhale 6 — or hide it entirely), then **Done for now → Lighter → Resume
+   checkpoint**.
+   - **What just happened (the logic):** participation — not points, speed, or
+     duration — completed the activity. Your Lighter/Same/Not sure answer is
+     stored as a preference that tunes future suggestions; it is never a health
+     score. Resuming restores your checkpoint, notes, and timer exactly.
+   - **Say it:** *"No score, no failure, and leaving early is also a valid
+     ending."*
 8. Go to the **Park → Pocket of Green**. Pick **open-window observation**,
    **self-confirm**, **Done**.
-   - **Point out:** four settings (outdoor / window / indoor / image), optional
-     photo checked *locally for greenery only*, camera-denied falls back to
-     self-confirm — and **both earn identically** (20 XP). No proof pressure.
+   - **What just happened (the logic):** this is the real-world twin of the
+     pond — 5–10 minutes with something green, in four settings (outside,
+     window, indoor plant, image) so nobody is assumed able-bodied, outdoors,
+     or on camera. An optional photo is checked *on your device* for greenery
+     or daylight only — never location, identity, or mood — and an uncertain
+     result just asks you to confirm manually. A denied camera skips straight
+     to self-confirm.
+   - **Say it:** *"Both paths earn identically — 20 XP. The system must never
+     pay more for photographic proof than for your word."*
 
 ## Act 5 — Memory and evidence (30 sec)
 
+*Goal: keep a souvenir of the reset, then see the whole story written down.*
+
 9. Click **Turn it into a Keepsake**. Choose **Create keepsake, discard
-   original**, tick the privacy review, **Generate**, approve, place it in the
-   **Recovery Garden**.
-   - **Point out:** metadata is stripped by redrawing, the original is discarded
-     as chosen, and the photo earned *nothing extra* — the keepsake is a memory,
-     never proof.
-10. Open the **Journal** (Post Office). Read the timeline: rebalance, session,
-    recovery, keepsake with deletion state, and the waiting next action.
-    - **Point out:** HUD shows earned XP/coins/level, one garden plant has grown,
-      and the Library fog has eased. *"The town responds to sustainable choices —
-      never to streaks or hours."*
+   original**, tick the four privacy confirmations, **Generate**, approve the
+   preview, and place it in the **Recovery Garden**.
+   - **What just happened (the logic):** your photo was redrawn into pixels
+     (which strips location data by construction), snapped to the town's color
+     palette by a local filter — or drawn as a symbolic card if you had no
+     photo. Nothing is placed without your preview approval, the original is
+     deleted exactly as you chose, and the photo earned *nothing extra*.
+   - **Say it:** *"A keepsake is a memory, never proof. A failed check would
+     never have blocked it, and a pretty result proves nothing."*
+10. Open the **Journal** (Post Office) and read the timeline aloud: the
+    rebalance with before/after values, the partial session with its reward,
+    the recovery choice, the keepsake with its deletion state — and the next
+    action, waiting patiently for next time.
+    - Glance up: the HUD shows earned XP, coins, and level; one garden plant
+      has grown; the Library fog has eased.
+    - **Closing line:** *"The town responds to sustainable choices — starting,
+      asking for help, replanning honestly, resting on purpose — never to
+      streaks or hours. That's PaceTown: find your pace, grow your place."*
 
 ## If the audience asks…
 
