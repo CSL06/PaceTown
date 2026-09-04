@@ -16,6 +16,7 @@ import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
+import { Pocket } from './panels/Pocket'
 import { Ripples } from './panels/Ripples'
 import {
   Backpack, Briefing, Calm, Council, Garden, Home, Journal, LoadPanel, Mailbox,
@@ -38,7 +39,7 @@ const VIEW_TITLE: Record<ViewId, string> = {
 
 const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
   intake: Intake, understand: Understand, rebalance: Rebalance, work: Work, session: Session,
-  recover: Recover, ripples: Ripples, pocket: Recover, firefly: Preview, chime: Preview,
+  recover: Recover, ripples: Ripples, pocket: Pocket, firefly: Preview, chime: Preview,
   warmcup: Preview, lanterns: Preview, keepsakes: Preview, collection: Preview,
   journal: Journal, council: Council, mailbox: Mailbox, calm: Calm,
   home: Home, backpack: Backpack, garden: Garden, load: LoadPanel, townlist: TownList,

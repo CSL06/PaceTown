@@ -60,7 +60,7 @@ export const PLACES: readonly Place[] = [
     blurb: 'Inspect what you are carrying' },
   { id: 'calm', name: 'Calm Corner', px: 77.0, py: 74.0, view: 'calm',
     blurb: 'All five activities, no prerequisites' },
-  { id: 'park', name: 'Park', px: 91.0, py: 85.0, view: 'recover', who: 'sol',
+  { id: 'park', name: 'Park', px: 91.0, py: 85.0, view: 'pocket', who: 'sol',
     blurb: 'Pocket of Green, outdoor recovery' },
 ]
 

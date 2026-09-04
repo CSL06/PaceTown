@@ -254,14 +254,7 @@ export function Recover({ state, update, go, toast }: PanelProps) {
           <span className="k">◎</span>
           <span>Do something here<small>Gentle Ripples · 45–120 seconds · no score, no failure state</small></span>
         </button>
-        <button className="opt" type="button" onClick={() => {
-          const reward = questReward('done', 'self')
-          update((s) => grow(record({ ...s, questOutcome: 'done' },
-            'Pocket of Green — done',
-            'Confirmed by self-report. Outdoor access is never assumed; indoor alternatives earn the same.',
-            reward)))
-          toast(`Quest complete · +${reward.xp} XP`)
-        }}>
+        <button className="opt" type="button" onClick={() => go('pocket')}>
           <span className="k">☀</span>
           <span>Do something away from the screen<small>Pocket of Green · IRL-01 · Sol</small></span>
         </button>
