@@ -505,10 +505,10 @@ export function TownList({ update, go }: PanelProps) {
 /* ----------------------------------------------- calm corner + previews */
 
 const PREVIEWS = [
-  ['Firefly Stories', 'mira', 'Fireflies reveal five short illustrated fragments about rest, uncertainty, loneliness, persistence, and self-kindness.'],
-  ['Chime Drift', 'kai', 'Slow notes arrive at a predictable pace. Tap, press a key, or simply watch as each passes the clock hand.'],
-  ['Warm Cup', 'sky', 'Choose a drink base, pour, stir, and sit by the window. The sequence is unhurried and cannot be ruined.'],
-  ['Night Lanterns', 'goh', 'Choose a symbol for a concern, light a lantern, and place it in the evening scene.'],
+  ['Firefly Stories', 'firefly', 'Fireflies reveal five short illustrated fragments about rest, uncertainty, loneliness, persistence, and self-kindness.'],
+  ['Chime Drift', 'chime', 'Slow notes arrive at a predictable pace. Tap, press a key, or simply watch as each passes the clock hand.'],
+  ['Warm Cup', 'warmcup', 'Choose a drink base, pour, stir, and sit by the window. The sequence is unhurried and cannot be ruined.'],
+  ['Night Lanterns', 'lanterns', 'Choose a symbol for a concern, light a lantern, and place it in the evening scene.'],
 ] as const
 
 export function Calm({ go }: PanelProps) {
@@ -523,18 +523,18 @@ export function Calm({ go }: PanelProps) {
       <div className="opts">
         <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◉</span>
-          <span>Gentle Ripples<small>The one fully interactive activity for this slice</small></span>
+          <span>Gentle Ripples<small>The paced sensory pause at the fountain</small></span>
         </button>
-        {PREVIEWS.map(([name, , play]) => (
-          <button key={name} className="opt" type="button" disabled>
+        {PREVIEWS.map(([name, view, play]) => (
+          <button key={name} className="opt" type="button" onClick={() => go(view as 'firefly' | 'chime' | 'warmcup' | 'lanterns')}>
             <span className="k">○</span>
-            <span>{name}<small>Preview · {play.slice(0, 64)}…</small></span>
+            <span>{name}<small>{play.slice(0, 64)}…</small></span>
           </button>
         ))}
       </div>
       <p className="note" style={{ marginTop: 14 }}>
-        Gentle Ripples is the required interactive activity; the other four are implemented after
-        the core loop passes acceptance.
+        All five activities are playable. Each has muted and reduced-motion variants, and leaving
+        early is always valid.
       </p>
     </div>
   )
