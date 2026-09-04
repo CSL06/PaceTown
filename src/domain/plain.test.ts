@@ -23,7 +23,28 @@ describe('plain-language guardians', () => {
     for (const [id, t] of Object.entries(PLAN_TEMPLATES)) {
       expect(t.opener.toLowerCase()).toContain(OPENER_WORD[id as BlockerKind])
       expect(sentences(t.opener).length).toBeLessThanOrEqual(2)
-      for (const w of BANNED) expect(t.opener.toLowerCase()).not.toContain(w)
+      for (const w of BANNED) expect(t.opener.toLowerCase()).not.toMatch(new RegExp(`\\b${w}\\b`))
+    }
+  })
+})
+import { guideLines, type HelpMode } from './guidance'
+
+const LENS_HEAD = /^(Mira explains|Kai plans|Sol keeps|Sky keeps|Goh finishes)/
+const LENS_CASE: [BlockerKind, HelpMode, 'mira' | 'kai' | 'sol' | 'sky' | 'goh'][] = [
+  ['unclear_start', 'Explain', 'mira'],
+  ['too_large', 'Plan', 'kai'],
+  ['low_capacity', 'Plan', 'sol'],
+  ['perfection_pressure', 'Review', 'sky'],
+  ['missing_materials', 'Plan', 'goh'],
+]
+
+describe('guardian lens', () => {
+  it('opens in the guardian’s plain job, briefly', () => {
+    for (const [b, m, g] of LENS_CASE) {
+      const head = guideLines(b, m, { taskTitle: 'ERD assignment' }, g)[0]
+      expect(head).toMatch(LENS_HEAD)
+      expect(sentences(head).length).toBeLessThanOrEqual(2)
+      for (const w of BANNED) expect(head.toLowerCase()).not.toMatch(new RegExp(`\\b${w}\\b`))
     }
   })
 })

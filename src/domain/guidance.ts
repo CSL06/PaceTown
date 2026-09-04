@@ -106,11 +106,11 @@ function blockerTip(blocker: BlockerKind, mode: HelpMode): string | null {
 /** One guardian lens: whose voice the answer arrives in. */
 function guardianLens(guardian: GuardianId): string {
   switch (guardian) {
-    case 'mira': return 'Mira, your study partner: let’s make this understandable before making it done.'
-    case 'kai': return 'Kai, your planner: let’s make this fit the time you actually have.'
-    case 'sol': return 'Sol, your sustainer: smaller is legitimate — stopping after it is complete.'
-    case 'sky': return 'Sky, keeping you company: no pressure here, rough on purpose.'
-    case 'goh': return 'Goh, your finisher: gather what’s missing first — that is the work right now.'
+    case 'mira': return 'Mira explains things. We make it understandable before we make it done.'
+    case 'kai': return 'Kai plans time. We make this fit the hours you actually have.'
+    case 'sol': return 'Sol keeps effort sustainable. Small is legitimate — stopping after it is done.'
+    case 'sky': return 'Sky keeps you company. No pressure here — rough on purpose.'
+    case 'goh': return 'Goh finishes small things. We gather what is missing first — that is the work right now.'
   }
 }
 
