@@ -2,7 +2,8 @@
  * Campus Grove layout.
  *
  * Coordinates are percentages of the world, so the same numbers work at any
- * render size. The world is drawn from public/game/world/campus.png.
+ * render size. The world is drawn from
+ * assets/app-runtime-v1/game/world/campus.png.
  *
  * The source illustration is 1200x800. The world is exactly 3x that, so the
  * map upscales on a whole-pixel grid, and a native 64x96 sprite stands 32
@@ -104,7 +105,7 @@ export const GUARDIAN_AT: Record<GuardianId, PlaceId> = {
   sky: 'cafe',
 }
 
-/** Order of frames in public/game/world/cast-sheet.png. */
+/** Order of frames in assets/app-runtime-v1/game/world/cast-sheet.png. */
 export const CAST_ORDER: readonly GuardianId[] = ['mira', 'kai', 'sol', 'goh', 'sky']
 
 export const GUARDIANS: Record<GuardianId, { name: string; role: string }> = {

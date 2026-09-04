@@ -407,7 +407,7 @@ versioned saves in the browser (currently v4, migrated forward — never wiped)
 behind an adapter, so production can swap in IndexedDB later. Mention it when
 you reload mid-demo without fear.
 
-**Offline shell** (`public/sw.js`, `public/manifest.webmanifest`,
+**Offline shell** (`assets/app-runtime-v1/sw.js`, `assets/app-runtime-v1/manifest.webmanifest`,
 `src/main.tsx`). What it is: the app is an installable PWA whose shell is
 runtime-cached, so a built copy works with the Wi-Fi off. Save it for the
 closing dare.

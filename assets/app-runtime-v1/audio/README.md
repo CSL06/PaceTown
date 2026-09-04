@@ -3,7 +3,7 @@
 The landing page will play a looping audio file from this folder if one exists:
 
 ```
-public/audio/ambient.mp3
+assets/app-runtime-v1/audio/ambient.mp3
 ```
 
 Nothing is committed here by default, and nothing needs to be. When the file

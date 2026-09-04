@@ -153,6 +153,7 @@ feature already has a deterministic local fallback, and the app never requires o
 - `PACETOWN_VISION_MERMAID.md`
 - `PaceTown_Hackathon_Implementation_Plan.md`
 - `assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md`
+- `assets/app-runtime-v1/README.md`
 - `assets/production/character-redesign-v3/README.md`
 - `assets/production/runtime-assets-v1/README.md`
 - `assets/production/runtime-assets-v1/pacetown-runtime-assets-v1-manifest.json`
