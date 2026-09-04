@@ -11,6 +11,7 @@ import { PLACES, doorstep } from '../layout'
 import { clearState, grow, record } from '../state'
 import { loadWeather, pressureByArea } from '../Campus'
 import { Guardian } from './Guardian'
+import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
 const fmt = (n: number) => n.toFixed(1)
@@ -123,7 +124,7 @@ export function Briefing({ state, load, update, go, toast }: PanelProps) {
 
   return (
     <div className="card">
-      <h2>Today</h2>
+      <h2>Today <HelpDot view="briefing" state={state} load={load} /></h2>
       <p className="lede">
         Defaults you can change at any time. Nothing here is a health measurement, and every field
         can be skipped.
@@ -197,7 +198,7 @@ export function Council({ state, load, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Guardian Council</div>
-      <h2>Three guardians, one recommendation</h2>
+      <h2>Three guardians, one recommendation <HelpDot view="council" state={state} load={load} /></h2>
       <p className="lede">
         The Council reads the same numbers you can see. It proposes; you decide. Ringing the bell
         never applies a schedule change.
@@ -222,11 +223,11 @@ export function Council({ state, load, go }: PanelProps) {
 
 /* ----------------------------------------------------------- recover */
 
-export function Recover({ state, update, go }: PanelProps) {
+export function Recover({ state, load, update, go }: PanelProps) {
   if (state.questOutcome === 'done' || state.questOutcome === 'partial') {
     return (
       <div className="card">
-        <h2>Recovery recorded</h2>
+        <h2>Recovery recorded <HelpDot view="recover" state={state} load={load} /></h2>
         <p className="lede">
           Self-confirmation and photo confirmation earn identically. Photo use grants no XP, coins,
           rarity, or progression advantage.
@@ -245,7 +246,7 @@ export function Recover({ state, update, go }: PanelProps) {
     return (
       <div className="card">
         <div className="eyebrow">Recover</div>
-        <h2>Your session is on hold</h2>
+        <h2>Your session is on hold <HelpDot view="recover" state={state} load={load} /></h2>
         <p className="lede">
           Resume it whenever you are ready — your checkpoint, notes and timer are held exactly as
           you left them. Recovery stays open alongside it.
@@ -262,7 +263,7 @@ export function Recover({ state, update, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Recover</div>
-      <h2>Two ways to pause</h2>
+      <h2>Two ways to pause <HelpDot view="recover" state={state} load={load} /></h2>
       <Guardian who="sol" says="Would you rather pause here with Gentle Ripples, or step away from the screen for a short reset? Neither is worth more than the other." />
       {state.session.pausedFrom ? (
         <div className="actions" style={{ marginTop: 12 }}>
@@ -293,11 +294,11 @@ export function Recover({ state, update, go }: PanelProps) {
 
 /* ----------------------------------------------------------- journal */
 
-export function Journal({ state, go }: PanelProps) {
+export function Journal({ state, load, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Post Office</div>
-      <h2>What Thursday actually held</h2>
+      <h2>What Thursday actually held <HelpDot view="journal" state={state} load={load} /></h2>
       <p className="lede">
         Written automatically from real events. No mood score, no streak, and no missed-day
         messaging when you come back.
@@ -338,12 +339,12 @@ export function Journal({ state, go }: PanelProps) {
 
 /* ---------------------------------------------------------- backpack */
 
-export function Backpack({ state, go }: PanelProps) {
+export function Backpack({ state, load, go }: PanelProps) {
   const today = state.tasks.filter((t) => t.day === 'thu')
   return (
     <div className="card">
       <div className="eyebrow">Backpack inspection point</div>
-      <h2>What you are carrying</h2>
+      <h2>What you are carrying <HelpDot view="backpack" state={state} load={load} /></h2>
       <p className="lede">
         Workload shown as something carried, not something you are. It gets lighter when work is
         done or safely rescheduled — it never bursts.
@@ -376,12 +377,12 @@ export function Backpack({ state, go }: PanelProps) {
 
 /* ------------------------------------------------------------ garden */
 
-export function Garden({ state, go }: PanelProps) {
+export function Garden({ state, load, go }: PanelProps) {
   const stages = ['Nothing planted yet', 'A shoot', 'Leaves opening', 'Standing tall', 'In bloom']
   return (
     <div className="card">
       <div className="eyebrow">Recovery Garden</div>
-      <h2>{stages[state.gardenGrowth]}</h2>
+      <h2>{stages[state.gardenGrowth]} <HelpDot view="garden" state={state} load={load} /></h2>
       <p className="lede">
         Growth comes from work progress, intentional recovery, realistic rescheduling and asking for
         help. There are no dead or wilted states, and being away never removes anything.
