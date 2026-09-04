@@ -531,7 +531,8 @@ git commit -m "feat: ? explainers in mini-games, Keepsakes, Collection"
 
 ```ts
 import { describe, expect, it } from 'vitest'
-import { PLAN_TEMPLATES, type BlockerKind } from './plans'
+import { PLAN_TEMPLATES } from './plans'
+import type { BlockerKind } from './types'
 
 export const BANNED = [
   'weighted', 'timebox', 'overloaded', 'xp', 'streak', 'parse', 'assumption', 'burnout', 'diagnos',
