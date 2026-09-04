@@ -182,7 +182,7 @@ export function Council({ state, load, go }: PanelProps) {
     ['kai', 'time', `Thursday holds ${Math.round(areas.time)} minutes of fixed time. That part cannot move.`],
     ['mira', 'mental', top
       ? `Most of what is left is thinking work, and “${top}” is the biggest piece.`
-      : `Most of what is left is cognitive. ${Math.round(areas.mental)} weighted minutes of it.`],
+      : `Most of what is left is thinking work — about ${Math.round(areas.mental)} minutes of it.`],
     ['sol', 'physical', 'You have been at this a while. A smaller step is still a full step.'],
     ['sky', 'social', 'One fixed social plan. You chose it, so I would not move it.'],
     ['goh', 'errands', 'The errands are small and fit together. They are not today’s problem.'],

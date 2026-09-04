@@ -366,6 +366,7 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 @media (prefers-reduced-motion: reduce) {
   .title-art, .cast.idle, .avatar.walking, .marker .ring, .dlg-caret { animation: none !important }
 }
+
 .helpdot-wrap { position: relative; display: inline-block; margin-left: 8px; vertical-align: middle }
 .helpdot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--edge-hi); background: var(--sunk); color: var(--dim); font-size: 12px; cursor: pointer; padding: 0; line-height: 1 }
 .helpdot:hover { border-color: var(--accent); color: var(--accent) }

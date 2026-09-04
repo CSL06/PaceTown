@@ -9,11 +9,10 @@
 
 import {
   BLOCKERS, DEMO_DESTINATION, guardianFor, proposeRebalance, wakingMinutes,
-  type DailyLoad,
+  type DailyLoad, type GuardianId,
 } from '../domain'
 import { GUARDIANS, type ViewId } from './layout'
 import type { GameState } from './state'
-import type { GuardianId } from '../domain'
 
 export interface HelpGuardian {
   who: GuardianId

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { guideLines, type HelpMode } from './guidance'
 import { PLAN_TEMPLATES } from './plans'
 import type { BlockerKind } from './types'
 
@@ -28,7 +29,6 @@ describe('plain-language guardians', () => {
     }
   })
 })
-import { guideLines, type HelpMode } from './guidance'
 
 const LENS_HEAD = /^(Mira explains|Kai plans|Sol keeps|Sky keeps|Goh finishes)/
 const LENS_CASE: [BlockerKind, HelpMode, 'mira' | 'kai' | 'sol' | 'sky' | 'goh'][] = [

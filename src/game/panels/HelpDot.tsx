@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DailyLoad } from '../../domain'
 import { HELP, adaptiveLine, type HelpContent } from '../help'
-import type { ViewId } from '../layout'
+import { GUARDIANS, type ViewId } from '../layout'
 import type { GameState } from '../state'
 
 export function HelpDot({ view, state, load }: { view: ViewId; state: GameState; load: DailyLoad }) {
@@ -26,7 +26,7 @@ export function HelpDot({ view, state, load }: { view: ViewId; state: GameState;
 
   if (!content) return null
   const live = adaptiveLine(view, state, load)
-  const who = content.guardian.who.charAt(0).toUpperCase() + content.guardian.who.slice(1)
+  const who = GUARDIANS[content.guardian.who].name
 
   return (
     <span className="helpdot-wrap" ref={box}>
