@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react'
 import {
-  BLOCKERS, DEMO_DESTINATION, DEMO_DESTINATION_CAPACITY, EFFORT_WEIGHT, PLAN_TEMPLATES,
+  BLOCKERS, DEMO_DESTINATION, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
   extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
   resolveCheckpoint, sessionReward,
@@ -280,9 +280,8 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     )
   }
 
-  const moved = selectedMoves.reduce((sum, m) => sum + m.weightedMinutes, 0)
-  const satBefore = (DEMO_DESTINATION_CAPACITY.committedWeighted / DEMO_DESTINATION_CAPACITY.wakingMinutes) * 100
-  const satAfter = ((DEMO_DESTINATION_CAPACITY.committedWeighted + moved) / DEMO_DESTINATION_CAPACITY.wakingMinutes) * 100
+  const satBefore = dailyLoad(state.tasks, DEMO_DESTINATION, waking).percentage
+  const satAfter = dailyLoad(applySelected(state.tasks, proposal, selectedIds), DEMO_DESTINATION, waking).percentage
 
   const DayCard = ({ name, before, after }: { name: string; before: number; after: number }) => (
     <div className="day">

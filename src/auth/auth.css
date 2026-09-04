@@ -120,7 +120,7 @@
 /* -------------------------------------------------------------- art side */
 .au-art-side { position: relative; overflow: hidden; background: #0B141D;
   display: flex; align-items: flex-end; }
-.au-art { position: absolute; inset: 0; background: url('/game/world/campus.png') center 40% / cover no-repeat;
+.au-art { position: absolute; inset: 0; background: url('/game/world/campus-daylight.png') center 40% / cover no-repeat;
   image-rendering: pixelated; filter: saturate(.9) brightness(.62);
   animation: au-drift 46s ease-in-out infinite alternate; }
 @keyframes au-drift { from { transform: scale(1.06) } to { transform: scale(1.16) } }

@@ -13,6 +13,7 @@ import {
   selectQuests, wakingMinutes, type GuardianId,
 } from '../domain'
 import { Campus, daylight } from './Campus'
+import { ClockTower } from './ClockTower'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
@@ -103,8 +104,11 @@ export default function Game() {
   }, [])
 
   const go = useCallback((view: ViewId | null) => {
-    setState((s) => ({ ...s, view }))
-    setLive(view ? `${VIEW_TITLE[view]} opened.` : 'Back on the campus.')
+    setState((s) => view === 'rebalance'
+      ? { ...s, scene: 'clock-tower', view: null }
+      : { ...s, scene: view ? 'campus' : s.scene, view })
+    setLive(view === 'rebalance' ? 'Clock Tower entered.'
+      : view ? `${VIEW_TITLE[view]} opened.` : 'View closed.')
   }, [])
 
   const load = useMemo(
@@ -118,7 +122,7 @@ export default function Game() {
   const { near, moveTo, press } = useWorld(
     { stage, world, avatar },
     {
-      enabled: state.started && !panelOpen && !dialogueOpen,
+      enabled: state.started && state.scene === 'campus' && !panelOpen && !dialogueOpen,
       reducedMotion,
       initial: state.avatar,
       initialFacing: state.facing,
@@ -227,7 +231,7 @@ export default function Game() {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
         <div className="title">
-          <div className="title-art" style={{ backgroundImage: 'url(/game/world/campus.png)' }} />
+          <div className="title-art" style={{ backgroundImage: 'url(/game/world/campus-daylight.png)' }} />
           <div className="title-veil" />
           <div className="title-inner">
             <div className="logo">
@@ -282,6 +286,22 @@ export default function Game() {
             </p>
           </div>
         </div>
+      </div>
+    )
+  }
+
+  if (state.scene === 'clock-tower') {
+    return (
+      <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        <ClockTower state={state} update={update} go={go} toast={toast}
+          onExit={() => {
+            setState((s) => ({ ...s, scene: 'campus', view: null }))
+            setLive('Back on the campus.')
+          }} />
+        <div className="toasts">
+          {toasts.map((t) => <div className="toast" key={t.id}>{t.text}</div>)}
+        </div>
+        <div className="sr" aria-live="polite">{live}</div>
       </div>
     )
   }

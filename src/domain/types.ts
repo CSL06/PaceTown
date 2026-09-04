@@ -18,6 +18,10 @@ export interface Task {
   category: DemandCategory
   /** Day key the task currently sits on, e.g. 'thu'. */
   day: string
+  /** Minutes after midnight. Omitted for work that has not been given a time. */
+  startMinute?: number
+  /** Minutes after midnight. Present with startMinute for a timed commitment. */
+  endMinute?: number
   estimatedMinutes: number
   priority: Priority
   mentalEffort: Effort

@@ -7,11 +7,16 @@ describe('parseSchedule', () => {
     const [t] = parseSchedule('lecture from 9 to 12').tasks
     expect(t.flexibility).toBe('fixed')
     expect(t.estimatedMinutes).toBe(180)
+    expect(t.startMinute).toBe(9 * 60)
+    expect(t.endMinute).toBe(12 * 60)
   })
 
   it('assumes an evening end when the range reads backwards', () => {
     // "6 to 10" is an evening shift, not a negative four hours.
-    expect(parseSchedule('café shift from 6 to 10').tasks[0].estimatedMinutes).toBe(240)
+    const task = parseSchedule('café shift from 6 to 10').tasks[0]
+    expect(task.estimatedMinutes).toBe(240)
+    expect(task.startMinute).toBe(18 * 60)
+    expect(task.endMinute).toBe(22 * 60)
   })
 
   it('reads a stated duration', () => {
@@ -60,6 +65,12 @@ describe('parseSchedule', () => {
     expect(result.confidence).toBe(1)
     expect(result.tasks.filter((t) => t.flexibility === 'fixed')).toHaveLength(4)
     expect(result.ambiguities).toHaveLength(3)
+  })
+
+  it('keeps an explicit time for a single timed event', () => {
+    const task = parseSchedule('Film Society at 5 pm').tasks[0]
+    expect(task.startMinute).toBe(17 * 60)
+    expect(task.endMinute).toBe(18 * 60)
   })
 })
 

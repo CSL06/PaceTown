@@ -8,6 +8,7 @@
  */
 
 import { dailyLoad, weightedDemand } from './workload'
+import { dayDistance } from './calendar'
 import type { RebalanceMove, RebalanceProposal, Task } from './types'
 
 const PRIORITY_RANK: Record<Task['priority'], number> = { low: 0, medium: 1, high: 2 }
@@ -28,8 +29,10 @@ export interface RebalanceOptions {
  * `deadlineDays <= 1` covers both fixed commitments and work due imminently,
  * so the engine can never push something past its deadline.
  */
-export function isMovable(task: Task, day: string): boolean {
-  return task.day === day && task.flexibility === 'flexible' && task.deadlineDays > 1
+export function isMovable(task: Task, day: string, destination?: string): boolean {
+  const distance = destination ? dayDistance(day, destination) : 1
+  return task.day === day && task.flexibility === 'flexible' &&
+    task.deadlineDays > 1 && distance > 0 && distance <= task.deadlineDays
 }
 
 export function proposeRebalance(
@@ -44,7 +47,7 @@ export function proposeRebalance(
   }
 
   const candidates = proposed
-    .filter((t) => isMovable(t, day))
+    .filter((t) => isMovable(t, day, destination))
     .sort((a, b) => {
       // Lowest priority first, then the most slack, then the biggest win.
       if (PRIORITY_RANK[a.priority] !== PRIORITY_RANK[b.priority]) {

@@ -65,7 +65,6 @@ describe('proposals on the seeded day', () => {
     const days = tasks.map((t) => t.day)
     proposeRebalance(tasks, opts)
     expect(tasks.map((t) => t.day)).toEqual(days)
-    expect(days.every((d) => d === DEMO_DAY)).toBe(true)
   })
 
   it('reports before and after so the student can compare', () => {
@@ -80,8 +79,8 @@ describe('approval', () => {
     const applied = applyRebalance(tasks, proposal)
 
     const movedIds = proposal.moves.map((m) => m.taskId)
-    for (const t of applied) {
-      expect(t.day).toBe(movedIds.includes(t.id) ? DEMO_DESTINATION : DEMO_DAY)
+    for (const [index, t] of applied.entries()) {
+      expect(t.day).toBe(movedIds.includes(t.id) ? DEMO_DESTINATION : tasks[index].day)
     }
     expect(dailyLoad(applied, DEMO_DAY, 900).percentage).toBeCloseTo(proposal.after.percentage, 5)
   })
@@ -99,8 +98,8 @@ describe('approval', () => {
     expect(proposal.moves.length).toBeGreaterThan(1)
     const [first] = proposal.moves
     const applied = applySelected(tasks, proposal, [first.taskId])
-    for (const t of applied) {
-      expect(t.day).toBe(t.id === first.taskId ? DEMO_DESTINATION : DEMO_DAY)
+    for (const [index, t] of applied.entries()) {
+      expect(t.day).toBe(t.id === first.taskId ? DEMO_DESTINATION : tasks[index].day)
     }
     const partial = dailyLoad(applied, DEMO_DAY, 900).percentage
     expect(partial).toBeLessThan(proposal.before.percentage)
@@ -110,7 +109,7 @@ describe('approval', () => {
   it('applies nothing when the selection is empty', () => {
     const tasks = demoTasks()
     const proposal = proposeRebalance(tasks, opts)
-    expect(applySelected(tasks, proposal, []).map((t) => t.day).every((d) => d === DEMO_DAY)).toBe(true)
+    expect(applySelected(tasks, proposal, []).map((t) => t.day)).toEqual(tasks.map((t) => t.day))
   })
 })
 

@@ -14,7 +14,7 @@ import {
 import type { CosmeticSlot } from '../domain'
 import type { WorldRefs } from './useWorld'
 
-const MAP = '/game/world/campus.png'
+const MAP = '/game/world/campus-daylight.png'
 const PLAYER_SHEET = '/game/world/player-sheet.png'
 const CAST_SHEET = '/game/world/cast-sheet.png'
 
@@ -87,7 +87,7 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equip
   return (
     <div className={`stage${quiet ? ' is-quiet' : ''} ${cosmetic}`} ref={refs.stage}>
       <div className="world" ref={refs.world}>
-        <img className="map" src={MAP} alt="Campus Grove in late afternoon" draggable={false} />
+        <img className="map" src={MAP} alt="Campus Grove in bright late-morning sunshine" draggable={false} />
 
         {/* Mental load — fog over the Library */}
         {Array.from({ length: byPlace.get('Library') ?? 0 }, (_, i) => (

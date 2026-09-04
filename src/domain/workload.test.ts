@@ -74,8 +74,11 @@ describe('the seeded demonstration day', () => {
   const tasks = demoTasks()
   const load = dailyLoad(tasks, DEMO_DAY, wakingMinutes(DEMO_CAPACITY))
 
-  it('parses into nine commitments', () => {
-    expect(tasks).toHaveLength(9)
+  it('keeps nine commitments on the overloaded demonstration day', () => {
+    expect(tasks.filter((task) => task.day === DEMO_DAY)).toHaveLength(9)
+    expect(new Set(tasks.map((task) => task.day))).toEqual(
+      new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
+    )
   })
 
   it('is at 108.0% — the figure the whole demo story rests on', () => {

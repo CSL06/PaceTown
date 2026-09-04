@@ -209,16 +209,16 @@
   z-index: 6; will-change: transform; }
 .lt-avatar.f-down { background-position-x: 0% }
 .lt-avatar.f-up { background-position-x: 27.27% }
-.lt-avatar.f-left { background-position-x: 54.54% }
-.lt-avatar.f-right { background-position-x: 81.81% }
+.lt-avatar.f-left { background-position-x: 81.81% }
+.lt-avatar.f-right { background-position-x: 54.54% }
 .lt-avatar.walking.f-down { animation: lt-wd .34s steps(2) infinite }
 .lt-avatar.walking.f-up { animation: lt-wu .34s steps(2) infinite }
 .lt-avatar.walking.f-left { animation: lt-wl .34s steps(2) infinite }
 .lt-avatar.walking.f-right { animation: lt-wr .34s steps(2) infinite }
 @keyframes lt-wd { from { background-position-x: 9.09% } to { background-position-x: 27.27% } }
 @keyframes lt-wu { from { background-position-x: 36.36% } to { background-position-x: 54.54% } }
-@keyframes lt-wl { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
-@keyframes lt-wr { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes lt-wl { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes lt-wr { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
 
 .lt-tag { position: absolute; left: 50%; top: -16px; transform: translateX(-50%);
   white-space: nowrap; background: rgba(12, 20, 28, .9); color: #EFE3CC;

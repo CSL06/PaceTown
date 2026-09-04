@@ -85,11 +85,11 @@
 .world { position: absolute; top: 0; left: 0; width: 3600px; height: 2400px; will-change: transform; }
 .map { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 9;
-  box-shadow: inset 0 -120px 150px -60px rgba(8,14,20,.8), inset 0 90px 120px -60px rgba(8,14,20,.65); }
+  box-shadow: inset 0 -100px 140px -70px rgba(73,50,30,.26), inset 0 70px 110px -70px rgba(255,245,196,.2); }
 .daytint { position: absolute; inset: 0; pointer-events: none; z-index: 8; transition: background 2s ease; }
 .daytint.afternoon { background: linear-gradient(180deg, rgba(255,196,120,.05), rgba(255,170,110,.03)); }
-.daytint.dusk { background: linear-gradient(180deg, rgba(120,60,90,.22), rgba(60,45,95,.30)); }
-.daytint.night { background: linear-gradient(180deg, rgba(28,36,92,.44), rgba(12,18,52,.56)); }
+.daytint.dusk { background: linear-gradient(180deg, rgba(255,201,112,.08), rgba(210,145,83,.12)); }
+.daytint.night { background: linear-gradient(180deg, rgba(92,126,159,.12), rgba(50,77,105,.2)); }
 
 /* Native frame size, drawn 1:1. A fractional sprite size is what smeared the
    pixel art — never give these a percentage width. */
@@ -104,16 +104,16 @@
 .avatar { background-size: 1200% 100%; z-index: 7; }
 .avatar.f-down { background-position-x: 0% }
 .avatar.f-up { background-position-x: 27.27% }
-.avatar.f-left { background-position-x: 54.54% }
-.avatar.f-right { background-position-x: 81.81% }
+.avatar.f-left { background-position-x: 81.81% }
+.avatar.f-right { background-position-x: 54.54% }
 .avatar.walking.f-down { animation: wd .34s steps(2) infinite }
 .avatar.walking.f-up { animation: wu .34s steps(2) infinite }
 .avatar.walking.f-left { animation: wl .34s steps(2) infinite }
 .avatar.walking.f-right { animation: wr .34s steps(2) infinite }
 @keyframes wd { from { background-position-x: 9.09% } to { background-position-x: 27.27% } }
 @keyframes wu { from { background-position-x: 36.36% } to { background-position-x: 54.54% } }
-@keyframes wl { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
-@keyframes wr { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes wl { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes wr { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
 
 .marker { position: absolute; transform: translate(-50%, -50%); background: none; border: none;
   padding: 0; width: 114px; height: 114px; z-index: 4; }

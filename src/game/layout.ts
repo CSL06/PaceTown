@@ -3,7 +3,7 @@
  *
  * Coordinates are percentages of the world, so the same numbers work at any
  * render size. The world is drawn from
- * assets/app-runtime-v1/game/world/campus.png.
+ * assets/app-runtime-v1/game/world/campus-daylight.png.
  *
  * The source illustration is 1200x800. The world is exactly 3x that, so the
  * map upscales on a whole-pixel grid, and a native 64x96 sprite stands 32

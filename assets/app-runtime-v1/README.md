@@ -14,6 +14,8 @@ when the running app needs to fetch it by URL.
 | Runtime group | Browser consumers | Provenance |
 |---|---|---|
 | `game/world/campus.png` | Landing, authentication, Campus Grove, social preview, preload | Export prepared for the current 1200×800 Campus Grove world |
+| `game/world/campus-daylight.png` | Landing, authentication, Campus Grove, social preview, preload | Sunlit ImageGen variant from `assets/production/world/campus-daylight-v2/` |
+| `game/scenes/clock-tower/*` | Dedicated Clock Tower room, board frame, animated interaction states, and ambient layers | Runtime copies from `assets/production/scenes/clock-tower-v1/` |
 | `game/world/player-sheet.png` | Landing live town and Campus Grove player | Runtime composite exported from the player animation package |
 | `game/world/cast-sheet.png` | Landing live town and Campus Grove guardians | Runtime composite of Mira, Kai, Sol, Goh, and Sky |
 | `game/portraits/{goh,kai,mira,sky,sol}.png` | Landing, authentication, title, dialogue, panels, guardian dock | Web portrait exports derived from the character-redesign masters |
@@ -41,6 +43,7 @@ when the running app needs to fetch it by URL.
 
 ```text
 /game/world/*       Current Campus Grove and landing scene
+/game/scenes/*      Dedicated playable interior scenes and their layered assets
 /game/portraits/*   Character portraits
 /game/campus.png    Original mentor demo background
 /game/player/*      Original mentor demo player frames

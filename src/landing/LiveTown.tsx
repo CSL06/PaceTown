@@ -19,7 +19,7 @@ import {
 } from '../game/layout'
 import type { GuardianId } from '../domain'
 
-const MAP = '/game/world/campus.png'
+const MAP = '/game/world/campus-daylight.png'
 const PLAYER_SHEET = '/game/world/player-sheet.png'
 const CAST_SHEET = '/game/world/cast-sheet.png'
 
