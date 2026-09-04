@@ -92,3 +92,39 @@ export function keepsakeBlockedBy(verification: 'pass' | 'uncertain' | 'fail'): 
   void verification
   return false
 }
+
+export type KeepsakeCategory =
+  | 'garden' | 'cafe' | 'library' | 'market' | 'path' | 'weather' | 'postcard'
+
+export const KEEPSAKE_CATEGORIES: readonly KeepsakeCategory[] = [
+  'garden', 'cafe', 'library', 'market', 'path', 'weather', 'postcard',
+]
+
+/** Which memory a quest photo becomes (vision §14). */
+export function categoryForQuest(quest: string): KeepsakeCategory {
+  if (quest === 'pocket_of_green') return 'garden'
+  if (quest === 'warm_cup') return 'cafe'
+  if (quest === 'ready_space') return 'library'
+  if (quest === 'errand_route') return 'market'
+  if (quest === 'gentle_loop') return 'path'
+  if (quest === 'find_sky') return 'weather'
+  return 'postcard'
+}
+
+export type KeepsakePlacement =
+  | 'collection' | 'journal' | 'recovery_garden' | 'town' | 'future_mailbox'
+
+export const KEEPSAKE_PLACEMENTS: readonly KeepsakePlacement[] = [
+  'collection', 'journal', 'recovery_garden', 'town', 'future_mailbox',
+]
+
+/** Suggested placements per category (vision §14). */
+export function suggestedPlacements(category: KeepsakeCategory): KeepsakePlacement[] {
+  switch (category) {
+    case 'garden': return ['recovery_garden', 'collection', 'journal']
+    case 'cafe': return ['town', 'collection', 'journal']
+    case 'weather': return ['journal', 'collection', 'future_mailbox']
+    case 'path': return ['collection', 'recovery_garden', 'journal']
+    default: return ['collection', 'journal', 'future_mailbox']
+  }
+}

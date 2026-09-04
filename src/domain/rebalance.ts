@@ -75,3 +75,16 @@ export function applyRebalance(tasks: readonly Task[], proposal: RebalancePropos
   const moved = new Map(proposal.moves.map((m) => [m.taskId, m.to]))
   return tasks.map((t) => (moved.has(t.id) ? { ...t, day: moved.get(t.id)! } : { ...t }))
 }
+
+/** Apply only the selected moves of a proposal — partial approval is valid. */
+export function applySelected(
+  tasks: readonly Task[],
+  proposal: RebalanceProposal,
+  selectedIds: readonly string[],
+): Task[] {
+  const wanted = new Set(selectedIds)
+  const moved = new Map(
+    proposal.moves.filter((m) => wanted.has(m.taskId)).map((m) => [m.taskId, m.to]),
+  )
+  return tasks.map((t) => (moved.has(t.id) ? { ...t, day: moved.get(t.id)! } : { ...t }))
+}

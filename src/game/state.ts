@@ -11,9 +11,12 @@ import {
   type BlockerKind, type Capacity, type Checkpoint, type Task,
 } from '../domain'
 import type { PlaceId, ViewId } from './layout'
+import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 1
+export const SAVE_VERSION = 2
+
+const store = localStorageAdapter(SAVE_KEY)
 
 export interface JournalEntry {
   at: number
@@ -47,6 +50,51 @@ export interface GameState {
 
   rippleTaps: number
   questOutcome: 'done' | 'partial' | 'changed' | null
+
+  /** Pace Session workspace: timer, scratchpad, and where a pause came from. */
+  session: {
+    elapsedSec: number
+    timerMode: 'none' | 'up' | 'down'
+    timerLenSec: number
+    scratchpad: string
+    helpMode: string | null
+    pausedFrom: ViewId | null
+  }
+
+  /** Gentle Ripples participation record. */
+  ripples: {
+    taps: number
+    response: 'lighter' | 'same' | 'not_sure' | null
+    lastAt: number | null
+  }
+
+  /** Pocket of Green quest path and verification state. */
+  pocket: {
+    path: 'outdoor' | 'window' | 'indoor' | 'image' | null
+    outcome: 'done' | 'partial' | 'changed' | null
+    confirmation: 'self' | 'photo' | null
+    verification: 'pass' | 'uncertain' | 'fail' | null
+  }
+
+  keepsakes: {
+    id: string
+    category: string
+    imageURL: string
+    source: 'local_filter' | 'symbolic_fallback'
+    placement: string
+    retainsOriginal: boolean
+    name: string
+    at: number
+  }[]
+
+  regulationSessions: {
+    at: number
+    activity: string
+    placement: string
+    response: 'lighter' | 'same' | 'not_sure' | null
+  }[]
+
+  skippedQuestKinds: string[]
 
   xp: number
   coins: number
@@ -88,6 +136,23 @@ export function initialState(): GameState {
     rippleTaps: 0,
     questOutcome: null,
 
+    session: {
+      elapsedSec: 0,
+      timerMode: 'none',
+      timerLenSec: 20 * 60,
+      scratchpad: '',
+      helpMode: null,
+      pausedFrom: null,
+    },
+
+    ripples: { taps: 0, response: null, lastAt: null },
+
+    pocket: { path: null, outcome: null, confirmation: null, verification: null },
+
+    keepsakes: [],
+    regulationSessions: [],
+    skippedQuestKinds: [],
+
     xp: 0,
     coins: 0,
     gardenGrowth: 0,
@@ -105,10 +170,35 @@ export function initialState(): GameState {
 type Migration = (state: Record<string, unknown>) => Record<string, unknown>
 
 /**
- * Save migrations, oldest first. Index 0 upgrades v0 saves to v1.
- * Adding a field means adding a migration, not bumping past the old save.
+ * Save migrations, oldest first. Index 0 upgrades v0 saves to v1, index 1
+ * upgrades v1 to v2. Adding a field means adding a migration, not bumping
+ * past the old save.
  */
-const MIGRATIONS: Migration[] = []
+const MIGRATIONS: Migration[] = [
+  (s) => ({ ...s, version: 1 }),
+  (s) => ({
+    ...s,
+    version: 2,
+    session: {
+      elapsedSec: 0,
+      timerMode: 'none',
+      timerLenSec: 20 * 60,
+      scratchpad: '',
+      helpMode: null,
+      pausedFrom: null,
+      ...(typeof s.session === 'object' && s.session !== null ? s.session : {}),
+    },
+    ripples: {
+      taps: typeof s.rippleTaps === 'number' ? s.rippleTaps : 0,
+      response: null,
+      lastAt: null,
+    },
+    pocket: { path: null, outcome: null, confirmation: null, verification: null },
+    keepsakes: Array.isArray(s.keepsakes) ? s.keepsakes : [],
+    regulationSessions: Array.isArray(s.regulationSessions) ? s.regulationSessions : [],
+    skippedQuestKinds: Array.isArray(s.skippedQuestKinds) ? s.skippedQuestKinds : [],
+  }),
+]
 
 /**
  * Load a save, migrating it forward. Only an unreadable or future-versioned
@@ -117,12 +207,7 @@ const MIGRATIONS: Migration[] = []
  */
 export function loadState(): GameState {
   const fresh = initialState()
-  let raw: string | null = null
-  try {
-    raw = localStorage.getItem(SAVE_KEY)
-  } catch {
-    return fresh
-  }
+  const raw = store.load()
   if (!raw) return fresh
 
   let parsed: Record<string, unknown>
@@ -154,20 +239,11 @@ export function loadState(): GameState {
 }
 
 export function saveState(state: GameState): void {
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state))
-  } catch {
-    // Private mode, or the quota is full. The session still works; it just
-    // will not survive a reload, which is better than crashing mid-session.
-  }
+  store.save(JSON.stringify(state))
 }
 
 export function clearState(): void {
-  try {
-    localStorage.removeItem(SAVE_KEY)
-  } catch {
-    /* nothing to clear */
-  }
+  store.clear()
 }
 
 /** Growth never decays and has no failure state (vision §7.6). */
