@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { REWARDS } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
+import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
 type Response = 'lighter' | 'same' | 'not_sure'
@@ -79,7 +80,7 @@ const FRAGMENTS = [
   { title: 'On self-kindness', text: 'You would not call a friend lazy for being tired. Keep the same rule for yourself.' },
 ]
 
-export function Firefly({ state, update, go, toast }: PanelProps) {
+export function Firefly({ state, load, update, go, toast }: PanelProps) {
   const [lit, setLit] = useState<number[]>([])
   const [placed, setPlaced] = useState<number | null>(null)
   const [response, setResponse] = useState<Response | null>(null)
@@ -93,7 +94,7 @@ export function Firefly({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Library · Firefly Stories</div>
-      <h2>Follow a light</h2>
+      <h2>Follow a light <HelpDot view="firefly" state={state} load={load} /></h2>
       <Guardian who="mira" says="Five lights, five short fragments. Follow any one, read or skip it, and place a single glow on the page." />
       <div className="opts">
         {FRAGMENTS.map((f, i) => (
@@ -135,7 +136,7 @@ export function Firefly({ state, update, go, toast }: PanelProps) {
 
 /* ------------------------------------------------------------ chime */
 
-export function Chime({ state, update, go, toast }: PanelProps) {
+export function Chime({ state, load, update, go, toast }: PanelProps) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const [waves, setWaves] = useState(0)
   const [taps, setTaps] = useState(0)
@@ -156,7 +157,7 @@ export function Chime({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Clock Tower · Chime Drift</div>
-      <h2>Slow waves</h2>
+      <h2>Slow waves <HelpDot view="chime" state={state} load={load} /></h2>
       <Guardian who="kai" says="Notes arrive slowly. Tap, press Space, or simply watch each one pass the clock hand. Timing is never scored." />
       <div className="capacity" aria-live="polite">
         <div><span>Wave {Math.min(waves + 1, 4)} of 4</span><span>{taps} soft {taps === 1 ? 'tap' : 'taps'}</span></div>
@@ -189,7 +190,7 @@ export function Chime({ state, update, go, toast }: PanelProps) {
 const CUP_BASES = ['Barley tea', 'Warm milk', 'Hot water with lemon']
 const CUP_STEPS = ['Choose a base', 'Pour', 'Stir', 'Sit by the window'] as const
 
-export function WarmCup({ state, update, go, toast }: PanelProps) {
+export function WarmCup({ state, load, update, go, toast }: PanelProps) {
   const [step, setStep] = useState(0)
   const [base, setBase] = useState<string | null>(null)
   const [response, setResponse] = useState<Response | null>(null)
@@ -203,7 +204,7 @@ export function WarmCup({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Café · Warm Cup</div>
-      <h2>An unhurried ritual</h2>
+      <h2>An unhurried ritual <HelpDot view="warmcup" state={state} load={load} /></h2>
       <Guardian who="sky" says="No rush and no wrong order that matters. I will keep you company while the cup is made." />
       <p className="note">Step {Math.min(step + 1, 4)} of 4 · {CUP_STEPS[Math.min(step, 3)]}</p>
       {step === 0 && (
@@ -251,7 +252,7 @@ const SYMBOLS = [
   { id: 'star', label: 'Star — something to wish for', glyph: '☆' },
 ]
 
-export function Lanterns({ state, update, go, toast }: PanelProps) {
+export function Lanterns({ state, load, update, go, toast }: PanelProps) {
   const [symbol, setSymbol] = useState<string | null>(null)
   const [phrase, setPhrase] = useState('')
   const [lit, setLit] = useState(false)
@@ -265,7 +266,7 @@ export function Lanterns({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Market · Night Lanterns</div>
-      <h2>Set something down</h2>
+      <h2>Set something down <HelpDot view="lanterns" state={state} load={load} /></h2>
       <Guardian who="goh" says="Pick a symbol for what is on your mind. Words are optional, private, and never required." />
       <div className="opts">
         {SYMBOLS.map((s) => (

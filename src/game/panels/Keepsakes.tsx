@@ -17,6 +17,7 @@ import {
 } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
+import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
 const POLICIES: { id: PhotoHandling; title: string; detail: string }[] = [
@@ -93,7 +94,7 @@ export function symbolicKeepsake(category: KeepsakeCategory): string {
 
 type Step = 'policy' | 'photo' | 'generate' | 'preview' | 'placed'
 
-export function Keepsakes({ state, update, go, toast }: PanelProps) {
+export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
   const eligible = state.pocket.outcome === 'done' || state.pocket.outcome === 'partial'
   const [step, setStep] = useState<Step>('policy')
   const [policy, setPolicy] = useState<PhotoHandling | null>(null)
@@ -112,7 +113,7 @@ export function Keepsakes({ state, update, go, toast }: PanelProps) {
     return (
       <div className="card">
         <div className="eyebrow">Pace Keepsakes</div>
-        <h2>Finish a quest first</h2>
+        <h2>Finish a quest first <HelpDot view="keepsakes" state={state} load={load} /></h2>
         <p className="lede">
           Keepsakes are memories of real recovery. Complete or partially complete Pocket of Green,
           then return here to turn an optional photo into private pixel art.
@@ -173,7 +174,7 @@ export function Keepsakes({ state, update, go, toast }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Pace Keepsakes · private by default</div>
-      <h2>A small memory, pixel-styled</h2>
+      <h2>A small memory, pixel-styled <HelpDot view="keepsakes" state={state} load={load} /></h2>
       <Guardian who="sol" says="Only if you want one. The quest already counted — this changes nothing about rewards." />
 
       {step === 'policy' && (
@@ -308,14 +309,14 @@ export function Keepsakes({ state, update, go, toast }: PanelProps) {
 
 /* ------------------------------------------------------ collection */
 
-export function Collection({ state, update, go }: PanelProps) {
+export function Collection({ state, load, update, go }: PanelProps) {
   const [filter, setFilter] = useState<'all' | KeepsakeCategory>('all')
   const shown = state.keepsakes.filter((k) => filter === 'all' || k.category === filter)
 
   return (
     <div className="card">
       <div className="eyebrow">Private collection</div>
-      <h2>Pace Keepsakes</h2>
+      <h2>Pace Keepsakes <HelpDot view="collection" state={state} load={load} /></h2>
       <p className="lede">
         Cosmetic memories, not proof. No public feed, trading, rarity, or completion target.
         Self-confirmed and photo quests earn the same place here.
