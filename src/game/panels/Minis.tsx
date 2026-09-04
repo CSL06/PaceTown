@@ -95,7 +95,7 @@ export function Firefly({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Library · Firefly Stories</div>
       <h2>Follow a light <HelpDot view="firefly" state={state} load={load} /></h2>
-      <Guardian who="mira" says="Five lights, five short fragments. Follow any one, read or skip it, and place a single glow on the page." />
+      <Guardian who="mira" says="Five lights, five short readings. Follow one, skip the rest, and leave one glow." />
       <div className="opts">
         {FRAGMENTS.map((f, i) => (
           <button key={f.title} className="opt" type="button" aria-pressed={lit.includes(i)}
@@ -158,7 +158,7 @@ export function Chime({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Clock Tower · Chime Drift</div>
       <h2>Slow waves <HelpDot view="chime" state={state} load={load} /></h2>
-      <Guardian who="kai" says="Notes arrive slowly. Tap, press Space, or simply watch each one pass the clock hand. Timing is never scored." />
+      <Guardian who="kai" says="Notes drift past slowly. Tap them, or just watch. Timing is never scored." />
       <div className="capacity" aria-live="polite">
         <div><span>Wave {Math.min(waves + 1, 4)} of 4</span><span>{taps} soft {taps === 1 ? 'tap' : 'taps'}</span></div>
       </div>
@@ -205,7 +205,7 @@ export function WarmCup({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Café · Warm Cup</div>
       <h2>An unhurried ritual <HelpDot view="warmcup" state={state} load={load} /></h2>
-      <Guardian who="sky" says="No rush and no wrong order that matters. I will keep you company while the cup is made." />
+      <Guardian who="sky" says="No rush and no wrong order. I will sit with you while the cup is made." />
       <p className="note">Step {Math.min(step + 1, 4)} of 4 · {CUP_STEPS[Math.min(step, 3)]}</p>
       {step === 0 && (
         <div className="opts">
@@ -267,7 +267,7 @@ export function Lanterns({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Market · Night Lanterns</div>
       <h2>Set something down <HelpDot view="lanterns" state={state} load={load} /></h2>
-      <Guardian who="goh" says="Pick a symbol for what is on your mind. Words are optional, private, and never required." />
+      <Guardian who="goh" says="Pick a symbol for what is on your mind. Words are optional and stay private." />
       <div className="opts">
         {SYMBOLS.map((s) => (
           <button key={s.id} className="opt" type="button" aria-pressed={symbol === s.id}

@@ -175,7 +175,7 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Pace Keepsakes · private by default</div>
       <h2>A small memory, pixel-styled <HelpDot view="keepsakes" state={state} load={load} /></h2>
-      <Guardian who="sol" says="Only if you want one. The quest already counted — this changes nothing about rewards." />
+      <Guardian who="sol" says="Only if you want one. The quest already counted — this changes no reward." />
 
       {step === 'policy' && (
         <>

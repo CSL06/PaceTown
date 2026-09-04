@@ -150,7 +150,7 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Park · Pocket of Green · Sol</div>
       <h2>A short reset, your way <HelpDot view="pocket" state={state} load={load} /></h2>
-      <Guardian who="sol" says="Five to ten minutes with something green, given light, or simply calming. Outside, at a window, beside a plant, or with an image — all four count the same." />
+      <Guardian who="sol" says="Five to ten calm minutes with something green. Outside, window, plant, or picture — all four count the same." />
 
       {step === 'path' && (
         <>

@@ -51,12 +51,12 @@ const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
 
 /** Greetings fire once per place, then never again. */
 const GREETINGS: Partial<Record<string, [GuardianId, string]>> = {
-  library: ['mira', 'You have a brief you have not opened. Let us start with one observable thing, not the whole assignment.'],
-  clock: ['kai', 'Two of your flexible tasks can move without touching a deadline. Want to see which?'],
-  garden: ['sol', 'The water is not achieving anything, and that is rather the point. Sit for a minute?'],
-  market: ['goh', 'Errands group better than they look from inside your head.'],
-  cafe: ['sky', 'No agenda here. Work if you want, and I will not ask how it is going.'],
-  park: ['sol', 'Ten minutes outside. Indoors counts the same — I am not checking up on you.'],
+  library: ['mira', 'I am Mira, and I explain things. Tell me what blocks you — we start with one small visible step.'],
+  clock: ['kai', 'I am Kai, and I plan time. Two flexible tasks can move to Saturday — want to see?'],
+  garden: ['sol', 'I am Sol, and I keep effort sustainable. This water achieves nothing, and that is the point — sit a minute?'],
+  market: ['goh', 'I am Goh, and I finish small things. Errands group well — bring me the list in your head.'],
+  cafe: ['sky', 'I am Sky, and I keep you company. Work if you want — I will not ask how it is going.'],
+  park: ['sol', 'I am Sol. Ten minutes with something green counts — outside, window, plant, or picture, all the same.'],
 }
 
 const LOOP_STEPS = [

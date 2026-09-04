@@ -12,6 +12,7 @@ import {
   wakingMinutes, weightedDemand, type HelpMode, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
+import { GUARDIANS } from '../layout'
 import { Guardian } from './Guardian'
 import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
@@ -245,7 +246,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
       <div className="card">
         <div className="eyebrow">Rebalance Workshop</div>
         <h2>Thursday is now {fmt(load.percentage)}% <HelpDot view="rebalance" state={state} load={load} /></h2>
-        <Guardian who="kai" says="That is as far as moving things will take you. What is left is real work, and it still has to be done. Shall we make it smaller?" />
+        <Guardian who="kai" says="Moving things cannot help further. What is left is real work — shall we make it smaller?" />
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('work')}>Handle what remains</button>
         </div>
@@ -288,7 +289,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Rebalance Workshop</div>
       <h2>Kai has a proposal <HelpDot view="rebalance" state={state} load={load} /></h2>
-      <Guardian who="kai" says={`I can move ${proposal.moves.length} things. I will not touch anything with a fixed time, and I will not push work past its deadline. Nothing has moved yet.`} />
+      <Guardian who="kai" says={`I can move ${proposal.moves.length} things. Fixed times stay, deadlines hold, and nothing has moved yet.`} />
 
       {proposal.moves.map((m) => {
         const task = state.tasks.find((t) => t.id === m.taskId)!
@@ -506,7 +507,7 @@ export function Work({ state, load, update, go }: PanelProps) {
               `Checkpoint: ${active.title} · blocker identified before starting.`,
               REWARDS.beginSession))
               go('session')
-            }}>Start a Pace Session with {PLAN_TEMPLATES[state.blocker].guardian}</button>
+            }}>Start a Pace Session with {GUARDIANS[PLAN_TEMPLATES[state.blocker].guardian].name}</button>
             <span className="note">Shorten it, rewrite it, or reject the whole plan.</span>
           </div>
         </>
@@ -635,7 +636,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
           }))} />
       </div>
 
-      <div className="eyebrow" style={{ marginTop: 18 }}>Ask {guardian}</div>
+      <div className="eyebrow" style={{ marginTop: 18 }}>Ask {GUARDIANS[guardian].name}</div>
       <div className="opts" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))' }}>
         {HELP_MODES.map((mode) => (
           <button key={mode} className="opt" type="button" style={{ gridTemplateColumns: '1fr' }}
@@ -649,7 +650,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
       </div>
       {help && (
         <div className="capacity" style={{ borderLeft: '2px solid var(--mental)' }}>
-          <div><span>{guardian} · local guidance for this task, no AI provider connected</span></div>
+          <div><span>{GUARDIANS[guardian].name} · local guidance for this task, no AI provider connected</span></div>
           {guideLines(state.blocker, help, guideCtx, guardianFor(state.blocker)).map((p) => (
             <div key={p} style={{ display: 'block', color: 'var(--dim)', marginTop: 6 }}>{p}</div>
           ))}

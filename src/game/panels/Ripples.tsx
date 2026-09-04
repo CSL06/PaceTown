@@ -139,7 +139,7 @@ export function Ripples({ state, load, update, go, toast }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Garden Pavilion · Gentle Ripples</div>
       <h2>A paced sensory pause <HelpDot view="ripples" state={state} load={load} /></h2>
-      <Guardian who="sol" says="No score here. Tap the water when you like, watch what answers, and leave whenever you are ready." />
+      <Guardian who="sol" says="No score here — tap the water when you like, and leave whenever you are ready." />
       <div
         ref={pondRef}
         className={`pond${reduced ? ' still' : ''}`}

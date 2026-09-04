@@ -179,13 +179,13 @@ export function Council({ state, load, go }: PanelProps) {
   const areas = pressureByArea(state.tasks, 'thu')
   const top = load.contributors[0]?.task.title ?? null
   const voices = ([
-    ['kai', 'time', `Thursday holds ${Math.round(areas.time)} minutes of fixed time. That is the part I cannot argue with.`],
+    ['kai', 'time', `Thursday holds ${Math.round(areas.time)} minutes of fixed time. That part cannot move.`],
     ['mira', 'mental', top
-      ? `Most of what is left is cognitive — ${Math.round(areas.mental)} weighted minutes, and “${top}” is the largest piece.`
+      ? `Most of what is left is thinking work, and “${top}” is the biggest piece.`
       : `Most of what is left is cognitive. ${Math.round(areas.mental)} weighted minutes of it.`],
-    ['sol', 'physical', 'You have been at this a while. A smaller checkpoint is not a lesser one.'],
-    ['sky', 'social', 'There is one fixed social commitment. I would not move it — you chose it.'],
-    ['goh', 'errands', 'The errands are small and they group well. They are not the problem today.'],
+    ['sol', 'physical', 'You have been at this a while. A smaller step is still a full step.'],
+    ['sky', 'social', 'One fixed social plan. You chose it, so I would not move it.'],
+    ['goh', 'errands', 'The errands are small and fit together. They are not today’s problem.'],
   ] as const)
     .slice()
     .sort((a, b) => areas[b[1]] - areas[a[1]])
@@ -264,7 +264,7 @@ export function Recover({ state, load, update, go }: PanelProps) {
     <div className="card">
       <div className="eyebrow">Recover</div>
       <h2>Two ways to pause <HelpDot view="recover" state={state} load={load} /></h2>
-      <Guardian who="sol" says="Would you rather pause here with Gentle Ripples, or step away from the screen for a short reset? Neither is worth more than the other." />
+      <Guardian who="sol" says="Two equal pauses: Ripples here, or a short reset away from the screen. Neither earns more." />
       {state.session.pausedFrom ? (
         <div className="actions" style={{ marginTop: 12 }}>
           <button className="primary" type="button" onClick={() => {
