@@ -250,13 +250,7 @@ export function Recover({ state, update, go, toast }: PanelProps) {
         </div>
       )}
       <div className="opts">
-        <button className="opt" type="button" onClick={() => {
-          update((s) => grow(record({ ...s, rippleTaps: s.rippleTaps + 1, questOutcome: 'done' },
-            'Used Gentle Ripples as a transition',
-            'Returned to the same checkpoint. A preference, not a health measurement.',
-            REWARDS.recovery)))
-          toast(`Recovery recorded · +${REWARDS.recovery.xp} XP`)
-        }}>
+        <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◎</span>
           <span>Do something here<small>Gentle Ripples · 45–120 seconds · no score, no failure state</small></span>
         </button>
@@ -534,7 +528,7 @@ export function Calm({ go }: PanelProps) {
         visual equivalent.
       </p>
       <div className="opts">
-        <button className="opt" type="button" onClick={() => go('recover')}>
+        <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◉</span>
           <span>Gentle Ripples<small>The one fully interactive activity for this slice</small></span>
         </button>
@@ -562,7 +556,7 @@ export function Preview({ go }: PanelProps) {
         Garden Pavilion is the one fully interactive activity in this slice.
       </p>
       <div className="actions">
-        <button className="primary" type="button" onClick={() => go('recover')}>Go to Gentle Ripples</button>
+        <button className="primary" type="button" onClick={() => go('ripples')}>Go to Gentle Ripples</button>
         <button className="secondary" type="button" onClick={() => go(null)}>Return to the campus</button>
       </div>
     </div>

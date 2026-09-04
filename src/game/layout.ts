@@ -28,7 +28,9 @@ export interface Place {
 
 export type ViewId =
   | 'intake' | 'understand' | 'rebalance' | 'work' | 'session'
-  | 'recover' | 'journal' | 'council' | 'mailbox' | 'calm' | 'home'
+  | 'recover' | 'ripples' | 'pocket' | 'firefly' | 'chime' | 'warmcup' | 'lanterns'
+  | 'keepsakes' | 'collection'
+  | 'journal' | 'council' | 'mailbox' | 'calm' | 'home'
   | 'backpack' | 'garden' | 'load' | 'townlist' | 'briefing' | 'preview'
 
 export const PLACES: readonly Place[] = [
@@ -36,7 +38,7 @@ export const PLACES: readonly Place[] = [
     blurb: 'Understand, work plans, checkpoints' },
   { id: 'clock', name: 'Clock Tower', px: 49.8, py: 11.0, view: 'rebalance', who: 'kai',
     blurb: 'Forecast and Rebalance Workshop' },
-  { id: 'garden', name: 'Garden Pavilion', px: 79.2, py: 16.3, view: 'recover', who: 'sol',
+  { id: 'garden', name: 'Garden Pavilion', px: 79.2, py: 16.3, view: 'ripples', who: 'sol',
     blurb: 'Gentle Ripples at the fountain' },
   { id: 'recover', name: 'Recovery Garden', px: 69.5, py: 30.5, view: 'garden',
     blurb: 'Growth from sustainable choices' },

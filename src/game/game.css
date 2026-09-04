@@ -316,6 +316,40 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 @keyframes rise { 0% { opacity: 0; transform: translateY(10px) } 12%,75% { opacity: 1; transform: none }
   100% { opacity: 0; transform: translateY(-8px) } }
 
+.pond { position: relative; height: 300px; margin-top: 14px; overflow: hidden;
+  background: linear-gradient(180deg, #1d4a56, #123140 70%, #0d2530);
+  border: 1px solid var(--edge-hi); cursor: pointer; touch-action: none }
+.pond:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.ripple { position: absolute; width: 14px; height: 14px; transform: translate(-50%,-50%);
+  border: 2px solid rgba(239,227,204,.85); border-radius: 50%;
+  animation: ripple 2.4s ease-out forwards; pointer-events: none }
+@keyframes ripple { from { opacity: .95; width: 14px; height: 8px } to { opacity: 0; width: 150px; height: 60px } }
+.pond.still .ripple { animation: stillripple 2.4s ease-out forwards }
+@keyframes stillripple { from { opacity: .8 } to { opacity: 0 } }
+.petal { position: absolute; top: -8px; width: 12px; height: 9px; border-radius: 60% 40% 60% 40%;
+  background: rgba(180,103,126,.9); animation: drift 9s linear infinite; pointer-events: none }
+@keyframes drift { to { transform: translateY(320px) rotate(40deg) } }
+.pond.still .petal { animation: none; top: 40% }
+.fish { position: absolute; top: 62%; left: -6%; width: 26px; height: 10px; border-radius: 50%;
+  background: rgba(78,159,168,.85); animation: swim 14s linear infinite; pointer-events: none }
+@keyframes swim { to { left: 104% } }
+.pond.still .fish { animation: none; left: 40% }
+.flowers { position: absolute; left: 0; right: 0; bottom: 10px; display: flex;
+  justify-content: center; gap: 14px; pointer-events: none }
+.bloom { width: 12px; height: 12px; border-radius: 50%; background: rgba(109,128,82,.55);
+  border: 1px solid rgba(239,227,204,.4); transition: all .8s ease }
+.bloom.open { width: 20px; height: 20px; background: #B4677E;
+  border: 2px solid var(--cream); box-shadow: 0 0 12px rgba(180,103,126,.7) }
+.breath-ring { position: absolute; right: 14px; top: 14px; width: 64px; height: 64px;
+  border-radius: 50%; border: 2px solid rgba(239,227,204,.7); display: grid;
+  place-items: center; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--cream); pointer-events: none }
+.breath-ring.in { animation: bin 4s linear infinite }
+.breath-ring.hold { box-shadow: 0 0 0 10px rgba(239,227,204,.12) }
+.breath-ring.out { animation: bout 6s linear infinite }
+@keyframes bin { from { transform: scale(.7) } to { transform: scale(1.1) } }
+@keyframes bout { from { transform: scale(1.1) } to { transform: scale(.7) } }
+
 @media (prefers-reduced-motion: reduce) {
   .title-art, .cast.idle, .avatar.walking, .marker .ring, .dlg-caret { animation: none !important }
 }

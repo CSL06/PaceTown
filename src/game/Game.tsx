@@ -16,6 +16,7 @@ import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
+import { Ripples } from './panels/Ripples'
 import {
   Backpack, Briefing, Calm, Council, Garden, Home, Journal, LoadPanel, Mailbox,
   Preview, Recover, TownList,
@@ -27,6 +28,9 @@ import './game.css'
 const VIEW_TITLE: Record<ViewId, string> = {
   intake: 'Town Hall', understand: 'Understand', rebalance: 'Rebalance Workshop',
   work: 'Choose the work', session: 'Pace Session', recover: 'Recover',
+  ripples: 'Gentle Ripples', pocket: 'Pocket of Green',
+  firefly: 'Firefly Stories', chime: 'Chime Drift', warmcup: 'Warm Cup', lanterns: 'Night Lanterns',
+  keepsakes: 'Pace Keepsakes', collection: 'Keepsake Collection',
   journal: 'Journal', council: 'Guardian Council', mailbox: 'Future Mailbox',
   calm: 'Calm Corner', home: 'Home', backpack: 'Backpack', garden: 'Recovery Garden',
   load: 'Daily Load', townlist: 'Town List', briefing: 'Daily Briefing', preview: 'Preview',
@@ -34,7 +38,9 @@ const VIEW_TITLE: Record<ViewId, string> = {
 
 const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
   intake: Intake, understand: Understand, rebalance: Rebalance, work: Work, session: Session,
-  recover: Recover, journal: Journal, council: Council, mailbox: Mailbox, calm: Calm,
+  recover: Recover, ripples: Ripples, pocket: Recover, firefly: Preview, chime: Preview,
+  warmcup: Preview, lanterns: Preview, keepsakes: Preview, collection: Preview,
+  journal: Journal, council: Council, mailbox: Mailbox, calm: Calm,
   home: Home, backpack: Backpack, garden: Garden, load: LoadPanel, townlist: TownList,
   briefing: Briefing, preview: Preview,
 }
