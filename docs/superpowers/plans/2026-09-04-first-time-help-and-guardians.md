@@ -555,7 +555,8 @@ describe('plain-language guardians', () => {
     for (const [id, t] of Object.entries(PLAN_TEMPLATES)) {
       expect(t.opener.toLowerCase()).toContain(OPENER_WORD[id as BlockerKind])
       expect(sentences(t.opener).length).toBeLessThanOrEqual(2)
-      for (const w of BANNED) expect(t.opener.toLowerCase()).not.toContain(w)
+      // Whole-word matching: substring checks false-positive (e.g. 'xp' in 'explains').
+      for (const w of BANNED) expect(t.opener.toLowerCase()).not.toMatch(new RegExp(`\\b${w}\\b`))
     }
   })
 })
@@ -621,7 +622,8 @@ describe('guardian lens', () => {
       const head = guideLines(b, m, { taskTitle: 'ERD assignment' }, g)[0]
       expect(head).toMatch(LENS_HEAD)
       expect(sentences(head).length).toBeLessThanOrEqual(2)
-      for (const w of BANNED) expect(head.toLowerCase()).not.toContain(w)
+      // Whole-word matching: substring checks false-positive (e.g. 'xp' in 'explains').
+      for (const w of BANNED) expect(head.toLowerCase()).not.toMatch(new RegExp(`\\b${w}\\b`))
     }
   })
 })
