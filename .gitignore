@@ -1,33 +1,4 @@
-# Third-party source packs are downloaded separately.
-# Keep only the source/license manifest in Git.
-assets/third-party/*
-!assets/third-party/ASSET_MANIFEST.md
-
-# Operating-system and editor files
-.DS_Store
-Thumbs.db
-Desktop.ini
-.vscode/
-.idea/
-AGENTS.md
-*.swp
-*.swo
-
-# Temporary files and local caches
-tmp/
-temp/
-dist/
-node_modules/
-.pnpm-store/
+node_modules
+dist
 *.tsbuildinfo
-vite.config.js
-vite.config.d.ts
-*.tmp
-*.log
-__pycache__/
-*.py[cod]
-
-# Environment files and credentials
-.env
-.env.*
-!.env.example
+lint-report.json

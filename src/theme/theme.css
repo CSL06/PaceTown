@@ -1,0 +1,214 @@
+/**
+ * PaceTown design tokens.
+ *
+ * Light is the default: the campus illustration is a warm late-afternoon
+ * scene — peach sky, cream stone, sage green — and a paper-light interface is
+ * a continuation of that art rather than a fight with it. Dark remains a
+ * first-class alternative, not an afterthought.
+ *
+ * Every token is semantic (`--pt-surface`, not `--pt-white`), so a component
+ * never needs to know which theme is active. Surfaces here are also chosen
+ * for contrast: body text clears WCAG AA on every surface it can land on, and
+ * `--pt-accent-ink` exists because the amber fill colour is not readable as
+ * text on a light background.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces, lightest to most recessed. */
+  --pt-bg: #FFFCF5;
+  --pt-bg-alt: #F7EFE1;
+  --pt-surface: #FFFFFF;
+  --pt-surface-2: #FBF5EA;
+  --pt-sunk: #F2E9D9;
+
+  /* Lines. */
+  --pt-border: #E9DCC6;
+  --pt-border-strong: #D2BE9C;
+
+  /* Text, in descending emphasis. */
+  --pt-text: #2B2318;
+  --pt-text-2: #665844;
+  --pt-text-3: #8C7B62;
+
+  /* Brand. `accent` is a fill, `accent-ink` is the readable text version,
+     `on-accent` is what sits on top of a filled accent surface. */
+  --pt-accent: #E0A52F;
+  --pt-accent-hover: #F0B646;
+  --pt-accent-ink: #8A5A16;
+  --pt-on-accent: #2B2318;
+  --pt-accent-wash: rgba(224, 165, 47, .12);
+
+  /* Secondary hues, pulled from the campus roofs and gardens. */
+  --pt-teal: #2F7F89;
+  --pt-moss: #5D7A3E;
+  --pt-plum: #A6465F;
+
+  /* Load bands. Darkened from the game's palette so they stay legible as
+     text and as small swatches on a light ground. */
+  --pt-open: #5D7A3E;
+  --pt-steady: #2F7F89;
+  --pt-heavy: #B07A15;
+  --pt-over: #A6465F;
+  --pt-unsust: #9B2F49;
+  /* Text on a filled band swatch. Bands darken on light, lighten on dark. */
+  --pt-on-band: #FFFFFF;
+
+  /* Feedback. */
+  --pt-danger: #B02D45;
+  --pt-danger-wash: #FCEFF1;
+
+  /* Elevation. The offset shadow is the pixel-art motif; the soft one is for
+     genuine depth. */
+  --pt-shadow-hard: rgba(43, 35, 24, .22);
+  --pt-shadow-soft: 0 18px 44px rgba(80, 62, 36, .13);
+  --pt-shadow-lift: 0 24px 60px rgba(80, 62, 36, .18);
+
+
+  /* Surfaces that sit ON the campus artwork. These are not the same as page
+     surfaces: they need enough opacity to stay readable over pixel detail. */
+  --pt-hud: rgba(255, 252, 245, .93);
+  --pt-chip: rgba(255, 252, 245, .95);
+  --pt-scrim: rgba(255, 252, 245, .9);
+  --pt-scrim-strong: rgba(255, 252, 245, .97);
+  --pt-marker-glow: rgba(70, 52, 26, .3);
+  --pt-art-filter: saturate(1.02) brightness(1.03);
+  --pt-art-veil: radial-gradient(ellipse at 50% 44%, rgba(255, 252, 245, .42), rgba(255, 252, 245, .94) 68%);
+
+  /* For elements drawn on their own dark canvas — the pond, the garden plot —
+     which stay dark in every theme, so their ink stays light in every theme. */
+  --pt-on-dark: #EFE3CC;
+
+  /* Chips over artwork in the live town stay dark: they overlay a dusk scene
+     that does not change with the theme. */
+  --pt-art-chip: rgba(10, 17, 24, .84);
+  --pt-art-chip-text: #EFE3CC;
+
+  /* Bitmap type. `--pt-prose` is the escape hatch: Pixelify Sans is readable,
+     but a long legal or explanatory paragraph is still kinder in a normal
+     sans, and forcing pixel type on everything is how pixel UIs become
+     unreadable. */
+  --pt-display: "Silkscreen", "Courier New", monospace;
+  --pt-ui: "Pixelify Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --pt-mono: "VT323", ui-monospace, Menlo, monospace;
+  --pt-prose: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --pt-bg: #101A22;
+  --pt-bg-alt: #0B1219;
+  --pt-surface: #18242E;
+  --pt-surface-2: #1F2D39;
+  --pt-sunk: #0E1720;
+
+  --pt-border: rgba(239, 227, 204, .14);
+  --pt-border-strong: rgba(239, 227, 204, .3);
+
+  --pt-text: #F1E6D2;
+  --pt-text-2: rgba(241, 230, 210, .7);
+  --pt-text-3: rgba(241, 230, 210, .46);
+
+  --pt-accent: #D9A234;
+  --pt-accent-hover: #E9BE63;
+  --pt-accent-ink: #E9BE63;
+  --pt-on-accent: #17240F;
+  --pt-accent-wash: rgba(217, 162, 52, .14);
+
+  --pt-teal: #4E9FA8;
+  --pt-moss: #6D8052;
+  --pt-plum: #B4677E;
+
+  --pt-open: #6D8052;
+  --pt-steady: #4E9FA8;
+  --pt-heavy: #D9A234;
+  --pt-over: #B4677E;
+  --pt-unsust: #C4566E;
+  --pt-on-band: #101B25;
+
+  --pt-danger: #E08497;
+  --pt-danger-wash: rgba(224, 132, 151, .1);
+
+  --pt-shadow-hard: rgba(6, 11, 17, .55);
+  --pt-shadow-soft: 0 18px 44px rgba(4, 9, 14, .5);
+  --pt-shadow-lift: 0 24px 60px rgba(4, 9, 14, .62);
+
+  --pt-hud: rgba(16, 27, 37, .9);
+  --pt-chip: rgba(12, 20, 28, .92);
+  --pt-scrim: rgba(9, 15, 22, .88);
+  --pt-scrim-strong: rgba(8, 14, 20, .97);
+  --pt-marker-glow: rgba(239, 227, 204, .3);
+  --pt-art-filter: saturate(.92) brightness(.62);
+  --pt-art-veil: radial-gradient(ellipse at 50% 44%, rgba(11, 20, 29, .18), rgba(11, 20, 29, .9) 68%);
+}
+
+/* Someone who has never touched the toggle gets their OS preference. Once
+   they choose, `data-theme` is set explicitly and this stops applying. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --pt-bg: #101A22;
+    --pt-bg-alt: #0B1219;
+    --pt-surface: #18242E;
+    --pt-surface-2: #1F2D39;
+    --pt-sunk: #0E1720;
+
+    --pt-border: rgba(239, 227, 204, .14);
+    --pt-border-strong: rgba(239, 227, 204, .3);
+
+    --pt-text: #F1E6D2;
+    --pt-text-2: rgba(241, 230, 210, .7);
+    --pt-text-3: rgba(241, 230, 210, .46);
+
+    --pt-accent: #D9A234;
+    --pt-accent-hover: #E9BE63;
+    --pt-accent-ink: #E9BE63;
+    --pt-on-accent: #17240F;
+    --pt-accent-wash: rgba(217, 162, 52, .14);
+
+    --pt-teal: #4E9FA8;
+    --pt-moss: #6D8052;
+    --pt-plum: #B4677E;
+
+    --pt-open: #6D8052;
+    --pt-steady: #4E9FA8;
+    --pt-heavy: #D9A234;
+    --pt-over: #B4677E;
+    --pt-unsust: #C4566E;
+    --pt-on-band: #101B25;
+
+    --pt-danger: #E08497;
+    --pt-danger-wash: rgba(224, 132, 151, .1);
+
+    --pt-shadow-hard: rgba(6, 11, 17, .55);
+    --pt-shadow-soft: 0 18px 44px rgba(4, 9, 14, .5);
+    --pt-shadow-lift: 0 24px 60px rgba(4, 9, 14, .62);
+
+    --pt-hud: rgba(16, 27, 37, .9);
+    --pt-chip: rgba(12, 20, 28, .92);
+    --pt-scrim: rgba(9, 15, 22, .88);
+    --pt-scrim-strong: rgba(8, 14, 20, .97);
+    --pt-marker-glow: rgba(239, 227, 204, .3);
+    --pt-art-filter: saturate(.92) brightness(.62);
+    --pt-art-veil: radial-gradient(ellipse at 50% 44%, rgba(11, 20, 29, .18), rgba(11, 20, 29, .9) 68%);
+  }
+}
+
+/* ------------------------------------------------------------------ reveal */
+
+/* Sections lift in as they enter the viewport. The `.is-in` class is added by
+   useReveal; without JS every section simply stays visible, and reduced-motion
+   users skip the movement entirely. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .6s cubic-bezier(.2, .7, .3, 1), transform .6s cubic-bezier(.2, .7, .3, 1);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}

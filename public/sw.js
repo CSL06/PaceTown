@@ -6,7 +6,7 @@
  * Version the cache name to invalidate: bump CACHE to pacetown-v2, etc.
  */
 
-const CACHE = 'pacetown-v1'
+const CACHE = 'pacetown-v2'
 const SHELL = '/'
 
 self.addEventListener('install', (event) => {

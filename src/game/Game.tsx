@@ -6,18 +6,22 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import {
-  DEMO_DESTINATION, PLAN_TEMPLATES, dailyLoad, foregroundQuest, levelOf, proposeRebalance,
+  DEMO_DESTINATION, dailyLoad, foregroundQuest, levelOf, proposeRebalance,
   selectQuests, wakingMinutes, type GuardianId,
 } from '../domain'
 import { Campus, daylight } from './Campus'
 import { Dialogue, type DialogueScript } from './Dialogue'
+import { GuardianDock } from './GuardianDock'
 import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
 import { Chime, Firefly, Lanterns, WarmCup } from './panels/Minis'
+import { Settings } from './panels/Settings'
+import { Shop } from './panels/Shop'
 import { Collection, Keepsakes } from './panels/Keepsakes'
 import { Pocket } from './panels/Pocket'
 import { Ripples } from './panels/Ripples'
@@ -28,6 +32,7 @@ import {
 import type { PanelProps } from './panels/types'
 import type { ReactElement } from 'react'
 import './game.css'
+import './cosmetics.css'
 
 const VIEW_TITLE: Record<ViewId, string> = {
   intake: 'Town Hall', understand: 'Understand', rebalance: 'Rebalance Workshop',
@@ -38,6 +43,7 @@ const VIEW_TITLE: Record<ViewId, string> = {
   journal: 'Journal', council: 'Guardian Council', mailbox: 'Future Mailbox',
   calm: 'Calm Corner', home: 'Home',   backpack: 'Backpack', garden: 'Recovery Garden',
   load: 'Daily Load', townlist: 'Town List', briefing: 'Daily Briefing',
+  settings: 'Settings', shop: 'Shop',
 }
 
 const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
@@ -46,7 +52,7 @@ const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
   warmcup: WarmCup, lanterns: Lanterns, keepsakes: Keepsakes, collection: Collection,
   journal: Journal, council: Council, mailbox: Mailbox, calm: Calm,
   home: Home, backpack: Backpack, garden: Garden, load: LoadPanel, townlist: TownList,
-  briefing: Briefing,
+  briefing: Briefing, settings: Settings, shop: Shop,
 }
 
 /** Greetings fire once per place, then never again. */
@@ -70,7 +76,9 @@ const LOOP_STEPS = [
 ] as const
 
 export default function Game() {
+  const { account, isGuest, signOut } = useAuth()
   const [state, setState] = useState<GameState>(() => loadState())
+  const [menuOpen, setMenuOpen] = useState(false)
   const [script, setScript] = useState<DialogueScript | null>(null)
   const [toasts, setToasts] = useState<{ id: number; text: string }[]>([])
   const [moved, setMoved] = useState(false)
@@ -207,6 +215,14 @@ export default function Game() {
   const panelProps: PanelProps = { state, load, update, go, toast }
   const Panel = state.view ? PANELS[state.view] : null
 
+  /* A save that has never been through onboarding gets sent there first. The
+     explore-without-an-account path marks itself onboarded, so it lands in the
+     town directly. */
+  if (!state.onboarded) return <Navigate to="/welcome" replace />
+
+  const returning = state.journal.length > 0
+  const firstName = account?.name?.split(' ')[0] ?? 'friend'
+
   if (!state.started) {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
@@ -221,6 +237,11 @@ export default function Game() {
                 <p>Find your pace. Grow your place.</p>
               </div>
             </div>
+
+            <p className="title-greet">
+              {returning ? `Welcome back, ${firstName}.` : `Good to meet you, ${firstName}.`}
+            </p>
+
             <p className="title-hook">
               Thursday is at <b style={{ color: 'var(--accent)' }}>{load.percentage.toFixed(0)}%</b>.
               {' '}{lockedCount} commitment{lockedCount === 1 ? ' is' : 's are'} already locked in.
@@ -228,18 +249,37 @@ export default function Game() {
                 ? <> Kai thinks {moverCount} thing{moverCount === 1 ? '' : 's'} can move — pick one checkpoint to begin.</>
                 : ' Nothing can move safely — pick one checkpoint to begin.'}
             </p>
-            <div className="title-cast" aria-hidden="true">
+
+            {returning && (
+              <div className="title-progress">
+                <div><b>Lv {level.level}</b><span>{state.xp} XP</span></div>
+                <div><b>{state.coins}</b><span>coins</span></div>
+                <div><b>{stepsDone}/{LOOP_STEPS.length}</b><span>of the loop</span></div>
+                <div><b>{state.gardenGrowth}/4</b><span>garden</span></div>
+              </div>
+            )}
+
+            {/* The cast is the map legend: who is here and what each one is for. */}
+            <ul className="title-cast">
               {(Object.keys(GUARDIANS) as GuardianId[]).map((id) => (
-                <img key={id} src={`/game/portraits/${id}.png`} alt="" />
+                <li key={id}>
+                  <img src={`/game/portraits/${id}.png`} alt="" width="190" height="285" />
+                  <b>{GUARDIANS[id].name}</b>
+                  <span>{GUARDIANS[id].role.split(' · ')[1]}</span>
+                </li>
               ))}
-            </div>
+            </ul>
+
             <div className="title-actions">
               <button className="primary big" type="button" onClick={start}>
-                {state.journal.length ? 'Continue your week' : 'Enter Campus Grove'}
+                {returning ? 'Continue your week' : 'Enter Campus Grove'}
               </button>
-              <Link className="secondary" to="/">Mentor demo</Link>
+              <Link className="secondary" to="/">Landing page</Link>
             </div>
-            <p className="title-note">A cozy campus for the week you actually have</p>
+
+            <p className="title-note">
+              W A S D to walk · E to enter · Esc to back out
+            </p>
           </div>
         </div>
       </div>
@@ -250,7 +290,7 @@ export default function Game() {
     <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
       <Campus refs={{ stage, world, avatar }} load={load} tasks={state.tasks} day="thu"
         near={near} leadPlace={leadPlace} quiet={state.quiet} stepsDone={stepsDone}
-        onEnter={enter} />
+        equipped={state.equipped} onEnter={enter} />
       <div className="vignette" aria-hidden="true" />
 
       <div className="hud hud-top">
@@ -264,15 +304,62 @@ export default function Game() {
           <span><span className="lbl">Daily Load</span><b>{load.percentage.toFixed(1)}%</b></span>
         </button>
         <span className="grow" />
+
+        {/* Level reads as progress, not as a target: the bar has no deadline
+            and nothing here ever goes backwards. */}
         <div className="coinbar">
-          <span>Lv <b>{level.level}</b></span>
-          <span>XP <b>{state.xp}</b></span>
-          <span>Coins <b>{state.coins}</b></span>
+          <div className="lvl">
+            <span className="lbl">Level {level.level}</span>
+            <span className="lvl-track">
+              <span className="lvl-fill" style={{ width: `${(level.into / level.need) * 100}%` }} />
+            </span>
+            <span className="lvl-num">{level.into}/{level.need} XP</span>
+          </div>
+          <span className="coins">Coins <b>{state.coins}</b></span>
         </div>
+
         <button className="iconbtn" type="button" aria-pressed={state.quiet} title="Quiet Mode"
           onClick={() => update((s) => ({ ...s, quiet: !s.quiet }))}>☾</button>
         <button className="iconbtn" type="button" aria-pressed={state.contrast} title="High contrast"
           onClick={() => update((s) => ({ ...s, contrast: !s.contrast }))}>◐</button>
+
+        <div className="acct">
+          <button className="acct-btn" type="button" aria-expanded={menuOpen}
+            aria-label={`Account: ${account?.name ?? 'signed in'}`}
+            onClick={() => setMenuOpen((v) => !v)}>
+            <span className="acct-av" style={{ background: `hsl(${account?.hue ?? 40} 44% 46%)` }}>
+              {(account?.name ?? '?').trim().charAt(0).toUpperCase()}
+            </span>
+            <span className="acct-name">{firstName}</span>
+          </button>
+          {menuOpen && (
+            <>
+              <div className="acct-catch" onClick={() => setMenuOpen(false)} />
+              <div className="acct-menu" role="menu">
+                <div className="acct-who">
+                  <b>{account?.name}</b>
+                  <span>{isGuest ? 'Browsing without an account' : account?.email}</span>
+                </div>
+                {isGuest && (
+                  <Link className="acct-keep" to="/signup" onClick={() => setMenuOpen(false)}>
+                    Keep this progress →
+                    <small>Your week is saved in this browser. An account keeps it yours.</small>
+                  </Link>
+                )}
+                <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('settings') }}>
+                  Settings
+                </button>
+                <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('shop') }}>
+                  Shop · {state.coins} coins
+                </button>
+                <Link to="/" role="menuitem" onClick={() => setMenuOpen(false)}>Landing page</Link>
+                <button type="button" role="menuitem" className="acct-out" onClick={signOut}>
+                  Sign out
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="hud hud-quest">
@@ -314,6 +401,8 @@ export default function Game() {
           </>
         )}
       </div>
+
+      <GuardianDock state={state} load={load} go={go} />
 
       <div className="hud hud-tools">
         <button className="tool" type="button" onClick={() => go('townlist')}>☰ Town List</button>

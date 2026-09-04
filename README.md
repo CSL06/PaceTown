@@ -25,17 +25,30 @@ in the browser with no cloud, AI provider, or Google Calendar required.
 - Portrait-faithful v3 character bases and v4 animation packages (player + 5 guardians)
 - 62-sheet production runtime library, manifests, review boards, and validation report
 - Deterministic asset-processing and preview tools
-- Mentor demo (`/`): campus movement, Sky dialogue, guided breathing activity
-- Campus Grove (`/game`): seeded Thursday at 108%, explainable Daily Load, selective
+- Landing page (`/`): interactive live town that plays itself until you take the
+  controls, a synthesised ambient score, and the seeded week's real numbers
+  computed on the page by the domain layer
+- Accounts (`/signup`, `/login`): register, email sign-in, a clearly labelled
+  local simulation of Google sign-in, and an **Explore Demo Town** guest path
+  that needs no account. Browser-only; see "Accounts" below
+- Onboarding (`/welcome`): four steps that replace the seeded student's week
+  with your own — waking hours, your day parsed live as you type it, preferred
+  recovery, and motion/contrast/theme. Skippable, and editable afterwards
+- Settings and Shop: capacity, session length, recovery preferences,
+  accessibility and data controls; plus cosmetic-only town appearance bought
+  with earned coins
+- Mentor demo (`/demo`): campus movement, Sky dialogue, guided breathing activity
+- Campus Grove (`/town`): seeded Thursday at 108%, explainable Daily Load, selective
   consent-based rebalancing, blocker-driven work plans, full Pace Sessions (timer,
   scratchpad, help modes, pause-and-regulate), all five regulation mini-games,
   Pocket of Green IRL quest with local photo verification, private keepsake pipeline
   with local pixel filter and symbolic fallback, quests, XP/coins, Recovery Garden,
   Journal, Future Mailbox, Backpack, Guardian Council, Quiet Mode, Exit Quest,
   versioned saves, export, and an offline PWA shell
-- 122 automated domain tests (`npm test`)
+- 212 automated tests across the domain, account, theme and UI layers (`npm test`)
+- Lint, typecheck, test and build enforced in CI on every push and PR
 
-## Run the mentor demo
+## Run PaceTown
 
 ### Requirements
 
@@ -82,7 +95,7 @@ promises so those cannot quietly rot: self/photo confirmation parity, no
 timer/mini-game/AI academic completion, rebalance previews never mutating tasks,
 bounded energy guidance, and the seeded 108% Thursday.
 
-### Campus Grove walkthrough (`/game`)
+### Campus Grove walkthrough (`/town`)
 
 1. Press **Enter Campus Grove**. Kai explains Thursday at **108%** — calculated, not written in.
 2. Open the **Clock Tower** and approve Kai's proposal (per-move checkboxes). Thursday drops
@@ -101,11 +114,35 @@ Reload at any point: you return to the title screen with progress intact (versio
 `localStorage` saves under `pacetown.game`). **Export save (JSON)** and
 **Delete local data** live at Home.
 
+## Accounts
+
+Campus Grove sits behind an account so the app can greet a returning student and
+so a future server has a person to attach a save to. **The implementation is
+browser-only and is not production authentication.**
+
+- Accounts live in `localStorage` under `pacetown.accounts`; the session lives
+  under `pacetown.session`. Clearing site data removes both.
+- Passwords are salted and stretched with PBKDF2-SHA256 (120k iterations) via
+  `crypto.subtle` before storage, and a plain hash on insecure origins. No
+  plaintext password is ever written. This is hygiene, not a security boundary —
+  anyone with the browser can read the store.
+- "Continue with Google" is a clearly labelled local simulation. It asks for the
+  profile a provider would return and **never asks for a Google password**.
+- Wrong-password and unknown-account failures return one identical message, so
+  the form cannot be used to discover who has an account.
+
+`src/auth/session.ts` is the single seam. Every function is async and returns a
+`Result` rather than throwing, so pointing it at Supabase, Firebase or a bespoke
+API is a change of implementation with no change to any call site. The React
+layer never reads `localStorage` directly — it reads `useAuth()`.
+
+Behaviour is covered by `src/auth/session.test.ts`.
+
 ### Demo scope
 
-The mentor demo (`/`) is intentionally narrow: visual direction, campus exploration, an
+The mentor demo (`/demo`) is intentionally narrow: visual direction, campus exploration, an
 accessible list alternative, a supportive Sky interaction, and one stress-reduction
-activity. The full product loop lives in Campus Grove (`/game`), which is local-first and
+activity. The full product loop lives in Campus Grove (`/town`), which is local-first and
 works offline after the first visit (runtime-cached PWA shell). Google Calendar, generative
 NPC conversations, and cloud sync remain planned production adapters — every AI-assisted
 feature already has a deterministic local fallback, and the app never requires one.

@@ -13,9 +13,18 @@ npm run dev
 
 Open `http://localhost:5173/game` (Vite prints the real port if 5173 is busy).
 
-For a clean run, reset first: **Home → Delete local data** (or a fresh private
-window). Reloading mid-demo is safe — saves are versioned and you return to the
-title screen with progress intact.
+That URL is the presenter's front door: it signs you in as a guest and opens
+the seeded week directly, so no account, form, or first-run wizard interrupts
+the demo. (`/` is the landing page, `/login` and `/signup` are the real account
+screens, and `/welcome` is the first-run setup a genuine new user sees — none
+of them are on this path.)
+
+For a clean run, reset first: **Settings → Start the example week again**. That
+restores the seeded week and keeps you in the town, which is what you want
+between runs. (**Delete local data** is the full wipe — it removes your account
+too and returns you to the landing page, so use it to finish, not to reset.)
+Reloading mid-demo is safe — saves are versioned and you return to the title
+screen with progress intact.
 
 ## The prefixed inputs (already in the app)
 
@@ -192,15 +201,15 @@ costs you your place.*
 |---|---|
 | What if I disagree with the plan? | Reject the rebalance, rewrite any checkpoint, pick another blocker — approval is always explicit (Clock Tower, Library). |
 | What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover first**; Exit Quest at Home closes the day with the next action kept. |
-| Where is my data? | Home → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
+| Where is my data? | Settings (or Home) → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
 | Does it work on a phone? | Same flow at 390px: Town List drawer, thumb D-pad, bottom sheet. Reduced-motion and high-contrast in Home and the top bar. |
-| What proves the math? | `npm test` — 122 cases pin the 108% Thursday, band boundaries, parity, and no-auto-complete rules. |
+| What proves the math? | `npm test` — 221 cases pin the 108% Thursday, band boundaries, parity, and no-auto-complete rules. |
 
 ## Troubleshooting (live-demo insurance)
 
 - **Numbers differ from this script** (e.g. not 108%): someone edited the
   schedule text — Town Hall → Re-parse → Save restores it.
-- **Stale state from a previous run**: Home → Delete local data → reload.
+- **Stale state from a previous run**: Settings → **Start the example week again**.
 - **No camera / file picker awkward on stage**: use self-confirm — that *is*
   the point (equal rewards), and say so.
 - **Offline dare**: `npm run build; npm run preview`, then disconnect — the
@@ -283,7 +292,7 @@ begin", extract brief deliverables, rewrite a checkpoint title live.
 the focused workspace for one checkpoint: its definition of done, an optional
 timer (untimed by default — a timer reaching zero never completes anything),
 a scratchpad, six help modes (Plan, Explain, Brainstorm, Review, Debug, What
-next?), and always-available escape routes (Pause & regulate, Reduce scope,
+next?), and always-available escape routes (Pause & regulate, Reduce the scope,
 Reschedule, Save & leave). Sessions end as completed, partial, blocked, or
 rescheduled — all valid. Why it exists: help must arrive *inside* the work, and
 stopping honestly must be rewarded, not punished. How to show it: ask Mira to
@@ -394,7 +403,7 @@ keyboard and screen-reader path through the whole game. Mention it whenever you
 walk somewhere: "or Town List, same destination."
 
 **Saves + storage** (`src/game/state.ts`, `src/game/storage.ts`). What it is:
-versioned saves in the browser (currently v3, migrated forward — never wiped)
+versioned saves in the browser (currently v4, migrated forward — never wiped)
 behind an adapter, so production can swap in IndexedDB later. Mention it when
 you reload mid-demo without fear.
 

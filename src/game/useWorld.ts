@@ -17,7 +17,8 @@ const KEY_MAP: Record<string, 'up' | 'down' | 'left' | 'right'> = {
   arrowup: 'up', arrowleft: 'left', arrowdown: 'down', arrowright: 'right',
 }
 
-const SPEED = 330 // world pixels per second
+/** World pixels per second. Scales with WORLD_W, not with the screen. */
+const SPEED = 495
 
 export type Facing = 'up' | 'down' | 'left' | 'right'
 
@@ -115,8 +116,8 @@ export function useWorld(refs: WorldRefs, opts: Options) {
 
       let x = (pos.current.px / 100) * WORLD_W + vx * SPEED * dt
       let y = (pos.current.py / 100) * WORLD_H + vy * SPEED * dt
-      x = Math.max(60, Math.min(WORLD_W - 60, x))
-      y = Math.max(210, Math.min(WORLD_H - 40, y))
+      x = Math.max(90, Math.min(WORLD_W - 90, x))
+      y = Math.max(315, Math.min(WORLD_H - 60, y))
 
       for (const b of BLOCKERS) {
         const bx = (b.px / 100) * WORLD_W

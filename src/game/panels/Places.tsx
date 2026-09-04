@@ -4,11 +4,11 @@
  */
 
 import {
-  DEMO_DESTINATION, EFFORT_WEIGHT, PRIORITY_WEIGHT, REWARDS, guidedPercentage, proposeRebalance,
-  questReward, wakingMinutes, weightedDemand,
+  DEMO_DESTINATION, REWARDS, guidedPercentage, proposeRebalance,
+  wakingMinutes, weightedDemand,
 } from '../../domain'
 import { PLACES, doorstep } from '../layout'
-import { clearState, grow, record } from '../state'
+import { clearState, record } from '../state'
 import { loadWeather, pressureByArea } from '../Campus'
 import { Guardian } from './Guardian'
 import { HelpDot } from './HelpDot'
@@ -505,7 +505,9 @@ export function Home({ state, load, update, go, toast }: PanelProps) {
           }}>Export save (JSON)</button>
           <button className="secondary" type="button" onClick={() => {
             clearState()
-            window.location.reload()
+            // A wiped save has no onboarding record, so reloading in place
+            // would land on the first-run wizard. Start from the front.
+            window.location.assign('/')
           }}>Delete local data</button>
           <span className="note">Local-first. Nothing has left this browser.</span>
         </div>

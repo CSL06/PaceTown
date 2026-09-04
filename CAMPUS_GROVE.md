@@ -26,11 +26,19 @@ Vite prints the address it chose. It is usually:
 
 | Route | What it is |
 |---|---|
-| `http://localhost:5173/` | The original mentor demo — Sky, one conversation, one breathing activity |
-| `http://localhost:5173/game` | **Campus Grove** — the full walkable campus |
+| `http://localhost:5173/` | Landing page — the live town, playing itself until you click |
+| `http://localhost:5173/signup` | Create an account |
+| `http://localhost:5173/welcome` | First-run onboarding (four steps, skippable) |
+| `http://localhost:5173/login` | Sign in by email, or with the simulated Google button |
+| `http://localhost:5173/town` | **Campus Grove** — the full walkable campus (needs an account) |
+| `http://localhost:5173/demo` | The original mentor demo — Sky, one conversation, one breathing activity |
 
 If port 5173 is busy Vite will pick another (often 5174); use whatever it
-prints. Each page links to the other from its top bar.
+prints. `/game` still works and redirects to `/town`.
+
+Campus Grove is behind an account, so visiting `/town` while signed out sends
+you to `/login` and then straight back to `/town` once you are in. Accounts are
+stored in your browser only — there is no server. See "Accounts" in README.md.
 
 ## Other commands
 

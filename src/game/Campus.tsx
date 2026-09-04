@@ -11,6 +11,7 @@ import { weightedDemand, type DailyLoad, type DemandCategory, type Task } from '
 import {
   CAST_ORDER, GUARDIAN_AT, GUARDIANS, PLACES, doorstep, type Place, type PlaceId,
 } from './layout'
+import type { CosmeticSlot } from '../domain'
 import type { WorldRefs } from './useWorld'
 
 const MAP = '/game/world/campus.png'
@@ -69,15 +70,22 @@ interface Props {
   leadPlace: PlaceId | null
   quiet: boolean
   stepsDone: number
+  /** Bought appearance. Never affects anything but how the town looks. */
+  equipped: Record<CosmeticSlot, string>
   onEnter: (place: Place) => void
 }
 
-function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, onEnter }: Props) {
+function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equipped, onEnter }: Props) {
   const weather = loadWeather(tasks, day)
   const byPlace = new Map(weather.map((w) => [w.place, w.level]))
 
+  // Quiet Mode suppresses ambient cosmetics, since their whole job is motion.
+  const cosmetic = quiet
+    ? `cos-${equipped.sky}`
+    : Object.values(equipped).map((id) => `cos-${id}`).join(' ')
+
   return (
-    <div className={`stage${quiet ? ' is-quiet' : ''}`} ref={refs.stage}>
+    <div className={`stage${quiet ? ' is-quiet' : ''} ${cosmetic}`} ref={refs.stage}>
       <div className="world" ref={refs.world}>
         <img className="map" src={MAP} alt="Campus Grove in late afternoon" draggable={false} />
 
@@ -137,7 +145,24 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, onEnt
           style={{ backgroundImage: `url(${PLAYER_SHEET})` }} />
 
         <div className={`daytint ${daylight(stepsDone)}`} aria-hidden="true" />
+        <div className="cos-grade" aria-hidden="true" />
       </div>
+
+      {/* Particle layers belong to the viewport, not to world coordinates: a
+          couple of dozen sprites spread over a 3600px world would vanish. */}
+      <div className="cos-fall" aria-hidden="true">
+        {Array.from({ length: 22 }, (_, i) => (
+          <span key={i} style={{ left: `${(i * 4.6) % 100}%`, animationDelay: `${(i % 11) * 0.85}s` }} />
+        ))}
+      </div>
+      <div className="cos-glow" aria-hidden="true">
+        {Array.from({ length: 14 }, (_, i) => (
+          <span key={i}
+            style={{ left: `${6 + (i * 7.1) % 88}%`, top: `${18 + (i * 11.3) % 66}%`,
+              animationDelay: `${(i % 7) * 0.8}s` }} />
+        ))}
+      </div>
+      <div className="cos-rain" aria-hidden="true" />
     </div>
   )
 }

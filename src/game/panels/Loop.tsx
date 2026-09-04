@@ -9,7 +9,7 @@ import {
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
   extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
   resolveCheckpoint, sessionReward,
-  wakingMinutes, weightedDemand, type HelpMode, type Task,
+  wakingMinutes, type HelpMode, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
 import { GUARDIANS } from '../layout'

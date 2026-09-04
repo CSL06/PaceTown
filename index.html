@@ -3,12 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#182738" />
-    <meta name="description" content="PaceTown mentor prototype: meet Sky and take one calming breath." />
+    <meta name="theme-color" content="#0F1A24" />
+    <meta name="description" content="PaceTown reads your real commitments, shows you where the pressure comes from, and helps you make space — without moving anything you did not approve." />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PaceTown — your workload, at a pace you can hold" />
+    <meta property="og:description" content="A cozy campus for the week you actually have. Five guardians, one small loop, no productivity guilt." />
+    <meta property="og:image" content="/game/world/campus.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
     <link rel="apple-touch-icon" href="/icons/icon.svg" />
-    <title>PaceTown — Mentor Prototype</title>
+
+    <!-- Two type systems on purpose. Silkscreen / Pixelify Sans / VT323 are
+         the bitmap faces used by the landing and sign-in pages. Fraunces and
+         IBM Plex are kept for Campus Grove, whose HUD sets text at 9-12px
+         where a bitmap face stops being readable. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400;500;600;700&family=VT323&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
+
+    <!-- The campus is the first meaningful paint on both the landing page and
+         the game; the sprite sheets follow within a frame of it. -->
+    <link rel="preload" as="image" href="/game/world/campus.png" />
+
+    <title>PaceTown — Find your pace. Grow your place.</title>
   </head>
   <body>
     <!--

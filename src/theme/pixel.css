@@ -1,0 +1,236 @@
+/**
+ * The pixel GUI kit.
+ *
+ * Everything here is generated in CSS rather than sliced from a raster asset
+ * pack. That is a deliberate call: a drawn 9-slice border is one fixed colour
+ * at one fixed scale, so it cannot follow the light/dark themes, it blurs on
+ * a high-DPI screen unless you ship several sizes, and it arrives with a
+ * licence attached. These borders theme, scale to any size, and weigh nothing.
+ *
+ * The conventions being reproduced are the standard ones from pixel-art UI
+ * kits:
+ *
+ *   - chamfered corners (a square bitten out of each corner), never radii
+ *   - a two-tone bevel: light on the top and left, dark on the bottom and
+ *     right, so a panel reads as raised and a field as sunken
+ *   - hard drop shadows offset by whole pixels, with no blur
+ *   - buttons that physically move down-right when pressed and swap bevels
+ *   - stepped animation, never smooth easing
+ *
+ * How the shape works: `border` draws the outline, inset shadows draw the
+ * bevel just inside it, `clip-path` bites out the corners (clipping the
+ * border with them), and `filter: drop-shadow` casts a hard shadow that
+ * follows the clipped silhouette. A plain `box-shadow` would ignore the
+ * chamfer and cast a rectangle.
+ */
+
+:root {
+  /* The unit everything is a multiple of. Change this and the whole kit
+     rescales coherently. */
+  --px: 4px;
+  --px-border: 3px;
+  --px-notch: 4px;
+  --px-drop: 4px;
+
+  /* The chamfer, as a value. Any element can wear it with
+     `clip-path: var(--px-clip)` instead of restating twelve coordinates. */
+  --px-clip: polygon(
+    var(--px-notch) 0,
+    calc(100% - var(--px-notch)) 0,
+    calc(100% - var(--px-notch)) var(--px-notch),
+    100% var(--px-notch),
+    100% calc(100% - var(--px-notch)),
+    calc(100% - var(--px-notch)) calc(100% - var(--px-notch)),
+    calc(100% - var(--px-notch)) 100%,
+    var(--px-notch) 100%,
+    var(--px-notch) calc(100% - var(--px-notch)),
+    0 calc(100% - var(--px-notch)),
+    0 var(--px-notch),
+    var(--px-notch) var(--px-notch)
+  );
+
+  /* The raised and sunken bevels, likewise. */
+  --px-bevel-up:
+    inset var(--px-border) var(--px-border) 0 0 var(--px-hi),
+    inset calc(var(--px-border) * -1) calc(var(--px-border) * -1) 0 0 var(--px-lo);
+  --px-bevel-down:
+    inset var(--px-border) var(--px-border) 0 0 var(--px-lo),
+    inset calc(var(--px-border) * -1) calc(var(--px-border) * -1) 0 0 var(--px-hi);
+}
+
+/* ---------------------------------------------------------------- palette */
+/* Bevel tones are derived from the surface so panels stay correct in both
+   themes without a second set of hand-picked colours. */
+:root {
+  --px-ink: #2B2318;
+  --px-hi: rgba(255, 255, 255, .85);
+  --px-lo: rgba(43, 35, 24, .22);
+  --px-shadow: rgba(43, 35, 24, .3);
+}
+:root[data-theme="dark"] {
+  --px-ink: #070C11;
+  --px-hi: rgba(239, 227, 204, .16);
+  --px-lo: rgba(0, 0, 0, .42);
+  --px-shadow: rgba(4, 8, 12, .65);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --px-ink: #070C11;
+    --px-hi: rgba(239, 227, 204, .16);
+    --px-lo: rgba(0, 0, 0, .42);
+    --px-shadow: rgba(4, 8, 12, .65);
+  }
+}
+
+/* ------------------------------------------------------------------ shape */
+
+/* A rectangle with an n-by-n square bitten out of each corner. Traced
+   clockwise from just right of the top-left notch. */
+.px-shape {
+  border-radius: 0;
+  clip-path: polygon(
+    var(--px-notch) 0,
+    calc(100% - var(--px-notch)) 0,
+    calc(100% - var(--px-notch)) var(--px-notch),
+    100% var(--px-notch),
+    100% calc(100% - var(--px-notch)),
+    calc(100% - var(--px-notch)) calc(100% - var(--px-notch)),
+    calc(100% - var(--px-notch)) 100%,
+    var(--px-notch) 100%,
+    var(--px-notch) calc(100% - var(--px-notch)),
+    0 calc(100% - var(--px-notch)),
+    0 var(--px-notch),
+    var(--px-notch) var(--px-notch)
+  );
+}
+
+/* ----------------------------------------------------------------- panels */
+
+/* A raised surface: outline, bevel, and a hard shadow following the chamfer. */
+.px-panel {
+  border: var(--px-border) solid var(--px-ink);
+  border-radius: 0;
+  box-shadow:
+    inset var(--px-border) var(--px-border) 0 0 var(--px-hi),
+    inset calc(var(--px-border) * -1) calc(var(--px-border) * -1) 0 0 var(--px-lo);
+  clip-path: polygon(
+    var(--px-notch) 0,
+    calc(100% - var(--px-notch)) 0,
+    calc(100% - var(--px-notch)) var(--px-notch),
+    100% var(--px-notch),
+    100% calc(100% - var(--px-notch)),
+    calc(100% - var(--px-notch)) calc(100% - var(--px-notch)),
+    calc(100% - var(--px-notch)) 100%,
+    var(--px-notch) 100%,
+    var(--px-notch) calc(100% - var(--px-notch)),
+    0 calc(100% - var(--px-notch)),
+    0 var(--px-notch),
+    var(--px-notch) var(--px-notch)
+  );
+}
+
+/* The shadow is a filter rather than a box-shadow so it follows the notches.
+   Kept separate because `filter` makes an element a containing block, which
+   would trap any fixed-position descendant. */
+.px-cast { filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow)); }
+
+/* A sunken surface — fields, tracks, wells. The bevel simply inverts. */
+.px-sunk {
+  border: var(--px-border) solid var(--px-ink);
+  border-radius: 0;
+  box-shadow:
+    inset var(--px-border) var(--px-border) 0 0 var(--px-lo),
+    inset calc(var(--px-border) * -1) calc(var(--px-border) * -1) 0 0 var(--px-hi);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.px-btn {
+  position: relative;
+  border: var(--px-border) solid var(--px-ink);
+  border-radius: 0;
+  box-shadow:
+    inset var(--px-border) var(--px-border) 0 0 var(--px-hi),
+    inset calc(var(--px-border) * -1) calc(var(--px-border) * -1) 0 0 var(--px-lo);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  /* Stepped, not eased: a pixel button snaps between two states. */
+  transition: transform .06s steps(2), filter .06s steps(2);
+}
+.px-btn:hover { filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow)) brightness(1.06); }
+
+/* Pressed: the button moves onto its own shadow and the bevel inverts, so it
+   reads as pushed into the surface rather than merely tinted. */
+.px-btn:active:not(:disabled) {
+  transform: translate(var(--px-drop), var(--px-drop));
+  filter: none;
+  box-shadow:
+    inset var(--px-border) var(--px-border) 0 0 var(--px-lo),
+    inset calc(var(--px-border) * -1) calc(var(--px-border) * -1) 0 0 var(--px-hi);
+}
+.px-btn:disabled { filter: none; transform: translate(var(--px-drop), var(--px-drop)); opacity: .5; }
+
+/* ------------------------------------------------------------------ focus */
+
+/* A stepped marching outline rather than a smooth ring. */
+.px-focus:focus-visible,
+.px-btn:focus-visible,
+.px-panel:focus-visible {
+  outline: var(--px-border) solid var(--pt-accent);
+  outline-offset: var(--px-border);
+}
+
+/* --------------------------------------------------------------- textures */
+
+/* A 50% checkerboard. The classic way to fake a mid-tone with two colours. */
+.px-dither {
+  background-image:
+    linear-gradient(45deg, var(--px-lo) 25%, transparent 25% 75%, var(--px-lo) 75%),
+    linear-gradient(45deg, var(--px-lo) 25%, transparent 25% 75%, var(--px-lo) 75%);
+  background-size: calc(var(--px) * 2) calc(var(--px) * 2);
+  background-position: 0 0, var(--px) var(--px);
+}
+
+/* A gradient that steps in bands instead of blending — dithering's cousin. */
+.px-ramp {
+  background-image: linear-gradient(
+    to bottom,
+    var(--pt-surface) 0 25%,
+    var(--pt-surface-2) 25% 50%,
+    var(--pt-sunk) 50% 75%,
+    var(--pt-bg-alt) 75% 100%
+  );
+}
+
+/* Faint horizontal scanlines. Very cheap, and it ties flat colour together. */
+.px-scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, .045) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/* ------------------------------------------------------------------ misc */
+
+/* Anything drawn from a sprite must never be resampled smoothly. */
+.px-art { image-rendering: pixelated; }
+
+/* A blinking block cursor, stepped so it snaps rather than fades. */
+.px-caret {
+  display: inline-block;
+  width: var(--px);
+  height: 1em;
+  background: currentColor;
+  vertical-align: -.15em;
+  animation: px-blink 1s steps(2, jump-none) infinite;
+}
+@keyframes px-blink { 50% { opacity: 0 } }
+
+@media (prefers-reduced-motion: reduce) {
+  .px-btn { transition: none; }
+  .px-caret { animation: none; }
+}

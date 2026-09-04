@@ -9,6 +9,7 @@ const EXPECTED_VIEWS: readonly ViewId[] = [
   'recover', 'ripples', 'pocket', 'firefly', 'chime', 'warmcup', 'lanterns',
   'keepsakes', 'collection', 'journal', 'council', 'mailbox', 'calm', 'home',
   'backpack', 'garden', 'load', 'townlist', 'briefing',
+  'settings', 'shop',
 ]
 
 const base = (over: Partial<GameState> = {}) =>

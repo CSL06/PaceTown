@@ -7,14 +7,15 @@
  */
 
 import {
-  DEMO_BRIEF, DEMO_CAPACITY, DEMO_SCHEDULE_TEXT, demoTasks,
-  type BlockerKind, type Capacity, type Checkpoint, type Task,
+  DEFAULT_COSMETICS, DEMO_BRIEF, DEMO_CAPACITY, DEMO_SCHEDULE_TEXT, demoTasks,
+  type BlockerKind, type Capacity, type Checkpoint, type CosmeticSlot,
+  type RegulationId, type Task,
 } from '../domain'
 import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 3
+export const SAVE_VERSION = 4
 
 const store = localStorageAdapter(SAVE_KEY)
 
@@ -29,6 +30,8 @@ export interface GameState {
   version: number
   started: boolean
   introSeen: boolean
+  /** True once onboarding has been completed or explicitly skipped. */
+  onboarded: boolean
   greeted: Partial<Record<PlaceId, boolean>>
 
   capacity: Capacity
@@ -101,6 +104,12 @@ export interface GameState {
   }[]
 
   skippedQuestKinds: string[]
+  /** Recovery activities the student said they prefer. Ordering, never gating. */
+  recoveryPrefs: RegulationId[]
+
+  /** Cosmetics bought with coins, and the one equipped in each slot. */
+  owned: string[]
+  equipped: Record<CosmeticSlot, string>
 
   xp: number
   coins: number
@@ -120,6 +129,7 @@ export function initialState(): GameState {
     version: SAVE_VERSION,
     started: false,
     introSeen: false,
+    onboarded: false,
     greeted: {},
 
     capacity: { ...DEMO_CAPACITY },
@@ -161,6 +171,10 @@ export function initialState(): GameState {
     keepsakes: [],
     regulationSessions: [],
     skippedQuestKinds: [],
+    recoveryPrefs: [],
+
+    owned: [],
+    equipped: { ...DEFAULT_COSMETICS },
 
     xp: 0,
     coins: 0,
@@ -213,6 +227,20 @@ const MIGRATIONS: Migration[] = [
     activeTaskId: typeof s.activeTaskId === 'string' ? s.activeTaskId : null,
     recoveryDone: typeof s.recoveryDone === 'boolean' ? s.recoveryDone : false,
   }),
+  /* v4 adds onboarding, recovery preferences and cosmetics. An existing save
+     is treated as already onboarded — it has a week in it, so sending that
+     player back through a first-run wizard would be wrong. */
+  (s) => ({
+    ...s,
+    version: 4,
+    onboarded: true,
+    recoveryPrefs: Array.isArray(s.recoveryPrefs) ? s.recoveryPrefs : [],
+    owned: Array.isArray(s.owned) ? s.owned : [],
+    equipped: {
+      ...DEFAULT_COSMETICS,
+      ...(typeof s.equipped === 'object' && s.equipped !== null ? s.equipped : {}),
+    },
+  }),
 ]
 
 /**
@@ -257,6 +285,29 @@ export function saveState(state: GameState): void {
   store.save(JSON.stringify(state))
 }
 
+/**
+ * Marks the save as onboarded without collecting anything. Used by the
+ * explore-without-an-account path, where the seeded week is the point and a
+ * first-run wizard would be in the way.
+ */
+export function markOnboarded(): void {
+  const state = loadState()
+  saveState({ ...state, onboarded: true })
+}
+
+/**
+ * Back to the seeded week, still in the town.
+ *
+ * Distinct from clearState: this is what a presenter wants between runs, and
+ * what "start the example week again" means. Onboarding stays marked, because
+ * being sent back through a first-run wizard is not what anyone means by
+ * "reset the demo".
+ */
+export function resetDemo(): void {
+  saveState({ ...initialState(), onboarded: true })
+}
+
+/** Removes everything. The caller is responsible for where to go next. */
 export function clearState(): void {
   store.clear()
 }

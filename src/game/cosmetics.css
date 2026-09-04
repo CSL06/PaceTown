@@ -1,0 +1,163 @@
+/* Town cosmetics and the two panels that manage them.
+   Every layer here is inert until the matching class lands on .stage, so the
+   default town costs nothing to render. Appearance only — nothing in this file
+   is allowed to change a number. */
+
+/* ---------------------------------------------------------- sky colour grade */
+.cos-grade {
+  position: absolute; inset: 0; z-index: 8; pointer-events: none;
+  transition: background 1.2s ease;
+}
+.stage.cos-sky-overcast .cos-grade {
+  background: linear-gradient(180deg, rgba(176, 190, 200, .30), rgba(150, 166, 178, .20));
+}
+.stage.cos-sky-evening .cos-grade {
+  background: linear-gradient(180deg, rgba(40, 58, 120, .40), rgba(22, 32, 74, .30));
+}
+.stage.cos-sky-golden .cos-grade {
+  background: linear-gradient(180deg, rgba(255, 178, 84, .26), rgba(226, 126, 64, .18));
+}
+
+/* ------------------------------------------------------------- falling things */
+.cos-fall, .cos-glow {
+  position: absolute; inset: 0; z-index: 9; pointer-events: none;
+  overflow: hidden; display: none;
+}
+.stage.cos-blossom-pink .cos-fall,
+.stage.cos-blossom-gold .cos-fall { display: block; }
+.stage.cos-lights-lanterns .cos-glow,
+.stage.cos-lights-fireflies .cos-glow { display: block; }
+
+.cos-fall span {
+  position: absolute; top: -5%; width: 9px; height: 7px;
+  border-radius: 62% 38% 58% 42%;
+  animation: cosfall 11s linear infinite;
+}
+.stage.cos-blossom-pink .cos-fall span { background: rgba(226, 150, 175, .85); }
+.stage.cos-blossom-gold .cos-fall span {
+  background: rgba(214, 150, 66, .85);
+  border-radius: 40% 60% 40% 60%;
+  animation-duration: 14s;
+}
+@keyframes cosfall {
+  0% { transform: translate(0, -6vh) rotate(0deg); opacity: 0 }
+  8% { opacity: .95 }
+  92% { opacity: .8 }
+  100% { transform: translate(11vw, 108vh) rotate(420deg); opacity: 0 }
+}
+
+/* -------------------------------------------------------------------- lights */
+.cos-glow span { position: absolute; width: 7px; height: 7px; border-radius: 50%; }
+.stage.cos-lights-lanterns .cos-glow span {
+  width: 11px; height: 14px; border-radius: 3px;
+  background: rgba(240, 186, 96, .9);
+  box-shadow: 0 0 16px 5px rgba(233, 168, 72, .42);
+  animation: cossway 5.5s ease-in-out infinite;
+}
+.stage.cos-lights-fireflies .cos-glow span {
+  background: rgba(214, 236, 140, .95);
+  box-shadow: 0 0 12px 4px rgba(190, 224, 110, .5);
+  animation: cosblink 4.2s ease-in-out infinite;
+}
+@keyframes cossway { 0%, 100% { transform: translateX(-3px) } 50% { transform: translateX(3px) } }
+@keyframes cosblink {
+  0%, 100% { opacity: .15; transform: translate(0, 0) }
+  40% { opacity: 1 }
+  50% { transform: translate(9px, -7px) }
+}
+
+/* ------------------------------------------------------------------- weather */
+.cos-rain { position: absolute; inset: 0; z-index: 9; pointer-events: none; display: none; }
+.stage.cos-weather-haze .cos-rain {
+  display: block;
+  background: radial-gradient(ellipse 80% 60% at 50% 55%, rgba(255, 244, 224, .20), rgba(255, 240, 214, .09));
+}
+.stage.cos-weather-drizzle .cos-rain {
+  display: block;
+  background: repeating-linear-gradient(74deg,
+    rgba(206, 224, 236, 0) 0 9px, rgba(206, 224, 236, .26) 9px 10px);
+  animation: cosrain .62s linear infinite;
+}
+@keyframes cosrain { to { background-position: -46px 132px } }
+
+/* Quiet Mode is a promise about motion, so the animated layers stop entirely. */
+.is-quiet .cos-fall, .is-quiet .cos-glow, .is-quiet .cos-rain { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .cos-fall span, .cos-glow span, .cos-rain { animation: none !important; }
+}
+
+/* ------------------------------------------------------------------ settings */
+.set-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; }
+.set-row label { display: grid; gap: 6px; flex: 1 1 190px; }
+.set-row span { font-size: 12px; color: var(--dim); }
+.set-row select {
+  background: var(--panel); border: 1px solid var(--edge); color: var(--text);
+  padding: 10px 12px; font: inherit; font-size: 14px;
+}
+.set-row select:focus { border-color: var(--accent); outline: none; }
+
+.set-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.set-chip {
+  background: var(--raised); border: 1px solid var(--edge); color: var(--dim);
+  padding: 8px 14px; font-size: 12.5px;
+}
+.set-chip:hover { border-color: var(--edge-hi); color: var(--text); }
+.set-chip.is-on {
+  background: var(--accent); border-color: var(--accent);
+  color: var(--on-accent); font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------- shop */
+.shop-wallet {
+  display: flex; flex-wrap: wrap; gap: 1px; margin-top: 14px;
+  background: var(--edge); border: 1px solid var(--edge);
+}
+.shop-wallet div { flex: 1 1 110px; background: var(--panel); padding: 12px 14px; display: grid; gap: 2px; }
+.shop-wallet .lbl { font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--faint); }
+.shop-wallet b { font-size: 19px; color: var(--accent-ink); }
+.shop-slots { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+
+.shop-preview {
+  display: flex; align-items: center; gap: 16px; margin-top: 14px;
+  padding: 16px; background: var(--raised); border: 1px solid var(--edge);
+}
+/* The swatch is the real map, filtered the way the cosmetic filters the town —
+   so a preview cannot promise something the town will not deliver. */
+.shop-swatch {
+  width: 78px; height: 56px; flex: none; border: 1px solid var(--edge-hi);
+  background: #7a8d5a url("/game/world/campus.png") center / 300% no-repeat;
+  image-rendering: pixelated;
+}
+.shop-swatch.small { width: 44px; height: 32px; }
+.sw-sky-overcast { filter: saturate(.7) brightness(1.04) hue-rotate(-8deg); }
+.sw-sky-evening { filter: saturate(.85) brightness(.6) hue-rotate(200deg); }
+.sw-sky-golden { filter: saturate(1.3) brightness(1.1) sepia(.3); }
+.sw-lights-lanterns { filter: brightness(.8) sepia(.4) saturate(1.4); }
+.sw-lights-fireflies { filter: brightness(.55) hue-rotate(60deg) saturate(1.3); }
+.sw-blossom-pink { filter: hue-rotate(-24deg) saturate(1.25); }
+.sw-blossom-gold { filter: hue-rotate(-40deg) saturate(1.4) brightness(1.05); }
+.sw-weather-haze { filter: contrast(.82) brightness(1.12); }
+.sw-weather-drizzle { filter: saturate(.62) brightness(.86); }
+
+.shop-row {
+  display: flex; align-items: center; gap: 12px; background: var(--raised);
+  border: 1px solid var(--edge); padding: 10px 12px;
+}
+.shop-row.is-on { border-color: var(--accent); }
+.shop-pick {
+  flex: 1; display: flex; align-items: center; gap: 12px; text-align: left;
+  background: none; border: none; padding: 0; min-width: 0;
+}
+.shop-pick b { display: block; font-size: 13.5px; color: var(--text); }
+.shop-pick small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--dim); }
+.shop-act { display: flex; align-items: center; gap: 8px; flex: none; }
+.shop-act .primary, .shop-act .secondary { padding: 8px 14px; font-size: 12px; }
+.shop-tag {
+  font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent-ink); font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .shop-row { flex-wrap: wrap; }
+  .shop-act { width: 100%; justify-content: flex-end; }
+}

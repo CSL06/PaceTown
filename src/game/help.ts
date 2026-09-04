@@ -200,6 +200,19 @@ export const HELP: Record<ViewId, HelpContent> = {
     how: 'Set what you know, skip the rest. This is preference, never diagnosis.',
     guardian: { who: 'sol', why: 'Sol reads capacity gently. Low energy gets smaller plans.' },
   },
+  settings: {
+    title: 'Settings',
+    what: 'Your defaults: waking hours, session length, preferred recovery, motion and contrast.',
+    how: 'Change anything at any time. Every value is a starting point, never a commitment you owe.',
+    guardian: { who: 'sol', why: 'Sol keeps effort sustainable, so the defaults are his to look after.' },
+  },
+  shop: {
+    title: 'Shop',
+    what: 'Ways the town can look, bought with coins you earned in the loop.',
+    how: 'Preview anything for free, then buy it if you want it. Appearance only.',
+    guardian: { who: 'goh', why: 'Goh keeps the market. Nothing he sells changes your week.' },
+    adaptive: (s) => `You have ${s.coins} coin${s.coins === 1 ? '' : 's'}. Nothing here affects load or rewards.`,
+  },
 }
 
 /** Crash-safe live line. Unknown views and failing adaptives yield null (static text only). */

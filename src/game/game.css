@@ -2,12 +2,25 @@
    with the mentor demo's global styles in styles.css. */
 
 .pt-game {
-  --ground: #0F1A24; --panel: #17242F; --raised: #1E2E3B; --sunk: #101B25;
-  --edge: rgba(239,227,204,.13); --edge-hi: rgba(239,227,204,.28);
-  --text: #EFE3CC; --dim: rgba(239,227,204,.66); --faint: rgba(239,227,204,.42);
-  --accent: #D9A234; --cream: #EFE3CC;
-  --open: #6D8052; --steady: #4E9FA8; --heavy: #D9A234; --over: #B4677E; --unsust: #C4566E;
-  --time: #D9A234; --mental: #4E9FA8; --physical: #6D8052; --social: #B4677E; --errands: #C7B89B;
+  /* Aliases onto src/theme/theme.css, so the HUD follows the chosen theme.
+     Panels over the campus become warm paper in light mode and stay ink in
+     dark; the artwork itself is untouched either way. */
+  --ground: var(--pt-bg); --panel: var(--pt-surface); --raised: var(--pt-surface-2);
+  --sunk: var(--pt-sunk);
+  --edge: var(--pt-border); --edge-hi: var(--pt-border-strong);
+  --text: var(--pt-text); --dim: var(--pt-text-2); --faint: var(--pt-text-3);
+  --accent: var(--pt-accent); --accent-ink: var(--pt-accent-ink);
+  --on-accent: var(--pt-on-accent); --cream: var(--pt-text);
+  --open: var(--pt-open); --steady: var(--pt-steady); --heavy: var(--pt-heavy);
+  --over: var(--pt-over); --unsust: var(--pt-unsust);
+  --time: var(--pt-heavy); --mental: var(--pt-steady); --physical: var(--pt-open);
+  --social: var(--pt-over); --errands: #A08A63;
+  /* The game deliberately does NOT follow the global bitmap type tokens.
+     Campus Grove is the working surface: its HUD runs labels at 9-12px, and
+     a bitmap face at that size is both illegible and far wider, so chips and
+     dock labels would overflow. The pixel-art feel here comes from the
+     artwork, which is actual pixel art — the interface over it stays legible.
+     Landing and sign-in use the bitmap faces; this screen does not. */
   --display: "Fraunces", Georgia, serif;
   --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -17,8 +30,8 @@
   font-family: var(--ui); font-size: 14px; line-height: 1.5;
 }
 .pt-game.hc {
-  --edge: rgba(239,227,204,.45); --edge-hi: rgba(239,227,204,.75);
-  --dim: #EFE3CC; --faint: rgba(239,227,204,.78); --panel: #0C1620; --raised: #16242F;
+  --edge: var(--pt-text-3); --edge-hi: var(--pt-text-2);
+  --dim: var(--pt-text); --faint: var(--pt-text);
 }
 .pt-game h1, .pt-game h2, .pt-game h3 { margin: 0; font-family: var(--display); font-weight: 600; }
 .pt-game button { font: inherit; color: inherit; cursor: pointer; }
@@ -27,33 +40,49 @@
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- title ---------- */
-.title { position: absolute; inset: 0; background: #0B141D; }
+.title { position: absolute; inset: 0; background: var(--pt-bg); }
 .title-art {
   position: absolute; inset: 0; background-size: cover; background-position: center 38%;
-  filter: saturate(.92) brightness(.62); animation: drift 40s ease-in-out infinite alternate;
+  filter: var(--pt-art-filter); animation: drift 40s ease-in-out infinite alternate;
 }
 @keyframes drift { from { transform: scale(1.04) } to { transform: scale(1.12) } }
-.title-veil { position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 44%, rgba(11,20,29,.18), rgba(11,20,29,.90) 68%); }
+.title-veil { position: absolute; inset: 0; background: var(--pt-art-veil); }
 .title-inner { position: relative; height: 100%; display: grid; align-content: center;
   justify-items: center; gap: 20px; padding: 24px; text-align: center; }
 .logo { display: flex; align-items: center; gap: 16px; }
-.mark { display: grid; place-items: center; background: var(--accent); color: #17240F;
+.mark { display: grid; place-items: center; background: var(--accent); color: var(--on-accent);
   font-family: var(--display); font-weight: 600; }
 .logo .mark { width: 60px; height: 60px; font-size: 33px; box-shadow: 5px 5px 0 rgba(9,15,22,.6); }
 .logo h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1; color: var(--cream); }
 .logo p { margin: 4px 0 0; font-family: var(--display); font-style: italic;
   color: var(--dim); font-size: 15px; }
 .title-hook { margin: 0; max-width: 44ch; color: var(--dim); font-size: 15px; line-height: 1.6; }
-.title-cast { display: flex; gap: 6px; }
-.title-cast img { width: 52px; height: auto; border: 2px solid rgba(239,227,204,.25);
-  background: rgba(16,27,37,.7); }
+.title-greet { margin: 0; font-family: var(--display); font-size: clamp(19px, 2.4vw, 25px);
+  font-style: italic; color: var(--cream); }
+
+.title-progress { display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;
+  background: var(--edge); border: 1px solid var(--edge); }
+.title-progress div { background: rgba(11,20,29,.82); padding: 10px 18px; display: grid; gap: 2px; }
+.title-progress b { font-family: var(--mono); font-size: 17px; color: var(--accent-ink); font-weight: 600; }
+.title-progress span { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+
+/* The cast doubles as the map legend, so each face carries its job. */
+.title-cast { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  list-style: none; margin: 0; padding: 0; }
+.title-cast li { display: grid; justify-items: center; gap: 3px; width: 72px; }
+.title-cast img { width: 56px; height: auto; image-rendering: pixelated;
+  border: 2px solid var(--edge-hi); background: var(--pt-surface-2); }
+.title-cast b { font-family: var(--display); font-size: 13px; color: var(--cream); font-weight: 600; }
+.title-cast span { font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--faint); text-align: center; line-height: 1.3; }
 .title-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .title-note { margin: 0; color: var(--faint); font-size: 12px; letter-spacing: .06em; }
 
 /* ---------- world ---------- */
 .stage { position: absolute; inset: 0; overflow: hidden; }
-.world { position: absolute; top: 0; left: 0; width: 2400px; height: 1600px; will-change: transform; }
+/* 3x the 1200x800 illustration: a whole-pixel upscale, so `pixelated` keeps
+   every edge sharp. See layout.ts for why 3 and not 2. */
+.world { position: absolute; top: 0; left: 0; width: 3600px; height: 2400px; will-change: transform; }
 .map { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 9;
   box-shadow: inset 0 -120px 150px -60px rgba(8,14,20,.8), inset 0 90px 120px -60px rgba(8,14,20,.65); }
@@ -62,11 +91,13 @@
 .daytint.dusk { background: linear-gradient(180deg, rgba(120,60,90,.22), rgba(60,45,95,.30)); }
 .daytint.night { background: linear-gradient(180deg, rgba(28,36,92,.44), rgba(12,18,52,.56)); }
 
-.spr { position: absolute; transform: translate(-50%, -100%); width: 1.75%; aspect-ratio: 64 / 96;
+/* Native frame size, drawn 1:1. A fractional sprite size is what smeared the
+   pixel art — never give these a percentage width. */
+.spr { position: absolute; transform: translate(-50%, -100%); width: 64px; height: 96px;
   image-rendering: pixelated; z-index: 5; pointer-events: none; background-repeat: no-repeat; }
-.spr::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 80%; height: 8px;
-  transform: translateX(-50%); border-radius: 50%; background: rgba(10,16,22,.45);
-  filter: blur(2px); z-index: -1; }
+.spr::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 78%; height: 11px;
+  transform: translateX(-50%); border-radius: 50%; background: rgba(10,16,22,.5);
+  filter: blur(3px); z-index: -1; }
 .cast { background-size: 500% 100%; }
 .cast.idle { animation: breathe 3.4s ease-in-out infinite; }
 @keyframes breathe { 0%,100% { transform: translate(-50%,-100%) } 50% { transform: translate(-50%, calc(-100% - 2px)) } }
@@ -85,69 +116,132 @@
 @keyframes wr { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
 
 .marker { position: absolute; transform: translate(-50%, -50%); background: none; border: none;
-  padding: 0; width: 76px; height: 76px; z-index: 4; }
+  padding: 0; width: 114px; height: 114px; z-index: 4; }
 .marker .ring { position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle, rgba(239,227,204,.30), rgba(239,227,204,.07) 55%, transparent 70%);
+  background: radial-gradient(circle, var(--pt-marker-glow), transparent 68%);
   animation: pulse 3.6s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { transform: scale(.86); opacity: .7 } 50% { transform: scale(1.06); opacity: 1 } }
-.marker .nm { position: absolute; left: 50%; top: -14px; transform: translateX(-50%); white-space: nowrap;
-  background: rgba(12,20,28,.92); color: var(--cream); border: 1px solid rgba(239,227,204,.35);
-  padding: 3px 9px; font-size: 11px; font-weight: 600; opacity: 0; transition: opacity .18s ease;
+.marker .nm { position: absolute; left: 50%; top: -10px; transform: translateX(-50%); white-space: nowrap;
+  background: var(--pt-chip); color: var(--text); border: 1px solid var(--edge-hi);
+  padding: 4px 11px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .18s ease;
   pointer-events: none; }
 .marker.near .nm, .marker:hover .nm { opacity: 1 }
 .marker.lead .ring { background: radial-gradient(circle, rgba(217,162,52,.55), rgba(217,162,52,.16) 55%, transparent 70%) }
 .marker.lead .nm { opacity: 1; border-color: var(--accent); color: var(--accent) }
 
 .fx { position: absolute; pointer-events: none; z-index: 3 }
-.fog { border-radius: 50%; background: rgba(239,227,204,.30); filter: blur(16px) }
-.parcel { width: 9px; height: 8px; background: #9C5A3C; border: 1px solid rgba(23,38,56,.7) }
-.crowd { width: 7px; height: 11px; background: rgba(146,86,106,.9); border: 1px solid rgba(23,38,56,.5) }
-.shade { background: rgba(23,38,56,.34); border-radius: 50%; filter: blur(15px) }
+.fog { border-radius: 50%; background: rgba(239,227,204,.30); filter: blur(24px) }
+.parcel { width: 14px; height: 12px; background: #9C5A3C; border: 1px solid rgba(23,38,56,.7) }
+.crowd { width: 11px; height: 17px; background: rgba(146,86,106,.9); border: 1px solid rgba(23,38,56,.5) }
+.shade { background: rgba(23,38,56,.34); border-radius: 50%; filter: blur(22px) }
 .is-quiet .fx { display: none }
 .is-quiet .cast.idle { animation: none }
 
 /* ---------- HUD ---------- */
 .hud { position: absolute; z-index: 20 }
 .hud-top { top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 9px; padding: 11px 13px;
-  flex-wrap: wrap; background: linear-gradient(to bottom, rgba(9,15,22,.88), rgba(9,15,22,0)); }
+  flex-wrap: wrap; background: linear-gradient(to bottom, var(--pt-scrim), transparent); }
 .hud-top .mark { width: 30px; height: 30px; font-size: 18px }
 .hud-name { font-family: var(--display); font-size: 16px; color: var(--cream); line-height: 1; white-space: nowrap }
 .hud-day { font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
   margin-top: 2px; white-space: nowrap }
 .grow { flex: 1 }
-.pill { display: flex; align-items: center; gap: 8px; background: rgba(16,27,37,.86);
+.pill { display: flex; align-items: center; gap: 8px; background: var(--pt-hud);
   border: 1px solid var(--edge); padding: 7px 11px; color: var(--text); flex: none; margin-left: 6px }
 .pill:hover { border-color: var(--edge-hi) }
 .pill b { font-family: var(--mono); font-size: 14px; font-weight: 600 }
 .pill .lbl { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); display: block }
 .pill .swatch { width: 9px; height: 22px }
-.coinbar { display: flex; gap: 12px; font-family: var(--mono); font-size: 12px; color: var(--dim);
-  background: rgba(16,27,37,.86); border: 1px solid var(--edge); padding: 8px 11px }
-.coinbar b { color: var(--accent); font-weight: 600 }
-.iconbtn { width: 38px; height: 38px; display: grid; place-items: center; background: rgba(16,27,37,.86);
+.coinbar { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: 12px;
+  color: var(--dim); background: var(--pt-hud); border: 1px solid var(--edge); padding: 7px 12px }
+.coinbar b { color: var(--accent-ink); font-weight: 600 }
+.lvl { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; min-width: 210px }
+.lvl .lbl { font-family: var(--ui); font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--faint) }
+.lvl-track { height: 5px; background: var(--sunk); border: 1px solid var(--edge); overflow: hidden }
+.lvl-fill { display: block; height: 100%; background: var(--accent); transition: width .5s ease }
+.lvl-num { font-size: 10.5px; color: var(--faint); font-variant-numeric: tabular-nums }
+.coins { white-space: nowrap }
+
+.acct { position: relative }
+.acct-btn { display: flex; align-items: center; gap: 8px; background: var(--pt-hud);
+  border: 1px solid var(--edge); padding: 5px 11px 5px 5px; color: var(--dim); font-size: 12.5px }
+.acct-btn:hover { border-color: var(--edge-hi); color: var(--text) }
+.acct-av { display: grid; place-items: center; width: 28px; height: 28px; color: #0E1720;
+  font-weight: 700; font-size: 13px; flex: none }
+.acct-catch { position: fixed; inset: 0; z-index: 1 }
+.acct-menu { position: absolute; right: 0; top: calc(100% + 7px); z-index: 2; min-width: 214px;
+  background: var(--panel); border: 1px solid var(--edge-hi); box-shadow: 0 18px 50px rgba(4,9,14,.65);
+  display: grid }
+.acct-who { padding: 12px 14px; border-bottom: 1px solid var(--edge); display: grid; gap: 2px }
+.acct-who b { font-size: 13px; color: var(--cream) }
+.acct-who span { font-size: 11px; color: var(--faint); word-break: break-all }
+.acct-keep { display: grid !important; gap: 3px; padding: 11px 14px !important;
+  background: var(--pt-accent-wash); border-bottom: 1px solid var(--edge);
+  color: var(--accent-ink) !important; font-size: 12.5px; font-weight: 600; text-decoration: none }
+.acct-keep small { font-size: 11px; color: var(--dim); font-weight: 400; line-height: 1.4 }
+.acct-menu button, .acct-menu a { text-align: left; background: none; border: none; padding: 11px 14px;
+  font-size: 12.5px; color: var(--dim); text-decoration: none; display: block }
+.acct-menu button:hover, .acct-menu a:hover { background: var(--raised); color: var(--text) }
+.acct-out { border-top: 1px solid var(--edge) !important; color: #E08497 !important }
+
+/* ---------- guardian dock ---------- */
+.dock { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); z-index: 21;
+  width: 62px; display: grid; gap: 5px; justify-items: stretch }
+.dock-head { display: grid; gap: 2px; text-align: center; padding-bottom: 3px }
+.dock-head span { font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint) }
+.dock-head b { font-size: 9px; color: var(--accent-ink); font-weight: 600 }
+.dock-row { position: relative }
+.dock-face { position: relative; width: 100%; padding: 0; background: var(--pt-hud);
+  border: 1px solid var(--edge); display: grid; justify-items: center; gap: 0; overflow: hidden;
+  transition: border-color .16s ease, transform .16s ease }
+.dock-face:hover { border-color: var(--edge-hi); transform: translateX(-2px) }
+.dock-row.is-open .dock-face { border-color: var(--accent) }
+.dock-face img { width: 46px; height: 58px; object-fit: cover; object-position: center top;
+  image-rendering: pixelated; margin-top: 3px }
+.dock-name { display: block; width: 100%; font-size: 9.5px; font-weight: 600; color: var(--dim);
+  padding: 2px 0 4px; background: var(--sunk) }
+.dock-row.is-waiting .dock-name { color: var(--accent-ink) }
+.dock-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 0 2px var(--pt-hud);
+  animation: dockpulse 2.2s ease-in-out infinite }
+@keyframes dockpulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+.dock-card { position: absolute; right: calc(100% + 8px); top: 0; width: 246px; z-index: 3;
+  background: var(--panel); border: 1px solid var(--edge-hi); padding: 13px 15px;
+  box-shadow: 0 16px 44px rgba(4,9,14,.6) }
+.dock-role { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink) }
+.dock-card p { margin: 7px 0 12px; font-size: 12.5px; color: var(--dim); line-height: 1.5 }
+.dock-go { background: var(--accent); color: var(--on-accent); border: none; padding: 8px 13px;
+  font-size: 11.5px; font-weight: 600; width: 100% }
+.dock-go:hover { filter: brightness(1.08) }
+
+@media (max-width: 900px), (max-height: 620px) {
+  .dock { display: none }
+}
+.iconbtn { width: 38px; height: 38px; display: grid; place-items: center; background: var(--pt-hud);
   border: 1px solid var(--edge); color: var(--dim); font-size: 15px }
 .iconbtn:hover { color: var(--text); border-color: var(--edge-hi) }
-.iconbtn[aria-pressed="true"] { background: var(--accent); color: #17240F; border-color: var(--accent) }
+.iconbtn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent) }
 
 .hud-quest { left: 13px; bottom: 13px; width: min(340px, calc(100vw - 26px));
-  background: rgba(16,27,37,.92); border: 1px solid var(--edge-hi); padding: 13px 15px;
+  background: var(--pt-hud); border: 1px solid var(--edge-hi); padding: 13px 15px;
   backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); box-shadow: 0 14px 40px rgba(6,12,20,.55) }
-.hud-quest .eyebrow { color: var(--accent) }
+.hud-quest .eyebrow { color: var(--accent-ink) }
 .hud-quest h3 { font-size: 15px; margin: 5px 0 0; color: var(--cream) }
 .hud-quest p { margin: 5px 0 0; font-size: 12px; color: var(--dim); line-height: 1.5 }
 .qa { display: flex; gap: 7px; margin-top: 11px; flex-wrap: wrap }
 .qa button { background: none; border: 1px solid var(--edge); padding: 7px 11px; font-size: 11.5px; color: var(--dim) }
-.qa button.go { background: var(--accent); color: #17240F; border-color: var(--accent); font-weight: 600 }
+.qa button.go { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600 }
 .qa button:hover { border-color: var(--edge-hi); color: var(--text) }
-.qa button.go:hover { color: #17240F }
+.qa button.go:hover { color: var(--on-accent) }
 
 .hud-tools { right: 13px; bottom: 13px; display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end }
-.tool { background: rgba(16,27,37,.9); border: 1px solid var(--edge); padding: 9px 12px;
+.tool { background: var(--pt-hud); border: 1px solid var(--edge); padding: 9px 12px;
   font-size: 11.5px; color: var(--dim); display: flex; align-items: center; gap: 7px }
 .tool:hover { color: var(--text); border-color: var(--edge-hi) }
 
 .prompt { position: absolute; left: 50%; bottom: 118px; transform: translateX(-50%) translateY(8px);
-  display: flex; align-items: center; gap: 9px; background: var(--accent); color: #17240F;
+  display: flex; align-items: center; gap: 9px; background: var(--accent); color: var(--on-accent);
   padding: 10px 18px; font-size: 14px; font-weight: 700; z-index: 25;
   box-shadow: 0 8px 26px rgba(8,14,20,.55); opacity: 0; visibility: hidden;
   transition: opacity .16s ease, transform .16s ease; pointer-events: none }
@@ -155,13 +249,13 @@
 .prompt kbd { background: rgba(23,38,56,.2); border: 1px solid rgba(23,38,56,.35);
   padding: 2px 7px; font: 700 12px var(--mono) }
 .hint-move { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 24;
-  font-size: 11px; color: rgba(239,227,204,.55); background: rgba(12,20,28,.6); padding: 6px 12px;
+  font-size: 11px; color: var(--dim); background: var(--pt-chip); padding: 6px 12px;
   letter-spacing: .06em; transition: opacity .8s ease }
 .hint-move.gone { opacity: 0 }
 
 .dpad { position: absolute; left: 16px; bottom: 16px; z-index: 26; display: none;
   grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(2, 48px); gap: 6px }
-.dpad button { background: rgba(16,27,37,.9); border: 1px solid var(--edge); color: var(--text);
+.dpad button { background: var(--pt-hud); border: 1px solid var(--edge); color: var(--text);
   font-size: 17px; display: grid; place-items: center; touch-action: none; user-select: none }
 .dpad .up { grid-column: 2 }
 @media (hover: none) and (pointer: coarse) {
@@ -171,11 +265,11 @@
 
 /* ---------- dialogue ---------- */
 .dlg { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; cursor: pointer;
-  background: linear-gradient(to top, rgba(8,14,20,.97), rgba(8,14,20,.86) 70%, rgba(8,14,20,0));
+  background: linear-gradient(to top, var(--pt-scrim-strong), var(--pt-scrim) 70%, transparent);
   padding: 26px 16px 20px }
 .dlg-inner { max-width: 940px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr;
   gap: 18px; align-items: end }
-.dlg-face { width: 132px; height: auto; border: 2px solid var(--edge-hi); background: rgba(16,27,37,.9) }
+.dlg-face { width: 132px; height: auto; border: 2px solid var(--edge-hi); background: var(--pt-hud) }
 .dlg-body { background: var(--panel); border: 1px solid var(--edge-hi); padding: 16px 20px;
   box-shadow: 0 18px 50px rgba(4,9,14,.6); min-height: 132px; display: flex; flex-direction: column }
 .dlg-name { font-family: var(--display); font-size: 17px; color: var(--cream); margin-bottom: 7px }
@@ -204,7 +298,7 @@
 .note { font-size: 12px; color: var(--faint) }
 .card + .card { margin-top: 20px; border-top: 1px solid var(--edge); padding-top: 18px }
 .actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 18px; align-items: center }
-.primary { background: var(--accent); color: #17240F; border: none; padding: 11px 18px;
+.primary { background: var(--accent); color: var(--on-accent); border: none; padding: 11px 18px;
   font-weight: 600; font-size: 13px }
 .primary:hover { filter: brightness(1.08) }
 .primary:disabled { opacity: .4; cursor: not-allowed; filter: none }
@@ -310,9 +404,9 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 
 .toasts { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 70;
   display: flex; flex-direction: column; gap: 7px; align-items: center; pointer-events: none }
-.toast { background: rgba(16,27,37,.95); border: 1px solid var(--accent); color: var(--cream);
+.toast { background: var(--pt-surface); border: 1px solid var(--accent); color: var(--text);
   padding: 9px 15px; font-size: 12.5px; animation: rise 2.6s ease forwards }
-.toast b { color: var(--accent); font-family: var(--mono) }
+.toast b { color: var(--accent-ink); font-family: var(--mono) }
 @keyframes rise { 0% { opacity: 0; transform: translateY(10px) } 12%,75% { opacity: 1; transform: none }
   100% { opacity: 0; transform: translateY(-8px) } }
 
@@ -321,7 +415,7 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
   border: 1px solid var(--edge-hi); cursor: pointer; touch-action: none }
 .pond:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 .ripple { position: absolute; width: 14px; height: 14px; transform: translate(-50%,-50%);
-  border: 2px solid rgba(239,227,204,.85); border-radius: 50%;
+  border: 2px solid var(--pt-on-dark); border-radius: 50%;
   animation: ripple 2.4s ease-out forwards; pointer-events: none }
 @keyframes ripple { from { opacity: .95; width: 14px; height: 8px } to { opacity: 0; width: 150px; height: 60px } }
 .pond.still .ripple { animation: stillripple 2.4s ease-out forwards }
@@ -337,13 +431,13 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 .flowers { position: absolute; left: 0; right: 0; bottom: 10px; display: flex;
   justify-content: center; gap: 14px; pointer-events: none }
 .bloom { width: 12px; height: 12px; border-radius: 50%; background: rgba(109,128,82,.55);
-  border: 1px solid rgba(239,227,204,.4); transition: all .8s ease }
+  border: 1px solid rgba(239,227,204,.55); transition: all .8s ease }
 .bloom.open { width: 20px; height: 20px; background: #B4677E;
-  border: 2px solid var(--cream); box-shadow: 0 0 12px rgba(180,103,126,.7) }
+  border: 2px solid var(--pt-on-dark); box-shadow: 0 0 12px rgba(180,103,126,.7) }
 .breath-ring { position: absolute; right: 14px; top: 14px; width: 64px; height: 64px;
-  border-radius: 50%; border: 2px solid rgba(239,227,204,.7); display: grid;
+  border-radius: 50%; border: 2px solid var(--pt-on-dark); display: grid;
   place-items: center; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--cream); pointer-events: none }
+  color: var(--pt-on-dark); pointer-events: none }
 .breath-ring.in { animation: bin 4s linear infinite }
 .breath-ring.hold { box-shadow: 0 0 0 10px rgba(239,227,204,.12) }
 .breath-ring.out { animation: bout 6s linear infinite }

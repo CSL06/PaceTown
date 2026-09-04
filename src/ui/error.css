@@ -1,0 +1,114 @@
+/* Crash fallback. Deliberately self-contained: if the app broke badly enough
+   to land here, this screen must not depend on anything that might also be
+   broken. Only the theme tokens are borrowed, and they have safe fallbacks. */
+
+.eb {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow-y: auto;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--pt-bg, #FFFCF5);
+  color: var(--pt-text, #2B2318);
+  font-family: var(--pt-ui, "IBM Plex Sans", "Segoe UI", system-ui, sans-serif);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.eb-card {
+  width: min(600px, 100%);
+  background: var(--pt-surface, #FFFFFF);
+  border: 1px solid var(--pt-border, #E9DCC6);
+  padding: clamp(24px, 4vw, 40px);
+  box-shadow: var(--pt-shadow-soft, 0 18px 44px rgba(80, 62, 36, .13));
+}
+
+.eb-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 20px;
+  background: var(--pt-accent, #E0A52F);
+  color: var(--pt-on-accent, #2B2318);
+  font-family: var(--pt-display, Georgia, serif);
+  font-weight: 600;
+  font-size: 24px;
+  box-shadow: 3px 3px 0 var(--pt-shadow-hard, rgba(43, 35, 24, .22));
+}
+
+.eb h1 {
+  margin: 0 0 12px;
+  font-family: var(--pt-display, Georgia, serif);
+  font-weight: 600;
+  font-size: clamp(24px, 3.2vw, 31px);
+  line-height: 1.15;
+}
+
+.eb-lede { margin: 0; color: var(--pt-text-2, #665844); font-size: 15px; }
+.eb-lede strong { color: var(--pt-text, #2B2318); }
+
+.eb-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+.eb button { font: inherit; cursor: pointer; padding: 12px 20px; font-size: 14.5px; }
+.eb button:focus-visible { outline: 2px solid var(--pt-accent, #E0A52F); outline-offset: 3px; }
+
+.eb-primary {
+  background: var(--pt-accent, #E0A52F);
+  color: var(--pt-on-accent, #2B2318);
+  border: none;
+  font-weight: 600;
+  box-shadow: 3px 3px 0 var(--pt-shadow-hard, rgba(43, 35, 24, .22));
+}
+.eb-primary:hover { filter: brightness(1.06); }
+
+.eb-secondary {
+  background: none;
+  border: 1px solid var(--pt-border-strong, #D2BE9C);
+  color: var(--pt-text-2, #665844);
+}
+.eb-secondary:hover { color: var(--pt-text, #2B2318); }
+
+.eb-rescue {
+  margin-top: 28px;
+  padding: 18px 20px;
+  background: var(--pt-surface-2, #FBF5EA);
+  border: 1px solid var(--pt-border, #E9DCC6);
+}
+.eb-rescue h2 {
+  margin: 0 0 8px;
+  font-family: var(--pt-display, Georgia, serif);
+  font-weight: 600;
+  font-size: 17px;
+}
+.eb-rescue p { margin: 0 0 14px; font-size: 13.5px; color: var(--pt-text-2, #665844); }
+
+.eb-details { margin-top: 24px; font-size: 13px; }
+.eb-details summary {
+  cursor: pointer;
+  color: var(--pt-text-3, #8C7B62);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.eb-msg {
+  margin: 14px 0 0;
+  font-family: var(--pt-mono, ui-monospace, Menlo, monospace);
+  font-size: 12.5px;
+  color: var(--pt-danger, #B02D45);
+  word-break: break-word;
+}
+.eb-details pre {
+  margin: 12px 0 0;
+  padding: 12px;
+  max-height: 230px;
+  overflow: auto;
+  background: var(--pt-sunk, #F2E9D9);
+  border: 1px solid var(--pt-border, #E9DCC6);
+  font-family: var(--pt-mono, ui-monospace, Menlo, monospace);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--pt-text-2, #665844);
+}

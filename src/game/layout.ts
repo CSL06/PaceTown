@@ -3,12 +3,26 @@
  *
  * Coordinates are percentages of the world, so the same numbers work at any
  * render size. The world is drawn from public/game/world/campus.png.
+ *
+ * The source illustration is 1200x800. The world is exactly 3x that, so the
+ * map upscales on a whole-pixel grid, and a native 64x96 sprite stands 32
+ * map-pixels tall — a little under a doorway, which is the proportion the
+ * illustration was drawn for. Any other multiple either blurs the map or
+ * forces a fractional sprite, which is what mangled the pixel art before.
  */
 
 import type { GuardianId } from '../domain'
 
-export const WORLD_W = 2400
-export const WORLD_H = 1600
+export const MAP_W = 1200
+export const MAP_H = 800
+/** Integer upscale of the illustration. Changing this blurs the map. */
+export const MAP_SCALE = 3
+export const WORLD_W = MAP_W * MAP_SCALE
+export const WORLD_H = MAP_H * MAP_SCALE
+
+/** Native sprite frame size. Rendered 1:1 — never scaled. */
+export const SPRITE_W = 64
+export const SPRITE_H = 96
 
 export type PlaceId =
   | 'library' | 'clock' | 'garden' | 'recover' | 'hall' | 'cafe' | 'market'
@@ -32,6 +46,7 @@ export type ViewId =
   | 'keepsakes' | 'collection'
   | 'journal' | 'council' | 'mailbox' | 'calm' | 'home'
   | 'backpack' | 'garden' | 'load' | 'townlist' | 'briefing'
+  | 'settings' | 'shop'
 
 export const PLACES: readonly Place[] = [
   { id: 'library', name: 'Library', px: 22.9, py: 20.6, view: 'work', who: 'mira',
@@ -66,13 +81,13 @@ export const PLACES: readonly Place[] = [
 
 /** Solid footprints, generous enough to walk between. Radii are world pixels. */
 export const BLOCKERS: readonly { px: number; py: number; r: number }[] = [
-  { px: 22.9, py: 19, r: 150 }, { px: 49.8, py: 9, r: 80 }, { px: 79.2, py: 14, r: 95 },
-  { px: 14.5, py: 41, r: 150 }, { px: 78.0, py: 45, r: 140 }, { px: 91.5, py: 42, r: 95 },
-  { px: 77.0, py: 72, r: 70 }, { px: 2.0, py: 40, r: 90 },
+  { px: 22.9, py: 19, r: 225 }, { px: 49.8, py: 9, r: 120 }, { px: 79.2, py: 14, r: 143 },
+  { px: 14.5, py: 41, r: 225 }, { px: 78.0, py: 45, r: 210 }, { px: 91.5, py: 42, r: 143 },
+  { px: 77.0, py: 72, r: 105 }, { px: 2.0, py: 40, r: 135 },
 ]
 
 /** Interaction radius, in world pixels. Generous on purpose. */
-export const TALK_RADIUS = 135
+export const TALK_RADIUS = 203
 
 export const SPAWN = { px: 49.8, py: 66 }
 
