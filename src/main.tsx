@@ -8,6 +8,16 @@ import './styles.css'
 // mentor demo. Visiting /game is what pulls them down.
 const Game = lazy(() => import('./game/Game'))
 
+// Offline shell in production builds only — a dev-time worker would serve
+// stale bundles while iterating.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      /* Offline support is best-effort; the app works without it. */
+    })
+  })
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>

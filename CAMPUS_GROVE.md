@@ -148,15 +148,25 @@ src/
     parse.ts         natural-language intake and brief extraction
     plans.ts         blockers to editable checkpoints, routed by guardian
     rewards.ts       progression, levels, confirmation parity
-    keepsake.ts      palette snapping and photo-consent decisions
+    keepsake.ts      palette snapping, photo-consent, categories, placements
+    regulation.ts    activity catalogue and recovery recommendations
+    quests.ts        three-quest selection with one foregrounded action
+    photo.ts         local Pocket-of-Green photo heuristics
     seed.ts          the demo week, produced by the parser
   game/            the campus
-    Game.tsx         shell: title, HUD, navigation, persistence
+    Game.tsx         shell: title, HUD, quest card, navigation, persistence
     Campus.tsx       map, Load Weather, guardians, markers
     useWorld.ts      movement, camera, proximity
     Dialogue.tsx     the guardian dialogue bar
     state.ts         save shape, migrations, journal
+    storage.ts       persistence adapter (localStorage today, IndexedDB later)
     panels/          what each place opens
+      Loop.tsx       intake, understand, rebalance, work, session
+      Ripples.tsx    interactive Gentle Ripples
+      Pocket.tsx     Pocket of Green, all paths
+      Minis.tsx      Firefly, Chime, Warm Cup, Lanterns
+      Keepsakes.tsx  keepsake pipeline and private collection
+      Places.tsx     load, briefing, council, journal, garden, town systems
   App.tsx          the original mentor demo, unchanged
 ```
 
@@ -169,7 +179,7 @@ never read from `game/`.
 npm test
 ```
 
-88 cases across six files. They cover the arithmetic, but they also pin the
+112 cases across nine files. They cover the arithmetic, but they also pin the
 product promises so those cannot quietly rot:
 
 - Self-confirmation and photo confirmation earn **identically**
@@ -189,16 +199,16 @@ Add a rule to the product, add a test with it.
 Honest list, measured against the vertical slice in
 [`PACETOWN_PROJECT_VISION.md`](PACETOWN_PROJECT_VISION.md) §24:
 
-- **Gentle Ripples is not interactive.** It records recovery; the ripples,
-  petals and breathing circle are not implemented.
-- **Pocket of Green has one path**, not the nine the vision specifies. No
-  optional photo, no camera-denied path.
-- **No Pace Keepsake pipeline** — the palette filter exists and is tested, but
-  nothing calls it yet.
-- **Firefly Stories, Chime Drift, Warm Cup and Night Lanterns** are previews.
-- **Storage is `localStorage`, not IndexedDB**, and the provider adapters
-  described in §22 are not built.
-- **No offline shell** and no export control.
+- **Storage is `localStorage`, not IndexedDB** — the storage adapter
+  (`src/game/storage.ts`) keeps the seam so production can swap it later.
+- **Photo verification is heuristic, not AI** — local green/sky/brightness checks with
+  manual correction always available, per the local-fallback contract.
 - **No CI** — the tests exist but nothing runs them on push.
+- **Deferred past the core:** deep shop and cosmetic catalog, live Google Calendar
+  authentication, full Recovery Garden catalog, ambient NPC and animal collection,
+  Coastal Commons and Night Market, production cloud services, Android packaging.
 
-None of these contradict the vision. They are unfinished, not incompatible.
+Everything else in the slice is playable: interactive Gentle Ripples, full Pocket of
+Green paths, all five mini-games, the keepsake pipeline with local filter and symbolic
+fallback, selective rebalancing, session timer/scratchpad/pause-resume, quests with
+replacement, save export, and a runtime-cached offline shell.

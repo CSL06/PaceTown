@@ -18,20 +18,22 @@ The planner explains and reduces external workload. Guided Pace Sessions are one
 
 ## Current status
 
-This repository currently contains the planning and asset-production milestone:
+This repository is a **functional local-first prototype**: the full §24 vertical slice runs
+in the browser with no cloud, AI provider, or Google Calendar required.
 
-- Product and implementation plans
-- Authoritative asset-completion checklist
-- Generated concepts, portraits, UI art, locations, and mini-game references
-- Portrait-faithful v3 character style masters
-- Transparent four-direction `64 × 96 px` character bases
-- Complete animation v4 packages for the player, Mira, Kai, Sol, Sky, and Goh: 240 frames and 108 Phaser animation definitions in total
-- A 62-sheet production-formatted runtime library covering interactive objects, mini-games, workload UI, application states, ambient life, Recovery Garden progression, postcards, Calendar art, overlays, effects, and PWA icons
-- Aggregate runtime manifest, per-sheet atlas JSON, visual review board, campus integration scene, and passing validation report
+- Product and implementation plans, asset-completion checklist, and generated art
+- Portrait-faithful v3 character bases and v4 animation packages (player + 5 guardians)
+- 62-sheet production runtime library, manifests, review boards, and validation report
 - Deterministic asset-processing and preview tools
-- Third-party asset source and license manifest
-
-The visual asset-generation milestone is complete, and the repository includes a mentor-ready React vertical slice with campus movement, Sky dialogue, and a guided breathing activity. The next product task is expanding that slice toward load explanation, rebalancing, task intake, one guided Pace Session, Gentle Ripples, the fully specified Pocket of Green IRL quest, an optional private photo-to-Keepsake flow, saved partial progress, and one visible town response. The production campus still needs to be assembled from the approved free packs.
+- Mentor demo (`/`): campus movement, Sky dialogue, guided breathing activity
+- Campus Grove (`/game`): seeded Thursday at 108%, explainable Daily Load, selective
+  consent-based rebalancing, blocker-driven work plans, full Pace Sessions (timer,
+  scratchpad, help modes, pause-and-regulate), all five regulation mini-games,
+  Pocket of Green IRL quest with local photo verification, private keepsake pipeline
+  with local pixel filter and symbolic fallback, quests, XP/coins, Recovery Garden,
+  Journal, Future Mailbox, Backpack, Guardian Council, Quiet Mode, Exit Quest,
+  versioned saves, export, and an offline PWA shell
+- 112 automated domain tests (`npm test`)
 
 ## Run the mentor demo
 
@@ -68,9 +70,45 @@ npm run preview
 
 The compiled demo is written to `dist/`, which is intentionally excluded from Git.
 
+### Tests
+
+```powershell
+npm test
+npm run test:watch
+```
+
+112 cases across nine files. They cover the arithmetic, and they pin the product
+promises so those cannot quietly rot: self/photo confirmation parity, no
+timer/mini-game/AI academic completion, rebalance previews never mutating tasks,
+bounded energy guidance, and the seeded 108% Thursday.
+
+### Campus Grove walkthrough (`/game`)
+
+1. Press **Enter Campus Grove**. Kai explains Thursday at **108%** — calculated, not written in.
+2. Open the **Clock Tower** and approve Kai's proposal (per-move checkboxes). Thursday drops
+   toward **91.5%**; Saturday stays Open. Nothing moves until you approve it.
+3. At the **Library**, pick *I do not know where to begin*, review the editable work plan,
+   and start a 20-minute checkpoint Pace Session with Mira.
+4. Ask Mira to *Explain*, record **Partial progress**, and save
+   *Add the enrolment junction entity* as the next action.
+5. Pause into **Gentle Ripples**, then take Sol's **Pocket of Green** (self-confirm or
+   optional photo — equal rewards).
+6. Turn the quest into a private **Keepsake** (create-and-discard keeps only the pixel art),
+   then open the **Journal**: rebalance, work, recovery, keepsake, deletion state, and next
+   action are all recorded. One Recovery Garden plant has grown.
+
+Reload at any point: you return to the title screen with progress intact (versioned
+`localStorage` saves under `pacetown.game`). **Export save (JSON)** and
+**Delete local data** live at Home.
+
 ### Demo scope
 
-This is a mentor-review vertical slice, not the complete PaceTown product. It demonstrates the intended visual direction, responsive campus exploration, an accessible list alternative, a supportive Sky interaction, and one stress-reduction activity. Google Calendar, generative NPC conversations, the remaining guardians, workload rebalancing, Keepsakes, and additional games are planned but are not connected to this demo yet.
+The mentor demo (`/`) is intentionally narrow: visual direction, campus exploration, an
+accessible list alternative, a supportive Sky interaction, and one stress-reduction
+activity. The full product loop lives in Campus Grove (`/game`), which is local-first and
+works offline after the first visit (runtime-cached PWA shell). Google Calendar, generative
+NPC conversations, and cloud sync remain planned production adapters — every AI-assisted
+feature already has a deterministic local fallback, and the app never requires one.
 
 ## Start here
 
