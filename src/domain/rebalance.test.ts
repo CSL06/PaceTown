@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyRebalance, isMovable, proposeRebalance } from './rebalance'
+import { applyRebalance, applySelected, isMovable, proposeRebalance } from './rebalance'
 import { dailyLoad } from './workload'
 import { DEMO_DAY, DEMO_DESTINATION, demoTasks } from './seed'
 import type { Task } from './types'
@@ -91,6 +91,26 @@ describe('approval', () => {
     const proposal = proposeRebalance(calm, opts)
     expect(proposal.moves).toHaveLength(0)
     expect(applyRebalance(calm, proposal).map((t) => t.day)).toEqual(['thu'])
+  })
+
+  it('applies only the selected moves on partial approval', () => {
+    const tasks = demoTasks()
+    const proposal = proposeRebalance(tasks, opts)
+    expect(proposal.moves.length).toBeGreaterThan(1)
+    const [first] = proposal.moves
+    const applied = applySelected(tasks, proposal, [first.taskId])
+    for (const t of applied) {
+      expect(t.day).toBe(t.id === first.taskId ? DEMO_DESTINATION : DEMO_DAY)
+    }
+    const partial = dailyLoad(applied, DEMO_DAY, 900).percentage
+    expect(partial).toBeLessThan(proposal.before.percentage)
+    expect(partial).toBeGreaterThanOrEqual(proposal.after.percentage)
+  })
+
+  it('applies nothing when the selection is empty', () => {
+    const tasks = demoTasks()
+    const proposal = proposeRebalance(tasks, opts)
+    expect(applySelected(tasks, proposal, []).map((t) => t.day).every((d) => d === DEMO_DAY)).toBe(true)
   })
 })
 

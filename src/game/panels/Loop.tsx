@@ -3,11 +3,12 @@
  * Pace Session itself. Every figure here comes from src/domain.
  */
 
+import { useState } from 'react'
 import {
   BLOCKERS, DEMO_DESTINATION, DEMO_DESTINATION_CAPACITY, EFFORT_WEIGHT, PLAN_TEMPLATES,
-  PRIORITY_WEIGHT, URGENCY_WEIGHT, applyRebalance, bandFor, buildCheckpoints, dailyLoad,
+  PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
   extractDeliverables, guardianFor, parseSchedule, proposeRebalance, REWARDS, sessionReward,
-  wakingMinutes, weightedDemand,
+  wakingMinutes, weightedDemand, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
@@ -23,6 +24,14 @@ const fmt = (n: number) => n.toFixed(1)
 
 export function Intake({ state, update, go, toast }: PanelProps) {
   const parsed = parseSchedule(state.scheduleText)
+  // An editable copy of the parse result. Null means "showing the live parse".
+  const [draft, setDraft] = useState<Task[] | null>(null)
+  const [draftSource, setDraftSource] = useState<string | null>(null)
+  const rows = draft ?? parsed.tasks
+  const stale = draft !== null && draftSource !== state.scheduleText
+
+  const patchRow = (id: string, patch: Partial<Task>) =>
+    setDraft((d) => (d ?? parsed.tasks).map((t) => (t.id === id ? { ...t, ...patch } : t)))
 
   return (
     <>
@@ -49,16 +58,70 @@ export function Intake({ state, update, go, toast }: PanelProps) {
             ))}
           </div>
         )}
+        <div className="actions">
+          {draft === null ? (
+            <button className="secondary" type="button" onClick={() => {
+              setDraft(parsed.tasks.map((t) => ({ ...t })))
+              setDraftSource(state.scheduleText)
+            }}>Review as editable list</button>
+          ) : (
+            <>
+              <button className="secondary" type="button" onClick={() => {
+                setDraft(parsed.tasks.map((t) => ({ ...t })))
+                setDraftSource(state.scheduleText)
+              }}>Re-parse{stale ? ' (text changed)' : ''}</button>
+              <button className="secondary" type="button" onClick={() => setDraft(null)}>
+                Back to parse preview
+              </button>
+            </>
+          )}
+        </div>
         <div className="scroll">
           <table>
-            <thead><tr><th>Commitment</th><th>Area</th><th>Type</th><th className="num">Minutes</th></tr></thead>
+            <thead><tr><th>Commitment</th><th>Area</th><th>Type</th><th className="num">Minutes</th><th>Day</th><th /></tr></thead>
             <tbody>
-              {parsed.tasks.map((t) => (
+              {rows.map((t) => (
                 <tr key={t.id}>
-                  <td>{t.title}</td>
-                  <td>{AREA_LABEL[t.category]}</td>
-                  <td>{t.flexibility}</td>
-                  <td className="num">{t.estimatedMinutes}</td>
+                  <td>
+                    {draft === null ? t.title : (
+                      <input aria-label={`Title for ${t.id}`} value={t.title}
+                        onChange={(e) => patchRow(t.id, { title: e.target.value })}
+                        style={{ width: '100%' }} />
+                    )}
+                  </td>
+                  <td>{draft === null ? AREA_LABEL[t.category] : (
+                    <select aria-label={`Area for ${t.title}`} value={t.category}
+                      onChange={(e) => patchRow(t.id, { category: e.target.value as Task['category'] })}>
+                      {(Object.keys(AREA_LABEL) as (keyof typeof AREA_LABEL)[]).map((k) => (
+                        <option key={k} value={k}>{AREA_LABEL[k]}</option>
+                      ))}
+                    </select>
+                  )}</td>
+                  <td>{draft === null ? t.flexibility : (
+                    <select aria-label={`Type for ${t.title}`} value={t.flexibility}
+                      onChange={(e) => patchRow(t.id, { flexibility: e.target.value as Task['flexibility'] })}>
+                      <option value="fixed">fixed</option>
+                      <option value="flexible">flexible</option>
+                    </select>
+                  )}</td>
+                  <td className="num">{draft === null ? t.estimatedMinutes : (
+                    <input aria-label={`Minutes for ${t.title}`} type="number" min={5} max={480}
+                      value={t.estimatedMinutes} style={{ width: 64 }}
+                      onChange={(e) => patchRow(t.id, {
+                        estimatedMinutes: Math.max(5, Math.min(480, Number(e.target.value) || 5)),
+                      })} />
+                  )}</td>
+                  <td>{draft === null ? t.day : (
+                    <select aria-label={`Day for ${t.title}`} value={t.day}
+                      onChange={(e) => patchRow(t.id, { day: e.target.value })}>
+                      <option value="thu">Thu</option>
+                      <option value="sat">Sat</option>
+                    </select>
+                  )}</td>
+                  <td>{draft !== null && (
+                    <button className="secondary" type="button" aria-label={`Remove ${t.title}`}
+                      onClick={() => setDraft((d) => (d ?? []).filter((x) => x.id !== t.id))}>✕</button>
+                  )}</td>
                 </tr>
               ))}
             </tbody>
@@ -66,9 +129,11 @@ export function Intake({ state, update, go, toast }: PanelProps) {
         </div>
         <div className="actions">
           <button className="primary" type="button" onClick={() => {
-            update((s) => record({ ...s, tasks: parsed.tasks, rebalanceSeen: false, rebalanceApproved: false },
+            const saving = (draft ?? parsed.tasks).filter((t) => t.title.trim().length > 0)
+            update((s) => record({ ...s, tasks: saving, rebalanceSeen: false, rebalanceApproved: false },
               'Saved parsed commitments',
-              `${parsed.tasks.length} commitments reviewed and approved before saving.`))
+              `${saving.length} commitments reviewed and approved before saving.`))
+            setDraft(null)
             toast('Commitments saved')
             go('understand')
           }}>Save these commitments</button>
@@ -162,6 +227,16 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     day: 'thu', destination: DEMO_DESTINATION, waking,
   })
   const locked = state.tasks.filter((t) => t.day === 'thu' && t.flexibility === 'fixed')
+  // Null means "all proposed moves selected".
+  const [selected, setSelected] = useState<string[] | null>(null)
+  const selectedIds = selected ?? proposal.moves.map((m) => m.taskId)
+  const selectedMoves = proposal.moves.filter((m) => selectedIds.includes(m.taskId))
+  const afterThu = dailyLoad(applySelected(state.tasks, proposal, selectedIds), 'thu', waking)
+
+  const toggle = (id: string) => setSelected((s) => {
+    const current = s ?? proposal.moves.map((m) => m.taskId)
+    return current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
+  })
 
   if (state.rebalanceSeen) {
     return (
@@ -192,7 +267,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     )
   }
 
-  const moved = proposal.moves.reduce((sum, m) => sum + m.weightedMinutes, 0)
+  const moved = selectedMoves.reduce((sum, m) => sum + m.weightedMinutes, 0)
   const satBefore = (DEMO_DESTINATION_CAPACITY.committedWeighted / DEMO_DESTINATION_CAPACITY.wakingMinutes) * 100
   const satAfter = ((DEMO_DESTINATION_CAPACITY.committedWeighted + moved) / DEMO_DESTINATION_CAPACITY.wakingMinutes) * 100
 
@@ -215,19 +290,22 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
 
       {proposal.moves.map((m) => {
         const task = state.tasks.find((t) => t.id === m.taskId)!
+        const on = selectedIds.includes(m.taskId)
         return (
-          <div className="move" key={m.taskId}>
+          <label className="move" key={m.taskId} style={{ opacity: on ? 1 : 0.55 }}>
+            <input type="checkbox" checked={on} onChange={() => toggle(m.taskId)}
+              aria-label={`Move ${m.title} to Saturday`} />
             <span>{m.title}
               <small>Thursday · {task.estimatedMinutes} min · due in {task.deadlineDays} days</small>
             </span>
             <span className="arrow" aria-hidden="true">→</span>
             <span>Saturday<small>within deadline · {fmt(m.weightedMinutes)} weighted min moved</small></span>
-          </div>
+          </label>
         )
       })}
 
       <div className="ba">
-        <DayCard name="Thursday" before={proposal.before.percentage} after={proposal.after.percentage} />
+        <DayCard name="Thursday" before={proposal.before.percentage} after={afterThu.percentage} />
         <DayCard name="Saturday" before={satBefore} after={satAfter} />
       </div>
 
@@ -237,17 +315,20 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
       </div>
 
       <div className="actions">
-        <button className="primary" type="button" onClick={() => {
-          const applied = applyRebalance(state.tasks, proposal)
+        <button className="primary" type="button" disabled={selectedMoves.length === 0} onClick={() => {
+          const applied = applySelected(state.tasks, proposal, selectedIds)
+          const titles = selectedMoves.map((m) => m.title).join(', ')
           update((s) => grow(record({
             ...s, tasks: applied, rebalanceSeen: true, rebalanceApproved: true,
           },
             'Rebalanced an overloaded day',
-            `${proposal.moves.map((m) => m.title).join(', ')} — moved to Saturday. ` +
-            `Thursday ${fmt(proposal.before.percentage)}% → ${fmt(proposal.after.percentage)}%.`,
+            `${titles} — moved to Saturday. ` +
+            `Thursday ${fmt(proposal.before.percentage)}% → ${fmt(afterThu.percentage)}%.`,
             REWARDS.rebalance)))
           toast(`Rebalanced · +${REWARDS.rebalance.xp} XP`)
-        }}>Approve these {proposal.moves.length} moves</button>
+        }}>Approve {selectedMoves.length === proposal.moves.length
+          ? `these ${selectedMoves.length} moves`
+          : `${selectedMoves.length} of ${proposal.moves.length} moves`}</button>
         <button className="secondary" type="button" onClick={() => {
           update((s) => record({ ...s, rebalanceSeen: true },
             'Declined the rebalance proposal', 'The week was left exactly as it was.'))
@@ -261,7 +342,9 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
 /* --------------------------------------------------------- choose work */
 
 export function Work({ state, load, update, go }: PanelProps) {
-  const task = load.contributors[0]?.task
+  const candidates = load.contributors.map((c) => c.task)
+  const [taskId, setTaskId] = useState<string | null>(null)
+  const task = candidates.find((t) => t.id === taskId) ?? candidates[0]
   if (!task) return <div className="card"><h2>No flexible work left on Thursday</h2></div>
 
   const active = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
@@ -270,6 +353,19 @@ export function Work({ state, load, update, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Library · choose the work</div>
+      {candidates.length > 1 && (
+        <div className="field">
+          <label htmlFor="workTask">Which commitment</label>
+          <select id="workTask" value={task.id}
+            onChange={(e) => setTaskId(e.target.value)}>
+            {candidates.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.title} · {t.estimatedMinutes} min
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <h2>{task.title}</h2>
       <p className="lede">
         {task.estimatedMinutes} estimated minutes · the largest single contributor to Thursday.
@@ -296,15 +392,56 @@ export function Work({ state, load, update, go }: PanelProps) {
             <p className="note" style={{ marginTop: 6 }}>From your brief: {state.deliverables.join(' · ')}</p>
           )}
           <div style={{ marginTop: 10 }}>
-            {state.checkpoints.map((c) => (
-              <button key={c.id} className="cp" type="button" aria-pressed={state.activeCheckpointId === c.id}
-                onClick={() => update((s) => ({ ...s, activeCheckpointId: c.id }))}>
-                <span className="cp-head">
-                  <strong>{c.title}</strong><span className="mins">{c.estimatedMinutes} min</span>
-                </span>
-                <span className="dod"><b>Done when:</b> {c.definitionOfDone}</span>
-              </button>
+            {state.checkpoints.map((c, index) => (
+              <div key={c.id} style={{ display: 'flex', gap: 6, alignItems: 'stretch', marginTop: 8 }}>
+                <button className="cp" type="button" aria-pressed={state.activeCheckpointId === c.id}
+                  style={{ flex: 1 }}
+                  onClick={() => update((s) => ({ ...s, activeCheckpointId: c.id }))}>
+                  <span className="cp-head">
+                    <strong>{c.title}</strong><span className="mins">{c.estimatedMinutes} min</span>
+                  </span>
+                  <span className="dod"><b>Done when:</b> {c.definitionOfDone}</span>
+                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <button className="secondary" type="button" aria-label={`Move ${c.title} up`}
+                    disabled={index === 0} style={{ padding: '4px 8px' }}
+                    onClick={() => update((s) => {
+                      const list = [...s.checkpoints]
+                      const [item] = list.splice(index, 1)
+                      list.splice(index - 1, 0, item)
+                      return { ...s, checkpoints: list }
+                    })}>↑</button>
+                  <button className="secondary" type="button" aria-label={`Move ${c.title} down`}
+                    disabled={index === state.checkpoints.length - 1} style={{ padding: '4px 8px' }}
+                    onClick={() => update((s) => {
+                      const list = [...s.checkpoints]
+                      const [item] = list.splice(index, 1)
+                      list.splice(index + 1, 0, item)
+                      return { ...s, checkpoints: list }
+                    })}>↓</button>
+                  <button className="secondary" type="button" aria-label={`Remove ${c.title}`}
+                    style={{ padding: '4px 8px' }}
+                    onClick={() => update((s) => ({
+                      ...s,
+                      checkpoints: s.checkpoints.filter((x) => x.id !== c.id),
+                      activeCheckpointId: s.activeCheckpointId === c.id ? null : s.activeCheckpointId,
+                    }))}>✕</button>
+                </div>
+              </div>
             ))}
+          </div>
+          <div className="actions">
+            <button className="secondary" type="button" onClick={() => {
+              const id = `manual-${Date.now()}`
+              update((s) => ({
+                ...s,
+                checkpoints: [...s.checkpoints, {
+                  id, title: 'My own checkpoint', definitionOfDone: 'I decide what finished looks like.',
+                  estimatedMinutes: 15, status: 'pending' as const,
+                }],
+                activeCheckpointId: id,
+              }))
+            }}>Add my own checkpoint</button>
           </div>
         </>
       )}
@@ -325,6 +462,15 @@ export function Work({ state, load, update, go }: PanelProps) {
                 ...s,
                 checkpoints: s.checkpoints.map((c) => c.id === active.id
                   ? { ...c, estimatedMinutes: Math.max(5, Math.min(180, Number(e.target.value) || 5)) } : c),
+              }))} />
+          </div>
+          <div className="field">
+            <label htmlFor="cpDod">What finished looks like</label>
+            <textarea id="cpDod" value={active.definitionOfDone} rows={2}
+              onChange={(e) => update((s) => ({
+                ...s,
+                checkpoints: s.checkpoints.map((c) => c.id === active.id
+                  ? { ...c, definitionOfDone: e.target.value } : c),
               }))} />
           </div>
           <div className="actions">
