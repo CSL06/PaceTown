@@ -129,3 +129,34 @@ and every number I show is calculated from it."*
   the point (equal rewards), and say so.
 - **Offline dare**: `npm run build; npm run preview`, then disconnect — the
   shell is runtime-cached and saves persist.
+
+## Function reference (presenter-only — own notes, not for the audience)
+
+What each function does, where it lives, and which act shows it.
+
+| Function | What it does (own words) | Key files | Act |
+|---|---|---|---|
+| Title + Kai intro | Title screen, computed Thursday %, first-run explainer dialogue | `src/game/Game.tsx`, `src/domain/seed.ts` | 1 |
+| Town Hall intake | Parses plain-language week into editable commitments; brief → deliverables; nothing saves until approved | `src/game/panels/Loop.tsx` (Intake), `src/domain/parse.ts` | 1 |
+| Understand | Shows the arithmetic per task: minutes × priority × effort × urgency ÷ available | `src/game/panels/Loop.tsx` (Understand), `src/domain/workload.ts` | 1 |
+| Rebalance Workshop | Greedy proposal (low-priority, most slack first); per-move checkboxes; approve-all/partial/reject | `src/game/panels/Loop.tsx` (Rebalance), `src/domain/rebalance.ts` | 2 |
+| Library work plans | Blocker → guardian + editable checkpoints grounded in your task and brief | `src/game/panels/Loop.tsx` (Work), `src/domain/plans.ts` | 3 |
+| Pace Session | One checkpoint, timer (never decisive), scratchpad, 6 contextual help modes, stuck actions, 4 valid outcomes + next action | `src/game/panels/Loop.tsx` (Session), `src/domain/guidance.ts` | 3 |
+| Gentle Ripples | Interactive pond: taps → ripples/petals/flowers, breath guide, response + 3 return paths, pause-resume safe | `src/game/panels/Ripples.tsx`, `src/domain/regulation.ts` | 4 |
+| Pocket of Green | 4 settings × self/photo × done/partial/changed/another + camera-denied; local greenery check; equal rewards | `src/game/panels/Pocket.tsx`, `src/domain/photo.ts` | 4 |
+| Firefly / Chime / Warm Cup / Lanterns | Playable-lite regulation games, each with response + spec'd return paths | `src/game/panels/Minis.tsx` | Encore |
+| Keepsakes pipeline | 4 photo policies → EXIF strip → privacy review → pixel filter or symbolic fallback → preview approval → placement | `src/game/panels/Keepsakes.tsx`, `src/domain/keepsake.ts` | 5 |
+| Collection | Private keepsake grid: filter, rename, move, download, delete; shows original retained/discarded | `src/game/panels/Keepsakes.tsx` (Collection) | 5 |
+| Journal | Auto timeline of rebalance, sessions, recovery, keepsakes, rewards + waiting next action | `src/game/panels/Places.tsx` (Journal), `src/game/state.ts` | 5 |
+| Backpack | Thursday's load as carried items: locked vs flexible badges; routes to session/rebalance | `src/game/panels/Places.tsx` (Backpack) | 2–3 |
+| Recovery Garden | 5 CSS growth stages from work/recovery/replan/help; never wilts, never decays | `src/game/panels/Places.tsx` (Garden) | 5 |
+| Future Mailbox | One-line notes to your future self, surfaced next session | `src/game/panels/Places.tsx` (Mailbox) | Encore |
+| Guardian Council | Top-3 guardian voices by pressure area + one foregrounded recommendation; proposes, never applies | `src/game/panels/Places.tsx` (Council) | Q&A |
+| Calm Corner | All 5 activities with no prerequisites | `src/game/panels/Places.tsx` (Calm) | 4 |
+| Daily Briefing | Wake/sleep hours, optional energy/stress; guided % shown *beside* raw %, never instead | `src/game/panels/Places.tsx` (Briefing), `src/domain/workload.ts` | Q&A |
+| Daily Load + Weather | Full % breakdown, area bars, district weather states (fog, clock speed, parcels…) | `src/game/panels/Places.tsx` (LoadPanel), `src/game/Campus.tsx` | 1 |
+| HUD quest card | Up to 3 quests, 1 foregrounded under pressure, replaceable without penalty | `src/game/Game.tsx`, `src/domain/quests.ts` | 3 |
+| Home + Exit Quest | Quiet Mode, contrast, capacity, save export/delete, intentional stop with next action kept | `src/game/panels/Places.tsx` (Home) | Setup |
+| Town List | Every spatial place reachable by list; keyboard-first parity | `src/game/panels/Places.tsx` (TownList), `src/game/layout.ts` | All |
+| Saves + storage | Versioned localStorage (`pacetown.game`, v3 + migrations) behind a swap-ready adapter | `src/game/state.ts`, `src/game/storage.ts` | Setup |
+| Offline shell | Manifest + runtime-caching service worker (prod only) | `public/sw.js`, `public/manifest.webmanifest`, `src/main.tsx` | Dare |
