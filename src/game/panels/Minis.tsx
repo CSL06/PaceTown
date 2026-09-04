@@ -120,9 +120,9 @@ export function Firefly({ state, load, update, go, toast }: PanelProps) {
       {done && !response && <Respond onPick={setResponse} />}
       {done && response && (
         <Returns options={[
-          { label: 'Return to work', detail: 'The same checkpoint is waiting.', onGo: () => finish(() => go(state.activeCheckpointId ? 'session' : null)) },
+          { label: 'Resume checkpoint', detail: 'The same notes and next action.', onGo: () => finish(() => go(state.activeCheckpointId ? 'session' : null)) },
           { label: 'Save a thought', detail: 'Send a line to the Future Mailbox.', onGo: () => finish(() => go('mailbox')) },
-          { label: 'Rest here', detail: 'Close with nothing further.', onGo: () => finish(() => go(null)) },
+          { label: 'Continue resting', detail: 'Close with nothing further.', onGo: () => finish(() => go(null)) },
         ]} />
       )}
       {!done && (
@@ -178,7 +178,7 @@ export function Chime({ state, load, update, go, toast }: PanelProps) {
         <Returns options={[
           { label: 'Choose one next action', detail: 'Back to the work plan.', onGo: () => finish(() => go('work')) },
           { label: 'Rebalance', detail: 'See what can safely move.', onGo: () => finish(() => go('rebalance')) },
-          { label: 'Return', detail: 'Back to the campus.', onGo: () => finish(() => go(null)) },
+          { label: 'Return to campus', detail: 'Back to the campus.', onGo: () => finish(() => go(null)) },
         ]} />
       )}
     </div>
@@ -234,7 +234,7 @@ export function WarmCup({ state, load, update, go, toast }: PanelProps) {
       {done && !response && <Respond onPick={setResponse} />}
       {done && response && (
         <Returns options={[
-          { label: 'Work together', detail: 'A quiet body-doubling session with Sky.', onGo: () => finish(() => go(state.activeCheckpointId ? 'session' : 'work')) },
+          { label: 'Work together (Pace Session)', detail: 'A quiet body-doubling session with Sky.', onGo: () => finish(() => go(state.activeCheckpointId ? 'session' : 'work')) },
           { label: 'Schedule later', detail: 'Send the plan to the Future Mailbox.', onGo: () => finish(() => go('mailbox')) },
           { label: 'Sit a little longer', detail: 'Stay with the cup a while.', onGo: () => finish(() => go(null)) },
         ]} />

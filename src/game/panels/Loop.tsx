@@ -255,6 +255,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
       <div className="card">
         <div className="eyebrow">Rebalance Workshop</div>
         <h2>Thursday is now {fmt(load.percentage)}% <HelpDot view="rebalance" state={state} load={load} /></h2>
+        <p className="lede">Heavy means a full day, not a failed one — one checkpoint still fits.</p>
         <Guardian who="kai" says="Moving things cannot help further. What is left is real work — shall we make it smaller?" />
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('work')}>Handle what remains</button>

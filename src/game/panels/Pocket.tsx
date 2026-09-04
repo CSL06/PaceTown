@@ -10,7 +10,7 @@
 
 import { useRef, useState } from 'react'
 import {
-  questReward, statsFromPixels, verifyPocketPhoto, type PhotoVerificationResult,
+  REWARDS, questReward, statsFromPixels, verifyPocketPhoto, type PhotoVerificationResult,
 } from '../../domain'
 import { grow, record } from '../state'
 import { Guardian } from './Guardian'
@@ -120,7 +120,8 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
         <h2>{lastOutcome === 'changed' ? 'Changed mind — no penalty' : 'Recovery recorded'} <HelpDot view="pocket" state={state} load={load} /></h2>
         <p className="lede">
           Self-confirmation and photo confirmation earn identically. Photo use grants no XP, coins,
-          rarity, or progression advantage.
+          rarity, or progression advantage. The first recovery pays {REWARDS.recovery.xp} XP —
+          further pauses cost nothing and earn nothing.
         </p>
         <div className="opts">
           {(lastOutcome === 'done' || lastOutcome === 'partial') && (
@@ -156,7 +157,7 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
 
       {step === 'path' && (
         <>
-          <div className="eyebrow" style={{ marginTop: 16 }}>Choose your setting</div>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 1 of 3 — Choose your setting</div>
           <div className="opts">
             {PATHS.map((p) => (
               <button key={p.id} className="opt" type="button" aria-pressed={path === p.id}
@@ -182,7 +183,7 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
 
       {step === 'method' && (
         <>
-          <div className="eyebrow" style={{ marginTop: 16 }}>How to confirm</div>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 2 of 3 — How to confirm</div>
           <div className="opts">
             <button className="opt" type="button" aria-pressed={method === 'self'}
               onClick={() => { setMethod('self'); setVerification(null); setPhotoURL(null) }}>
@@ -250,17 +251,17 @@ export function Pocket({ state, load, update, go, toast }: PanelProps) {
 
       {step === 'outcome' && (
         <>
-          <div className="eyebrow" style={{ marginTop: 16 }}>How did it go?</div>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 3 of 3 — How did it go?</div>
           <div className="outcomes">
             <button type="button" onClick={() => complete('done')}>Done</button>
             <button type="button" onClick={() => complete('partial')}>Partly done</button>
           </div>
           <div className="actions">
             <button className="secondary" type="button" onClick={() => complete('changed')}>
-              Changed my mind
+              Stop this quest (no reward, no penalty)
             </button>
             <button className="secondary" type="button" onClick={() => setStep('path')}>
-              Choose another
+              Back to setting choice
             </button>
           </div>
         </>

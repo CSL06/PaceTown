@@ -145,8 +145,10 @@ export const HELP: Record<ViewId, HelpContent> = {
     what: 'Three guardians read the same numbers you can see and propose one next step. You decide.',
     how: 'Read the voices, pick the recommendation or choose for yourself. The bell changes nothing by itself.',
     guardian: { who: 'kai', why: 'Kai chairs the numbers. All three speak, then you decide.' },
-    adaptive: (s, load) => {
-      const rec = load.percentage > 95 ? 'Make space' : s.outcome && !s.questOutcome ? 'Recover first' : 'Do one checkpoint'
+    adaptive: (s) => {
+      const open = !s.rebalanceSeen &&
+        proposeRebalance(s.tasks, { day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(s.capacity) }).moves.length > 0
+      const rec = open ? 'Rebalance the week' : s.outcome && !s.questOutcome ? 'Recover' : 'Choose the work'
       return `Right now the Council leans: ${rec}.`
     },
   },

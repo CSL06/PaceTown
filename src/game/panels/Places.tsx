@@ -191,14 +191,14 @@ export function Council({ state, load, go }: PanelProps) {
     .sort((a, b) => areas[b[1]] - areas[a[1]])
     .slice(0, 3)
 
-  // 'Make space' only while a rebalance is still undecided — afterwards the
-  // Council agrees with the HUD: recover if work was banked, else one checkpoint.
+  // One name per destination, shared with the HUD and the ? popups:
+  // 'Rebalance the week' only while a rebalance is still undecided.
   const waking = wakingMinutes(state.capacity)
   const rebalanceOpen = !state.rebalanceSeen &&
     proposeRebalance(state.tasks, { day: 'thu', destination: DEMO_DESTINATION, waking }).moves.length > 0
   const recommendation = rebalanceOpen
-    ? 'Make space'
-    : state.outcome && !state.questOutcome ? 'Recover first' : 'Do one checkpoint'
+    ? 'Rebalance the week'
+    : state.outcome && !state.questOutcome ? 'Recover' : 'Choose the work'
 
   return (
     <div className="card">
@@ -210,10 +210,10 @@ export function Council({ state, load, go }: PanelProps) {
       </p>
       {voices.map(([who, , says]) => <Guardian key={who} who={who} says={says} />)}
       <div className="card">
-        <div className="eyebrow">Foregrounded</div>
+        <div className="eyebrow">Recommended</div>
         <h3 style={{ fontSize: 18, marginTop: 5, color: 'var(--accent)' }}>{recommendation}</h3>
         <div className="opts">
-          {([['Do one checkpoint', 'work'], ['Make space', 'rebalance'], ['Recover first', 'recover'],
+          {([['Choose the work', 'work'], ['Rebalance the week', 'rebalance'], ['Recover', 'recover'],
             ['Gather what is missing', 'backpack'], ['Choose for myself', null]] as const).map(([label, view]) => (
             <button key={label} className="opt" type="button" aria-pressed={label === recommendation}
               onClick={() => go(view)}>
@@ -235,7 +235,8 @@ export function Recover({ state, load, update, go }: PanelProps) {
         <h2>Recovery recorded <HelpDot view="recover" state={state} load={load} /></h2>
         <p className="lede">
           Self-confirmation and photo confirmation earn identically. Photo use grants no XP, coins,
-          rarity, or progression advantage.
+          rarity, or progression advantage. The first recovery pays {REWARDS.recovery.xp} XP —
+          further pauses cost nothing and earn nothing.
         </p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('journal')}>See the Journal</button>

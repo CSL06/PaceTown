@@ -181,14 +181,11 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
 
       {step === 'policy' && (
         <>
-          <div className="eyebrow" style={{ marginTop: 16 }}>How should your photo be handled?</div>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 1 of 4 — How should your photo be handled?</div>
           <div className="opts">
             {POLICIES.map((p) => (
               <button key={p.id} className="opt" type="button" aria-pressed={policy === p.id}
-                onClick={() => {
-                  setPolicy(p.id)
-                  if (p.id === 'cancel') go('pocket')
-                }}>
+                onClick={() => setPolicy(p.id)}>
                 <span className="k">{policy === p.id ? '▸' : '○'}</span>
                 <span>{p.title}<small>{p.detail}</small></span>
               </button>
@@ -200,12 +197,19 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
               Continue
             </button>
           </div>
+          {policy === 'cancel' && (
+            <div className="actions">
+              <span className="note">Leave without making anything?</span>
+              <button className="secondary" type="button" onClick={() => go('pocket')}>Leave</button>
+              <button className="secondary" type="button" onClick={() => setPolicy(null)}>Stay</button>
+            </div>
+          )}
         </>
       )}
 
       {step === 'photo' && (
         <>
-          <div className="eyebrow" style={{ marginTop: 16 }}>Choose the photo</div>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 2 of 4 — Choose the photo</div>
           <p className="note">
             Redrawing the image strips location metadata before anything else happens.
             {policy === 'verify_and_discard' ? ' It is deleted immediately after verification.' : ''}
@@ -239,6 +243,7 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
 
       {step === 'generate' && (
         <>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 3 of 4 — Prepare it</div>
           <p className="lede" style={{ marginTop: 16 }}>
             {file
               ? 'The photo will be downsampled to the world grid and snapped to the PaceTown palette.'
@@ -255,7 +260,7 @@ export function Keepsakes({ state, load, update, go, toast }: PanelProps) {
 
       {step === 'preview' && preview && (
         <>
-          <div className="eyebrow" style={{ marginTop: 16 }}>Preview — approve before anything is placed</div>
+          <div className="eyebrow" style={{ marginTop: 16 }}>Step 4 of 4 — Preview: approve before anything is placed</div>
           <img src={preview} alt="Keepsake preview" width={192} height={192}
             style={{ imageRendering: 'pixelated', border: '1px solid var(--edge-hi)', marginTop: 8 }} />
           <p className="note">
