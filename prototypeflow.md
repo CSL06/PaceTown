@@ -132,31 +132,197 @@ and every number I show is calculated from it."*
 
 ## Function reference (presenter-only — own notes, not for the audience)
 
-What each function does, where it lives, and which act shows it.
+Read this if you are new to the system. Each function is explained in plain
+language: what it is, why it exists, and how to show it. Jargon is decoded on
+first use. Key files are listed so you can quote exact paths when asked.
 
-| Function | What it does (own words) | Key files | Act |
-|---|---|---|---|
-| Title + Kai intro | Title screen, computed Thursday %, first-run explainer dialogue | `src/game/Game.tsx`, `src/domain/seed.ts` | 1 |
-| Town Hall intake | Parses plain-language week into editable commitments; brief → deliverables; nothing saves until approved | `src/game/panels/Loop.tsx` (Intake), `src/domain/parse.ts` | 1 |
-| Understand | Shows the arithmetic per task: minutes × priority × effort × urgency ÷ available | `src/game/panels/Loop.tsx` (Understand), `src/domain/workload.ts` | 1 |
-| Rebalance Workshop | Greedy proposal (low-priority, most slack first); per-move checkboxes; approve-all/partial/reject | `src/game/panels/Loop.tsx` (Rebalance), `src/domain/rebalance.ts` | 2 |
-| Library work plans | Blocker → guardian + editable checkpoints grounded in your task and brief | `src/game/panels/Loop.tsx` (Work), `src/domain/plans.ts` | 3 |
-| Pace Session | One checkpoint, timer (never decisive), scratchpad, 6 contextual help modes, stuck actions, 4 valid outcomes + next action | `src/game/panels/Loop.tsx` (Session), `src/domain/guidance.ts` | 3 |
-| Gentle Ripples | Interactive pond: taps → ripples/petals/flowers, breath guide, response + 3 return paths, pause-resume safe | `src/game/panels/Ripples.tsx`, `src/domain/regulation.ts` | 4 |
-| Pocket of Green | 4 settings × self/photo × done/partial/changed/another + camera-denied; local greenery check; equal rewards | `src/game/panels/Pocket.tsx`, `src/domain/photo.ts` | 4 |
-| Firefly / Chime / Warm Cup / Lanterns | Playable-lite regulation games, each with response + spec'd return paths | `src/game/panels/Minis.tsx` | Encore |
-| Keepsakes pipeline | 4 photo policies → EXIF strip → privacy review → pixel filter or symbolic fallback → preview approval → placement | `src/game/panels/Keepsakes.tsx`, `src/domain/keepsake.ts` | 5 |
-| Collection | Private keepsake grid: filter, rename, move, download, delete; shows original retained/discarded | `src/game/panels/Keepsakes.tsx` (Collection) | 5 |
-| Journal | Auto timeline of rebalance, sessions, recovery, keepsakes, rewards + waiting next action | `src/game/panels/Places.tsx` (Journal), `src/game/state.ts` | 5 |
-| Backpack | Thursday's load as carried items: locked vs flexible badges; routes to session/rebalance | `src/game/panels/Places.tsx` (Backpack) | 2–3 |
-| Recovery Garden | 5 CSS growth stages from work/recovery/replan/help; never wilts, never decays | `src/game/panels/Places.tsx` (Garden) | 5 |
-| Future Mailbox | One-line notes to your future self, surfaced next session | `src/game/panels/Places.tsx` (Mailbox) | Encore |
-| Guardian Council | Top-3 guardian voices by pressure area + one foregrounded recommendation; proposes, never applies | `src/game/panels/Places.tsx` (Council) | Q&A |
-| Calm Corner | All 5 activities with no prerequisites | `src/game/panels/Places.tsx` (Calm) | 4 |
-| Daily Briefing | Wake/sleep hours, optional energy/stress; guided % shown *beside* raw %, never instead | `src/game/panels/Places.tsx` (Briefing), `src/domain/workload.ts` | Q&A |
-| Daily Load + Weather | Full % breakdown, area bars, district weather states (fog, clock speed, parcels…) | `src/game/panels/Places.tsx` (LoadPanel), `src/game/Campus.tsx` | 1 |
-| HUD quest card | Up to 3 quests, 1 foregrounded under pressure, replaceable without penalty | `src/game/Game.tsx`, `src/domain/quests.ts` | 3 |
-| Home + Exit Quest | Quiet Mode, contrast, capacity, save export/delete, intentional stop with next action kept | `src/game/panels/Places.tsx` (Home) | Setup |
-| Town List | Every spatial place reachable by list; keyboard-first parity | `src/game/panels/Places.tsx` (TownList), `src/game/layout.ts` | All |
-| Saves + storage | Versioned localStorage (`pacetown.game`, v3 + migrations) behind a swap-ready adapter | `src/game/state.ts`, `src/game/storage.ts` | Setup |
-| Offline shell | Manifest + runtime-caching service worker (prod only) | `public/sw.js`, `public/manifest.webmanifest`, `src/main.tsx` | Dare |
+### Understand — see the week clearly
+
+**Title + Kai intro** (`src/game/Game.tsx`, `src/domain/seed.ts`).
+What it is: the opening screen. Kai, the planning guardian, tells you Thursday
+is at 108% before you see any menus. Why it exists: a stressed student should
+meet an explanation first, not a dashboard. How to show it: press Enter Campus
+Grove and read Kai's three lines aloud. The 108% is calculated live from the
+seeded week, not typed in.
+
+**Town Hall intake** (`src/game/panels/Loop.tsx` → Intake, `src/domain/parse.ts`).
+What it is: a plain-text box where the student describes their week ("lecture
+from 9 to 12…"), plus an optional assignment-brief box. A deterministic local
+parser turns the text into a list of commitments with time, category (time,
+mental, physical, social, errands), and fixed/flexible type. Anything the parser
+had to guess (e.g. "assumed 30 minutes") is shown as an assumption, never hidden.
+Why it exists: typing a week is easier than filling a form, and no AI is needed.
+How to show it: open Town Hall, point at confidence 1.00 and the 3 assumptions,
+click Review as editable list, edit one row, save.
+
+**Understand / Daily Load** (`Loop.tsx` → Understand, `src/domain/workload.ts`).
+What it is: the math behind the 108%. Each flexible task gets a *weighted
+demand* = minutes × priority weight × mental-effort weight × urgency weight;
+fixed commitments (lectures, shifts) instead shrink your available minutes.
+Load % = weighted demand ÷ available minutes. Bands: Open <60, Steady 60–80,
+Heavy 81–95, Overloaded 96–110, Unsustainable >110. Why it exists: every number
+on screen must be explainable — "explain every score" is a product rule.
+How to show it: open Understand, read one row's arithmetic aloud (ERD: 120 ×
+1.25 × 1.20 × 1.15 ≈ 207).
+
+**Daily Load + Load Weather** (`Places.tsx` → LoadPanel, `src/game/Campus.tsx`).
+What it is: the same numbers expressed two ways — a breakdown panel (waking
+minutes, fixed, available, weighted demand, top contributors) and ambient art on
+the map (Library fog = mental load, fast clock = time pressure, parcels =
+errands, café crowd = social, garden shade = physical). Why it exists: pressure
+should be *felt* in the world, not just read in a table — but never as damage;
+the town is never punished. How to show it: open Daily Load, then step back to
+the map and point at the fog and parcels.
+
+### Make space — reduce what can be reduced
+
+**Rebalance Workshop** (`Loop.tsx` → Rebalance, `src/domain/rebalance.ts`).
+What it is: Kai proposes moving flexible tasks with slack (low priority first,
+never past deadlines, never fixed events) to Saturday, with before/after
+percentages for both days. Checkboxes approve all, some, or none. Why it
+exists: students shouldn't have to spot the movable pieces themselves — but the
+app must never move anything without explicit approval. How to show it: uncheck
+a move, watch Thursday's after-value change, re-check, approve. Thursday
+108% → 91.5%, Saturday stays Open.
+
+**Backpack** (`Places.tsx` → Backpack). What it is: Thursday's tasks shown as
+things you *carry* — locked badges for fixed commitments, flexible badges for
+movable work, with minutes and weighted demand. Why it exists: workload as a
+container you can lighten, not a verdict on you. How to show it: open it before
+and after rebalancing — it gets visibly lighter.
+
+### Do the work — one checkpoint with a guardian
+
+**Library work plans** (`Loop.tsx` → Work, `src/domain/plans.ts`). What it is:
+pick a task, answer what's blocking you (unclear start, too large, missing
+knowledge/materials, low capacity, perfection pressure, something else), and get
+an editable checkpoint list from the guardian whose specialty matches (Mira for
+understanding, Kai for planning, Sol for low capacity, Sky for perfection
+pressure, Goh for materials). The first checkpoint is grounded in your brief's
+deliverables when a brief exists. Why it exists: intimidating work starts when
+it becomes one small, owned step. How to show it: pick "I do not know where to
+begin", extract brief deliverables, rewrite a checkpoint title live.
+
+**Pace Session** (`Loop.tsx` → Session, `src/domain/guidance.ts`). What it is:
+the focused workspace for one checkpoint: its definition of done, an optional
+timer (untimed by default — a timer reaching zero never completes anything),
+a scratchpad, six help modes (Plan, Explain, Brainstorm, Review, Debug, What
+next?), and always-available escape routes (Pause & regulate, Reduce scope,
+Reschedule, Save & leave). Sessions end as completed, partial, blocked, or
+rescheduled — all valid. Why it exists: help must arrive *inside* the work, and
+stopping honestly must be rewarded, not punished. How to show it: ask Mira to
+Explain (the answer references your task, not a canned example), pick Partial
+progress, save the next action.
+
+**Guardian Council** (`Places.tsx` → Council). What it is: when pressures
+compete, the three most relevant guardians each give one short read of the
+numbers (Mira names your largest contributor), and one recommendation is
+foregrounded: do one checkpoint, make space, recover first, gather what's
+missing, or choose for yourself. Why it exists: one clear suggestion beats five
+equal buttons when you're overloaded — but the student always decides. How to
+show it: open it after the session; it should say Recover first.
+
+### Recover — rest without losing progress
+
+**Gentle Ripples** (`src/game/panels/Ripples.tsx`, `src/domain/regulation.ts`).
+What it is: the flagship mini-game at the Garden Pavilion. Tap the pond to make
+ripples; petals drift, a fish swims, flowers bloom as you participate; an
+optional breathing circle (inhale 4, hold 2, exhale 6) can be hidden. No score,
+no failure, no minimum time; leaving early is a valid ending. It ends with an
+optional Lighter / Same / Not sure response (a preference, never a health
+score) and three return paths: resume, reduce scope, keep resting. Why it
+exists: regulation needs to be available before, during, and after work — and
+pausing must never lose your place. How to show it: tap a few times, toggle the
+breathing guide, finish, resume the checkpoint with notes intact.
+
+**Pocket of Green** (`src/game/panels/Pocket.tsx`, `src/domain/photo.ts`).
+What it is: the real-world quest at the Park — 5–10 minutes with something
+green, via four settings (go outside, open window, indoor plant, nature image).
+Confirm by your own word or an optional photo, which is checked *locally* for
+greenery/daylight only. Outcomes: done, partly done, changed mind, choose
+another; a denied camera falls back to self-confirm. Why it exists: recovery
+shouldn't require a screen, proof, or able-bodied outdoors access — and photos
+must never earn more than honesty. How to show it: pick window + self-confirm +
+Done, and say the XP (20) is identical either way.
+
+**Firefly Stories, Chime Drift, Warm Cup, Night Lanterns**
+(`src/game/panels/Minis.tsx`). What they are: the other four mini-games —
+follow story lights with Mira; tap slow chimes with Kai (or just watch); brew an
+unruinable drink with Sky; light a lantern for a worry with Goh. Same contract
+as Ripples: no score, muted by default, reduced-motion variants, early exit,
+response, and each game's own return paths. Why they exist: different stuck
+feelings need different pauses. How to show them: Calm Corner lists all five;
+if time is short, just open Warm Cup and complete the 4-step ritual.
+
+**Calm Corner** (`Places.tsx` → Calm). What it is: direct access to all five
+activities with zero prerequisites — no load score or active task needed. Why it
+exists: you shouldn't have to earn rest. Mention it when showing Ripples.
+
+### Remember and grow — nothing is lost
+
+**Pace Keepsakes pipeline** (`src/game/panels/Keepsakes.tsx`,
+`src/domain/keepsake.ts`). What it is: after an IRL quest, an optional photo
+can become private pixel art. You pick one of four explicit policies (verify
+and discard / keepsake and discard original / save both privately / cancel),
+the image is redrawn (which strips location metadata), you confirm a privacy
+checklist, a local palette filter (or symbolic fallback with no photo)
+generates the art, and you approve a preview before placing it in the Journal,
+Garden, town, mailbox, or collection. Why it exists: memories without
+surveillance — verification and art-making are separate, failure never blocks a
+keepsake, and photo users gain zero advantage. How to show it: create-and-
+discard → generate → approve → place in the Recovery Garden.
+
+**Collection** (`Keepsakes.tsx` → Collection). What it is: your private grid of
+keepsakes — filter by category, rename, move placement, download, delete. Each
+card states whether the original was retained or discarded. No feed, no
+trading, no rarity. Mention it right after placing a keepsake.
+
+**Journal** (`Places.tsx` → Journal, `src/game/state.ts`). What it is: an
+automatic private timeline — every rebalance, session, recovery, keepsake, and
+reward, plus the waiting next action. No mood scores, no streaks, no
+missed-day shame. Why it exists: returning students shouldn't have to
+reconstruct anything. How to show it: read the last three entries aloud at the
+end of the demo.
+
+**Recovery Garden** (`Places.tsx` → Garden). What it is: one plot with five
+growth stages, fed by work progress, recovery, replanning, and help-seeking.
+Nothing wilts; absence removes nothing. Why it exists: visible proof that
+sustainable choices accumulate. How to show it: point at the taller sprout in
+Act 5.
+
+**Future Mailbox** (`Places.tsx` → Mailbox). What it is: send your next action
+or a kind note to your future self; it waits for the next session instead of
+nagging you. Show it as a return choice after Pocket of Green.
+
+**Daily Briefing** (`Places.tsx` → Briefing). What it is: wake/sleep hours plus
+optional energy/stress check-in. Energy *bends* the guidance within a bounded
+range and is always shown beside — never instead of — the raw %. Skipping is
+always one click. Mention it when asked "what if I'm tired."
+
+### System — the invisible parts worth naming
+
+**HUD quest card** (`src/game/Game.tsx`, `src/domain/quests.ts`). What it is:
+the bottom-left card that always shows one foregrounded quest (up to three
+exist; only one is pushed under high pressure) plus a resume card when a
+checkpoint is in progress. Quests can be replaced without penalty; frequently
+skipped kinds appear less often. Name it when it flips to "Recover first."
+
+**Home + Exit Quest** (`Places.tsx` → Home). What it is: Quiet Mode (less
+motion, life, and effects), high contrast, capacity settings, save export
+(JSON) and deletion — plus the Exit Quest: close the day intentionally with
+progress recorded and the next action kept. Start here to reset the demo.
+
+**Town List** (`Places.tsx` → TownList, `src/game/layout.ts`). What it is: a
+list that reaches every place on the map — nothing is pointer-only. It is the
+keyboard and screen-reader path through the whole game. Mention it whenever you
+walk somewhere: "or Town List, same destination."
+
+**Saves + storage** (`src/game/state.ts`, `src/game/storage.ts`). What it is:
+versioned saves in the browser (currently v3, migrated forward — never wiped)
+behind an adapter, so production can swap in IndexedDB later. Mention it when
+you reload mid-demo without fear.
+
+**Offline shell** (`public/sw.js`, `public/manifest.webmanifest`,
+`src/main.tsx`). What it is: the app is an installable PWA whose shell is
+runtime-cached, so a built copy works with the Wi-Fi off. Save it for the
+closing dare.
