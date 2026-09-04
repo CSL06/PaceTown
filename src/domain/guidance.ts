@@ -7,7 +7,7 @@
  * editable: the student reviews everything before acting on it.
  */
 
-import type { BlockerKind } from './types'
+import type { BlockerKind, GuardianId } from './types'
 
 export type HelpMode = 'Plan' | 'Explain' | 'Brainstorm' | 'Review' | 'Debug' | 'What next?'
 
@@ -18,6 +18,7 @@ export const HELP_MODES: readonly HelpMode[] = [
 export interface GuideContext {
   taskTitle?: string
   checkpointTitle?: string
+  checkpointMinutes?: number
   definitionOfDone?: string
   deliverables?: string[]
 }
@@ -38,6 +39,9 @@ function modeLines(mode: HelpMode, ctx: GuideContext): string[] {
         firstDeliverable
           ? `The brief names “${firstDeliverable}” — let that be the whole scope of ${c}.`
           : `Then shrink ${c} until it fits the time you actually have.`,
+        ctx.checkpointMinutes
+          ? `This checkpoint runs about ${ctx.checkpointMinutes} min — start its first two minutes now.`
+          : 'Start the first two minutes now — momentum first, plan second.',
       ]
     case 'Explain':
       return [
@@ -45,11 +49,13 @@ function modeLines(mode: HelpMode, ctx: GuideContext): string[] {
         ctx.definitionOfDone?.trim()
           ? `Finished means: ${ctx.definitionOfDone.trim()}`
           : 'If you cannot say what finished looks like, that is the first thing to write down.',
+        'Write that explanation in the scratchpad below — one messy paragraph is enough.',
       ]
     case 'Brainstorm':
       return [
         `List every approach to ${t} you can think of — bad ideas included, speed over quality. Start from ${c}.`,
         'Then cross out every approach your brief or instructions never mention.',
+        'Pick the least-bad idea left and write it as the next action.',
       ]
     case 'Review':
       return [
@@ -57,16 +63,19 @@ function modeLines(mode: HelpMode, ctx: GuideContext): string[] {
           ? `Check ${t} against one line only: ${ctx.definitionOfDone.trim()}`
           : `Check ${t} against ${c}: does it do what the checkpoint promised?`,
         'Mark exactly one thing to improve. The rest stays as it is.',
+        'If it meets the definition of done, say so in What changed — then it is done.',
       ]
     case 'Debug':
       return [
         `Describe what you expected ${t} to do, and what it actually does — in one sentence each.`,
         'If two parts both seem to own the same piece, it usually belongs to the connection between them.',
+        'Change one thing, then re-check once: did the behavior move?',
       ]
     case 'What next?':
       return [
         `The smallest next action on ${c} for ${t} is one you could start in under two minutes.`,
         'Name it out loud, write it as the next action, and stop planning there.',
+        'Type it into “The easiest next starting action” below, so future-you starts in seconds.',
       ]
   }
 }
@@ -94,11 +103,28 @@ function blockerTip(blocker: BlockerKind, mode: HelpMode): string | null {
   return null
 }
 
+/** One guardian lens: whose voice the answer arrives in. */
+function guardianLens(guardian: GuardianId): string {
+  switch (guardian) {
+    case 'mira': return 'Mira, your study partner: let’s make this understandable before making it done.'
+    case 'kai': return 'Kai, your planner: let’s make this fit the time you actually have.'
+    case 'sol': return 'Sol, your sustainer: smaller is legitimate — stopping after it is complete.'
+    case 'sky': return 'Sky, keeping you company: no pressure here, rough on purpose.'
+    case 'goh': return 'Goh, your finisher: gather what’s missing first — that is the work right now.'
+  }
+}
+
 /**
  * Guidance lines for one help request. Always mentions the student's task;
  * never falls back to a hardcoded example assignment.
  */
-export function guideLines(blocker: BlockerKind, mode: HelpMode, ctx: GuideContext = {}): string[] {
+export function guideLines(
+  blocker: BlockerKind,
+  mode: HelpMode,
+  ctx: GuideContext = {},
+  guardian?: GuardianId,
+): string[] {
   const tip = blockerTip(blocker, mode)
-  return tip ? [...modeLines(mode, ctx), tip] : modeLines(mode, ctx)
+  const head = guardian ? [guardianLens(guardian)] : []
+  return tip ? [...head, ...modeLines(mode, ctx), tip] : [...head, ...modeLines(mode, ctx)]
 }

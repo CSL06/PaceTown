@@ -20,7 +20,8 @@ export interface QuestContext {
   loadPercentage: number
   hasOutcome: boolean
   hasRecovery: boolean
-  hasCheckpoint: boolean
+  /** At least one checkpoint still open — finished work is never re-offered. */
+  hasOpenCheckpoint: boolean
   rebalanceAvailable: boolean
   taskTitle: string | null
   nextAction: string | null
@@ -43,14 +44,12 @@ export function selectQuests(ctx: QuestContext, skipped: readonly string[] = [])
       detail: 'Kai found safer placements. Nothing moves until you approve it.',
       view: 'rebalance',
     })
-  } else if (ctx.taskTitle) {
+  } else if (ctx.taskTitle && ctx.hasOpenCheckpoint) {
     quests.push({
       id: 'quest-checkpoint',
       kind: 'work',
       title: `One checkpoint: ${ctx.taskTitle}`,
-      detail: ctx.hasCheckpoint
-        ? 'Your checkpoint is held exactly as you left it.'
-        : 'Turn the largest contributor into one manageable checkpoint.',
+      detail: 'Your checkpoint is held exactly as you left it.',
       view: 'work',
     })
   }
@@ -71,7 +70,7 @@ export function selectQuests(ctx: QuestContext, skipped: readonly string[] = [])
       kind: 'choice',
       title: 'Resume your next action',
       detail: ctx.nextAction,
-      view: 'session',
+      view: 'journal',
     })
   } else {
     quests.push({

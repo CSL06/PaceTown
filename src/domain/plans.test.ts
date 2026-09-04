@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BLOCKERS, PLAN_TEMPLATES, buildCheckpoints, guardianFor } from './plans'
+import { BLOCKERS, PLAN_TEMPLATES, buildCheckpoints, guardianFor, resolveCheckpoint } from './plans'
 import type { BlockerKind } from './types'
 
 const ALL: BlockerKind[] = BLOCKERS.map((b) => b.id)
@@ -101,5 +101,37 @@ describe('task-aware checkpoints', () => {
         expect(c.estimatedMinutes).toBeLessThanOrEqual(30)
       }
     }
+  })
+})
+
+describe('resolveCheckpoint', () => {
+  const plan = buildCheckpoints('unclear_start', { taskTitle: 'Weekly groceries' })
+
+  it('marks completed work completed', () => {
+    const [first] = plan
+    const next = resolveCheckpoint(plan, first.id, 'completed')
+    expect(next.find((c) => c.id === first.id)?.status).toBe('completed')
+  })
+
+  it('keeps partial and blocked work visibly open', () => {
+    const [first] = plan
+    expect(resolveCheckpoint(plan, first.id, 'partial').find((c) => c.id === first.id)?.status).toBe('partial')
+    expect(resolveCheckpoint(plan, first.id, 'blocked').find((c) => c.id === first.id)?.status).toBe('blocked')
+  })
+
+  it('returns rescheduled work to pending — waiting, not failed', () => {
+    const [first] = plan
+    expect(resolveCheckpoint(plan, first.id, 'rescheduled').find((c) => c.id === first.id)?.status).toBe('pending')
+  })
+
+  it('leaves every other checkpoint untouched', () => {
+    const next = resolveCheckpoint(plan, plan[0].id, 'completed')
+    expect(next.slice(1)).toEqual(plan.slice(1))
+  })
+
+  it('never mutates the caller’s list', () => {
+    const before = plan.map((c) => c.status)
+    resolveCheckpoint(plan, plan[0].id, 'completed')
+    expect(plan.map((c) => c.status)).toEqual(before)
   })
 })

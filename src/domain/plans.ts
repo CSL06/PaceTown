@@ -7,6 +7,7 @@
  */
 
 import type { BlockerKind, Checkpoint, GuardianId } from './types'
+import type { SessionOutcome } from './rewards'
 
 export interface BlockerOption {
   id: BlockerKind
@@ -169,4 +170,22 @@ export function buildCheckpoints(blocker: BlockerKind, ctx?: PlanContext): Check
 
 export function guardianFor(blocker: BlockerKind): GuardianId {
   return (PLAN_TEMPLATES[blocker] ?? PLAN_TEMPLATES.other).guardian
+}
+
+/**
+ * Resolve a checkpoint from a recorded session outcome. Completed work reads
+ * as completed; partial and blocked stay visibly open; rescheduled returns to
+ * pending — waiting, never failed. Never mutates the caller's list.
+ */
+export function resolveCheckpoint(
+  checkpoints: readonly Checkpoint[],
+  id: string,
+  outcome: SessionOutcome,
+): Checkpoint[] {
+  const status: Checkpoint['status'] =
+    outcome === 'completed' ? 'completed'
+    : outcome === 'partial' ? 'partial'
+    : outcome === 'blocked' ? 'blocked'
+    : 'pending'
+  return checkpoints.map((c) => (c.id === id ? { ...c, status } : c))
 }

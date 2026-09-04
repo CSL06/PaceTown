@@ -52,6 +52,8 @@ export interface GameState {
 
   rippleTaps: number
   questOutcome: 'done' | 'partial' | 'changed' | null
+  /** Set once any recovery has been completed; gates the reward, not the path. */
+  recoveryDone: boolean
 
   /** Pace Session workspace: timer, scratchpad, and where a pause came from. */
   session: {
@@ -138,6 +140,7 @@ export function initialState(): GameState {
 
     rippleTaps: 0,
     questOutcome: null,
+    recoveryDone: false,
 
     session: {
       elapsedSec: 0,
@@ -205,6 +208,7 @@ const MIGRATIONS: Migration[] = [
     ...s,
     version: 3,
     activeTaskId: typeof s.activeTaskId === 'string' ? s.activeTaskId : null,
+    recoveryDone: typeof s.recoveryDone === 'boolean' ? s.recoveryDone : false,
   }),
 ]
 

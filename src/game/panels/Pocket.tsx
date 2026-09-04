@@ -80,10 +80,12 @@ export function Pocket({ state, update, go, toast }: PanelProps) {
 
   const complete = (outcome: 'done' | 'partial' | 'changed') => {
     const confirmation = method === 'photo' ? 'photo' : 'self'
-    const reward = questReward(outcome, confirmation)
+    const firstTime = !state.recoveryDone
+    const reward = firstTime ? questReward(outcome, confirmation) : undefined
     update((s) => grow(record({
       ...s,
       questOutcome: outcome === 'changed' ? 'changed' : outcome,
+      recoveryDone: true,
       pocket: {
         path,
         outcome: outcome === 'changed' ? 'changed' : outcome,
@@ -105,7 +107,7 @@ export function Pocket({ state, update, go, toast }: PanelProps) {
           `${verification ? ` · local check: ${verification.overall}` : ''}. ` +
           'Outdoor access is never assumed; every path earns the same.',
       reward)))
-    if (outcome !== 'changed') toast(`Quest ${outcome === 'done' ? 'complete' : 'partly done'} · +${reward.xp} XP`)
+    if (outcome !== 'changed' && firstTime) toast(`Quest ${outcome === 'done' ? 'complete' : 'partly done'} · +${reward!.xp} XP`)
     setStep('recorded')
   }
 

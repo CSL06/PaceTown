@@ -50,7 +50,21 @@ describe('guideLines', () => {
     const review = guideLines('perfection_pressure', 'Review', ctx).join(' ')
     expect(review).toMatch(/rough/i)
     const plain = guideLines('other', 'Review' as HelpMode, ctx)
-    expect(plain).toHaveLength(2)
+    expect(plain).toHaveLength(3)
+  })
+
+  it('speaks in the guardian’s voice when one is given', () => {
+    const kai = guideLines('too_large', 'Plan', ctx, 'kai').join(' ')
+    expect(kai).toMatch(/kai/i)
+    expect(kai).toMatch(/time you actually have/i)
+    const mira = guideLines('unclear_start', 'Explain', ctx, 'mira').join(' ')
+    expect(mira).toMatch(/mira/i)
+  })
+
+  it('gives every answer a concrete next physical action', () => {
+    expect(guideLines('other', 'Plan', ctx, 'kai').join(' ')).toMatch(/first two minutes/i)
+    expect(guideLines('other', 'Explain', ctx).join(' ')).toMatch(/scratchpad/i)
+    expect(guideLines('other', 'What next?', ctx).join(' ')).toMatch(/next starting action/i)
   })
 
   it('degrades gracefully without any context', () => {

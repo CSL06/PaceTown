@@ -222,8 +222,8 @@ export function Council({ state, load, go }: PanelProps) {
 
 /* ----------------------------------------------------------- recover */
 
-export function Recover({ state, update, go, toast }: PanelProps) {
-  if (state.questOutcome) {
+export function Recover({ state, update, go }: PanelProps) {
+  if (state.questOutcome === 'done' || state.questOutcome === 'partial') {
     return (
       <div className="card">
         <h2>Recovery recorded</h2>
@@ -233,6 +233,27 @@ export function Recover({ state, update, go, toast }: PanelProps) {
         </p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('journal')}>See the Journal</button>
+          <button className="secondary" type="button" onClick={() => {
+            update((s) => ({ ...s, questOutcome: null }))
+            go('calm')
+          }}>Choose another recovery</button>
+        </div>
+      </div>
+    )
+  }
+  if (state.session.pausedFrom) {
+    return (
+      <div className="card">
+        <div className="eyebrow">Recover</div>
+        <h2>Your session is on hold</h2>
+        <p className="lede">
+          Resume it whenever you are ready — your checkpoint, notes and timer are held exactly as
+          you left them. Recovery stays open alongside it.
+        </p>
+        <div className="actions">
+          <button className="primary" type="button" onClick={() => go('session')}>Resume Pace Session</button>
+          <button className="secondary" type="button" onClick={() => go('ripples')}>Gentle Ripples</button>
+          <button className="secondary" type="button" onClick={() => go('calm')}>Short reset</button>
         </div>
       </div>
     )
@@ -243,7 +264,7 @@ export function Recover({ state, update, go, toast }: PanelProps) {
       <div className="eyebrow">Recover</div>
       <h2>Two ways to pause</h2>
       <Guardian who="sol" says="Would you rather pause here with Gentle Ripples, or step away from the screen for a short reset? Neither is worth more than the other." />
-      {state.session.pausedFrom && (
+      {state.session.pausedFrom ? (
         <div className="actions" style={{ marginTop: 12 }}>
           <button className="primary" type="button" onClick={() => {
             update((s) => ({ ...s, session: { ...s.session, pausedFrom: null } }))
@@ -251,7 +272,7 @@ export function Recover({ state, update, go, toast }: PanelProps) {
           }}>Resume Pace Session</button>
           <span className="note">Your checkpoint, notes and timer are held exactly as you left them.</span>
         </div>
-      )}
+      ) : null}
       <div className="opts">
         <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◎</span>
@@ -272,7 +293,7 @@ export function Recover({ state, update, go, toast }: PanelProps) {
 
 /* ----------------------------------------------------------- journal */
 
-export function Journal({ state }: PanelProps) {
+export function Journal({ state, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Post Office</div>
@@ -282,7 +303,12 @@ export function Journal({ state }: PanelProps) {
         messaging when you come back.
       </p>
       {state.journal.length === 0
-        ? <p className="empty">Nothing recorded yet.</p>
+        ? <>
+            <p className="empty">Nothing recorded yet. Actions across town write here automatically.</p>
+            <div className="actions">
+              <button className="primary" type="button" onClick={() => go('intake')}>Start at Town Hall</button>
+            </div>
+          </>
         : [...state.journal].reverse().map((e) => {
           const d = new Date(e.at)
           return (

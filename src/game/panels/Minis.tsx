@@ -19,14 +19,17 @@ type Response = 'lighter' | 'same' | 'not_sure'
 function recordPlay(
   update: PanelProps['update'],
   toast: PanelProps['toast'],
+  state: PanelProps['state'],
   activity: string,
   label: string,
   pausedFrom: string | null,
   response: Response,
 ) {
+  const firstTime = !state.recoveryDone
   update((s) => grow(record({
     ...s,
     questOutcome: 'done',
+    recoveryDone: true,
     regulationSessions: [...s.regulationSessions, {
       at: Date.now(), activity, placement: pausedFrom ? 'mid_session' : 'standalone', response,
     }],
@@ -34,8 +37,8 @@ function recordPlay(
   },
     label,
     'A preference, not a health measurement.',
-    REWARDS.recovery)))
-  toast(`Recovery recorded · +${REWARDS.recovery.xp} XP`)
+    firstTime ? REWARDS.recovery : undefined)))
+  if (firstTime) toast(`Recovery recorded · +${REWARDS.recovery.xp} XP`)
 }
 
 function Respond({ onPick }: { onPick: (r: Response) => void }) {
@@ -83,7 +86,7 @@ export function Firefly({ state, update, go, toast }: PanelProps) {
   const done = placed !== null
 
   const finish = (fn: () => void) => {
-    if (done) recordPlay(update, toast, 'firefly_stories', 'Used Firefly Stories to settle', state.session.pausedFrom, response ?? 'not_sure')
+    if (done) recordPlay(update, toast, state, 'firefly_stories', 'Used Firefly Stories to settle', state.session.pausedFrom, response ?? 'not_sure')
     fn()
   }
 
@@ -146,7 +149,7 @@ export function Chime({ state, update, go, toast }: PanelProps) {
   }, [reduced, done])
 
   const finish = (fn: () => void) => {
-    recordPlay(update, toast, 'chime_drift', 'Used Chime Drift to slow a transition', state.session.pausedFrom, response ?? 'not_sure')
+    recordPlay(update, toast, state, 'chime_drift', 'Used Chime Drift to slow a transition', state.session.pausedFrom, response ?? 'not_sure')
     fn()
   }
 
@@ -193,7 +196,7 @@ export function WarmCup({ state, update, go, toast }: PanelProps) {
   const done = step >= CUP_STEPS.length
 
   const finish = (fn: () => void) => {
-    recordPlay(update, toast, 'warm_cup', 'Prepared a Warm Cup transition', state.session.pausedFrom, response ?? 'not_sure')
+    recordPlay(update, toast, state, 'warm_cup', 'Prepared a Warm Cup transition', state.session.pausedFrom, response ?? 'not_sure')
     fn()
   }
 
@@ -255,7 +258,7 @@ export function Lanterns({ state, update, go, toast }: PanelProps) {
   const [response, setResponse] = useState<Response | null>(null)
 
   const finish = (fn: () => void) => {
-    recordPlay(update, toast, 'night_lanterns', 'Placed a Night Lantern', state.session.pausedFrom, response ?? 'not_sure')
+    recordPlay(update, toast, state, 'night_lanterns', 'Placed a Night Lantern', state.session.pausedFrom, response ?? 'not_sure')
     fn()
   }
 

@@ -5,7 +5,7 @@ const ctx = (over: Partial<QuestContext> = {}): QuestContext => ({
   loadPercentage: 91.5,
   hasOutcome: false,
   hasRecovery: false,
-  hasCheckpoint: false,
+  hasOpenCheckpoint: false,
   rebalanceAvailable: true,
   taskTitle: 'ERD assignment',
   nextAction: null,
@@ -22,8 +22,18 @@ describe('selectQuests', () => {
   })
 
   it('offers a checkpoint quest when there is nothing left to move', () => {
-    const quests = selectQuests(ctx({ rebalanceAvailable: false }))
+    const quests = selectQuests(ctx({ rebalanceAvailable: false, hasOpenCheckpoint: true }))
     expect(quests.some((q) => q.id === 'quest-checkpoint')).toBe(true)
+  })
+
+  it('stops offering finished work — a completed checkpoint is not re-offered', () => {
+    const quests = selectQuests(ctx({ rebalanceAvailable: false, hasOpenCheckpoint: false }))
+    expect(quests.some((q) => q.id === 'quest-checkpoint')).toBe(false)
+  })
+
+  it('sends the saved next action to the journal, where it waits', () => {
+    const quests = selectQuests(ctx({ nextAction: 'Add the enrolment junction entity.' }))
+    expect(quests.find((q) => q.id === 'quest-next-action')?.view).toBe('journal')
   })
 
   it('stops offering recovery once recovery is recorded', () => {

@@ -173,7 +173,9 @@ export default function Game() {
   const stepsDone = LOOP_STEPS.filter(([, done]) => done(state)).length
   const level = levelOf(state.xp)
   const activeCheckpoint = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
-  const leadView: ViewId = load.percentage > 95 ? 'rebalance' : state.outcome ? 'recover' : 'work'
+  const leadView: ViewId = load.percentage > 95
+    ? 'rebalance'
+    : state.outcome && !state.questOutcome ? 'recover' : 'work'
   const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
 
   const waking = wakingMinutes(state.capacity)
@@ -183,7 +185,9 @@ export default function Game() {
     loadPercentage: load.percentage,
     hasOutcome: !!state.outcome,
     hasRecovery: !!state.questOutcome,
-    hasCheckpoint: !!state.activeCheckpointId,
+    hasOpenCheckpoint: state.checkpoints.length === 0
+      ? load.contributors.length > 0
+      : state.checkpoints.some((c) => c.status !== 'completed'),
     rebalanceAvailable: rebalanceOpen,
     taskTitle: load.contributors[0]?.task.title ?? null,
     nextAction: state.nextAction || null,

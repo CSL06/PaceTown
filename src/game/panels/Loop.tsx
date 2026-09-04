@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react'
 import {
   BLOCKERS, DEMO_DESTINATION, DEMO_DESTINATION_CAPACITY, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
-  extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS, sessionReward,
+  extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
+  resolveCheckpoint, sessionReward,
   wakingMinutes, weightedDemand, type HelpMode, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
@@ -345,7 +346,17 @@ export function Work({ state, load, update, go }: PanelProps) {
   const candidates = load.contributors.map((c) => c.task)
   const [taskId, setTaskId] = useState<string | null>(null)
   const task = candidates.find((t) => t.id === taskId) ?? candidates[0]
-  if (!task) return <div className="card"><h2>No flexible work left on Thursday</h2></div>
+  if (!task) {
+    return (
+      <div className="card">
+        <h2>No flexible work left on Thursday</h2>
+        <p className="lede">Everything is locked, moved, or done. Review the week to add more.</p>
+        <div className="actions">
+          <button className="primary" type="button" onClick={() => go('intake')}>Review commitments</button>
+        </div>
+      </div>
+    )
+  }
 
   const active = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
   const template = state.blocker ? PLAN_TEMPLATES[state.blocker] : null
@@ -394,13 +405,21 @@ export function Work({ state, load, update, go }: PanelProps) {
             <p className="note" style={{ marginTop: 6 }}>From your brief: {state.deliverables.join(' · ')}</p>
           )}
           <div style={{ marginTop: 10 }}>
+            {state.checkpoints.every((c) => c.status === 'completed') && state.checkpoints.length > 0 && (
+              <p className="note" style={{ marginBottom: 8 }}>
+                Every checkpoint here reads completed. Add one below, or pick another commitment above.
+              </p>
+            )}
             {state.checkpoints.map((c, index) => (
               <div key={c.id} style={{ display: 'flex', gap: 6, alignItems: 'stretch', marginTop: 8 }}>
                 <button className="cp" type="button" aria-pressed={state.activeCheckpointId === c.id}
                   style={{ flex: 1 }}
                   onClick={() => update((s) => ({ ...s, activeCheckpointId: c.id }))}>
                   <span className="cp-head">
-                    <strong>{c.title}</strong><span className="mins">{c.estimatedMinutes} min</span>
+                    <strong>{c.title}</strong>
+                    <span className="mins">
+                      {c.status && c.status !== 'pending' ? `${c.status} · ` : ''}{c.estimatedMinutes} min
+                    </span>
                   </span>
                   <span className="dod"><b>Done when:</b> {c.definitionOfDone}</span>
                 </button>
@@ -480,6 +499,7 @@ export function Work({ state, load, update, go }: PanelProps) {
               update((s) => record({
                 ...s,
                 activeTaskId: task.id,
+                outcome: null,
                 session: { ...s.session, elapsedSec: 0, pausedFrom: null },
               }, 'Began a planned Pace Session',
               `Checkpoint: ${active.title} · blocker identified before starting.`,
@@ -524,7 +544,15 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
   }, [ticking, update, toast])
 
   if (!active || !state.blocker) {
-    return <div className="card"><h2>Pick a checkpoint first</h2></div>
+    return (
+      <div className="card">
+        <h2>Pick a checkpoint first</h2>
+        <p className="lede">Sessions attach to one concrete checkpoint with a definition of done.</p>
+        <div className="actions">
+          <button className="primary" type="button" onClick={() => go('work')}>Choose the work</button>
+        </div>
+      </div>
+    )
   }
   const guardian = guardianFor(state.blocker)
   const help = state.session.helpMode as HelpMode | null
@@ -535,6 +563,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
   const guideCtx = {
     taskTitle: sessionTask?.title,
     checkpointTitle: active.title,
+    checkpointMinutes: active.estimatedMinutes,
     definitionOfDone: active.definitionOfDone,
     deliverables: state.deliverables,
   }
@@ -620,7 +649,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
       {help && (
         <div className="capacity" style={{ borderLeft: '2px solid var(--mental)' }}>
           <div><span>{guardian} · local guidance for this task, no AI provider connected</span></div>
-          {guideLines(state.blocker, help, guideCtx).map((p) => (
+          {guideLines(state.blocker, help, guideCtx, guardianFor(state.blocker)).map((p) => (
             <div key={p} style={{ display: 'block', color: 'var(--dim)', marginTop: 6 }}>{p}</div>
           ))}
         </div>
@@ -671,10 +700,15 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
           const label = { completed: 'Completed', partial: 'Made partial progress on',
             blocked: 'Identified a blocker on', rescheduled: 'Rescheduled' }[outcome]
           setTicking(false)
-          update((s) => grow(record(
-            record(s, `${label} “${active.title}”`, s.progressNote, sessionReward(outcome)),
-            'Saved a clear next action', s.nextAction, REWARDS.savedNextAction,
-          )))
+          update((s) => {
+            const withStatus = {
+              ...s, checkpoints: resolveCheckpoint(s.checkpoints, active.id, outcome),
+            }
+            return grow(record(
+              record(withStatus, `${label} “${active.title}”`, s.progressNote, sessionReward(outcome)),
+              'Saved a clear next action', s.nextAction, REWARDS.savedNextAction,
+            ))
+          })
           update((s) => ({ ...s, session: { ...s.session, pausedFrom: null } }))
           toast('Session saved · next action recorded')
           go('recover')
