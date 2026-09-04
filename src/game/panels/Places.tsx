@@ -240,6 +240,15 @@ export function Recover({ state, update, go, toast }: PanelProps) {
       <div className="eyebrow">Recover</div>
       <h2>Two ways to pause</h2>
       <Guardian who="sol" says="Would you rather pause here with Gentle Ripples, or step away from the screen for a short reset? Neither is worth more than the other." />
+      {state.session.pausedFrom && (
+        <div className="actions" style={{ marginTop: 12 }}>
+          <button className="primary" type="button" onClick={() => {
+            update((s) => ({ ...s, session: { ...s.session, pausedFrom: null } }))
+            go('session')
+          }}>Resume Pace Session</button>
+          <span className="note">Your checkpoint, notes and timer are held exactly as you left them.</span>
+        </div>
+      )}
       <div className="opts">
         <button className="opt" type="button" onClick={() => {
           update((s) => grow(record({ ...s, rippleTaps: s.rippleTaps + 1, questOutcome: 'done' },

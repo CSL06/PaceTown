@@ -3,7 +3,7 @@
  * Pace Session itself. Every figure here comes from src/domain.
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BLOCKERS, DEMO_DESTINATION, DEMO_DESTINATION_CAPACITY, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
@@ -475,9 +475,12 @@ export function Work({ state, load, update, go }: PanelProps) {
           </div>
           <div className="actions">
             <button className="primary" type="button" onClick={() => {
-              update((s) => record(s, 'Began a planned Pace Session',
-                `Checkpoint: ${active.title} · blocker identified before starting.`,
-                REWARDS.beginSession))
+              update((s) => record({
+                ...s,
+                session: { ...s.session, elapsedSec: 0, pausedFrom: null },
+              }, 'Began a planned Pace Session',
+              `Checkpoint: ${active.title} · blocker identified before starting.`,
+              REWARDS.beginSession))
               go('session')
             }}>Start a Pace Session with {PLAN_TEMPLATES[state.blocker].guardian}</button>
             <span className="note">Shorten it, rewrite it, or reject the whole plan.</span>
@@ -504,13 +507,38 @@ const GUIDANCE: Record<string, string[]> = {
   'What next?': ['You have listed the entities. The smallest next action is to name the junction entity between Student and Course.'],
 }
 
+const fmtClock = (totalSec: number) => {
+  const s = Math.max(0, Math.floor(totalSec))
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+}
+
 export function Session({ state, update, go, toast }: PanelProps) {
   const active = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
+  const [ticking, setTicking] = useState(false)
+
+  useEffect(() => {
+    if (!ticking) return
+    const id = window.setInterval(() => {
+      update((s) => {
+        const elapsed = s.session.elapsedSec + 1
+        if (s.session.timerMode === 'down' && elapsed >= s.session.timerLenSec) {
+          window.clearInterval(id)
+          setTicking(false)
+          toast('Timebox reached — the checkpoint stays open. Only you can complete it.')
+        }
+        return { ...s, session: { ...s.session, elapsedSec: elapsed } }
+      })
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [ticking, update, toast])
+
   if (!active || !state.blocker) {
     return <div className="card"><h2>Pick a checkpoint first</h2></div>
   }
   const guardian = guardianFor(state.blocker)
-  const help = state.notes.startsWith('__help:') ? state.notes.slice(7).split('\n')[0] : null
+  const help = state.session.helpMode
+  const ses = state.session
+  const remaining = ses.timerLenSec - ses.elapsedSec
 
   return (
     <div className="card">
@@ -523,11 +551,66 @@ export function Session({ state, update, go, toast }: PanelProps) {
       <h3 style={{ fontSize: 17, marginTop: 10 }}>{active.title}</h3>
       <p className="dod"><b>Done when:</b> {active.definitionOfDone}</p>
 
+      <div className="eyebrow" style={{ marginTop: 18 }}>Timer — optional, never decisive</div>
+      <div className="capacity">
+        <div>
+          <span>
+            <select aria-label="Timer mode" value={ses.timerMode}
+              onChange={(e) => {
+                setTicking(false)
+                update((s) => ({
+                  ...s,
+                  session: { ...s.session, timerMode: e.target.value as typeof ses.timerMode },
+                }))
+              }}>
+              <option value="none">Untimed</option>
+              <option value="up">Count up</option>
+              <option value="down">Count down</option>
+            </select>
+            {ses.timerMode === 'down' && (
+              <select aria-label="Timebox length" value={ses.timerLenSec}
+                onChange={(e) => update((s) => ({
+                  ...s, session: { ...s.session, timerLenSec: Number(e.target.value) },
+                }))}>
+                {[10, 15, 20, 25, 45].map((m) => (
+                  <option key={m} value={m * 60}>{m} min</option>
+                ))}
+              </select>
+            )}
+          </span>
+          <span className="mono" aria-live="off">
+            {ses.timerMode === 'down' ? fmtClock(remaining) : fmtClock(ses.elapsedSec)}
+          </span>
+        </div>
+      </div>
+      {ses.timerMode !== 'none' && (
+        <div className="actions">
+          <button className="secondary" type="button" onClick={() => setTicking((t) => !t)}>
+            {ticking ? 'Pause timer' : ses.elapsedSec > 0 ? 'Resume timer' : 'Start timer'}
+          </button>
+          <button className="secondary" type="button" onClick={() => {
+            setTicking(false)
+            update((s) => ({ ...s, session: { ...s.session, elapsedSec: 0 } }))
+          }}>Reset</button>
+        </div>
+      )}
+
+      <div className="field">
+        <label htmlFor="scratch">Scratchpad — notes, links, excerpts</label>
+        <textarea id="scratch" rows={3} value={ses.scratchpad} placeholder="Nothing here needs to be tidy."
+          onChange={(e) => update((s) => ({
+            ...s, session: { ...s.session, scratchpad: e.target.value },
+          }))} />
+      </div>
+
       <div className="eyebrow" style={{ marginTop: 18 }}>Ask {guardian}</div>
       <div className="opts" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))' }}>
         {HELP_MODES.map((mode) => (
           <button key={mode} className="opt" type="button" style={{ gridTemplateColumns: '1fr' }}
-            onClick={() => update((s) => ({ ...s, notes: `__help:${mode}` }))}>
+            aria-pressed={help === mode}
+            onClick={() => update((s) => ({
+              ...s, session: { ...s.session, helpMode: s.session.helpMode === mode ? null : mode },
+            }))}>
             <span>{mode}</span>
           </button>
         ))}
@@ -540,6 +623,24 @@ export function Session({ state, update, go, toast }: PanelProps) {
           ))}
         </div>
       )}
+
+      <div className="eyebrow" style={{ marginTop: 20 }}>Stuck? These are always available</div>
+      <div className="actions">
+        <button className="secondary" type="button" onClick={() => {
+          update((s) => ({ ...s, session: { ...s.session, pausedFrom: 'session' } }))
+          go('recover')
+        }}>Pause &amp; regulate</button>
+        <button className="secondary" type="button" onClick={() => {
+          update((s) => ({
+            ...s,
+            checkpoints: s.checkpoints.map((c) => c.id === active.id
+              ? { ...c, estimatedMinutes: Math.max(5, Math.floor(c.estimatedMinutes / 2)) } : c),
+          }))
+          toast('Scope reduced — the rest keeps its place in the week.')
+        }}>Reduce the scope</button>
+        <button className="secondary" type="button"
+          onClick={() => update((s) => ({ ...s, outcome: 'rescheduled' }))}>Reschedule</button>
+      </div>
 
       <div className="eyebrow" style={{ marginTop: 20 }}>End the session — every outcome is valid</div>
       <div className="outcomes">
@@ -567,10 +668,12 @@ export function Session({ state, update, go, toast }: PanelProps) {
           const outcome = state.outcome!
           const label = { completed: 'Completed', partial: 'Made partial progress on',
             blocked: 'Identified a blocker on', rescheduled: 'Rescheduled' }[outcome]
+          setTicking(false)
           update((s) => grow(record(
             record(s, `${label} “${active.title}”`, s.progressNote, sessionReward(outcome)),
             'Saved a clear next action', s.nextAction, REWARDS.savedNextAction,
           )))
+          update((s) => ({ ...s, session: { ...s.session, pausedFrom: null } }))
           toast('Session saved · next action recorded')
           go('recover')
         }}>Save and leave</button>
