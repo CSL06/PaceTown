@@ -154,11 +154,11 @@ stay in charge of every change.*
      same board is a drag-and-drop calendar: flexible tasks drag, fixed ones
      don't, a move past a deadline is refused, and **Undo last move** is
      always one click.
-    - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
-      stays Open. *"Nothing moved until I approved it. Dismissing the preview
-      would have left my week exactly as it was."* (103% and 95% are the board's rounded
-      on-screen readings; precisely they are 102.9 → 94.6 — Heavy either way
-      you read it.)
+   - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
+     stays Open. *"Nothing moved until I approved it. Dismissing the preview
+     would have left my week exactly as it was."* (103% and 95% are the
+     board's rounded on-screen readings; precisely they are 102.9 → 94.6 —
+     Heavy either way you read it.)
    - Numbers assume the seeded week, unedited. If you edited anything at Town
      Hall, expect different figures — that is the parser working live, not the
      demo breaking.
@@ -175,7 +175,8 @@ company.*
    routes you there). Walk to Mira and press `E` — **Talk to Mira** — and her
    open-work list opens on Thursday: a day switcher (‹ ›) and the day's
    unfinished commitments, three to a page (*"Showing 1–3 of 6 unfinished
-   commitments"* after Act 2's approval). Pick the **ERD assignment**.
+   commitments"* after Act 2's approval — skip Act 2 and the same page shows
+   9). Pick the **ERD assignment**.
    - **What just happened (the logic):** the Library is now a room you walk,
      not a form you fill. Mira always starts from the real commitment list —
      sorted by day, paged so it never becomes a wall — and the task you left
@@ -287,7 +288,7 @@ costs you your place.*
 
 | Question | Answer to give (and where to click) |
 |---|---|
-| What if I disagree with the plan? | Dismiss the preview, rewrite any checkpoint, pick another blocker, drag a task yourself — approval is always explicit (Clock Tower Week Board, Library). |
+| What if I disagree with the plan? | Dismiss the preview, shrink the proposal (**Make it smaller**), pick a different blocker for another proposal, drag a task yourself — approval is always explicit (Clock Tower Week Board, Library). |
 | What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover**; Exit Quest at Home closes the day with the next action kept. |
 | Where is my data? | Settings or Home → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
 | Does it work on a phone? | Same flow at 390px: Town List drawer, thumb D-pad, bottom sheet. Reduced-motion and high-contrast in Home and the top bar. |
