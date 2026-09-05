@@ -120,7 +120,7 @@
 /* -------------------------------------------------------------- art side */
 .au-art-side { position: relative; overflow: hidden; background: #0B141D;
   display: flex; align-items: flex-end; }
-.au-art { position: absolute; inset: 0; background: url('/game/world/campus-daylight.png') center 40% / cover no-repeat;
+.au-art { position: absolute; inset: 0; background: url('/game/world/campus-daylight.webp') center 40% / cover no-repeat;
   image-rendering: pixelated; filter: saturate(.9) brightness(.62);
   animation: au-drift 46s ease-in-out infinite alternate; }
 @keyframes au-drift { from { transform: scale(1.06) } to { transform: scale(1.16) } }
@@ -166,4 +166,85 @@
 @media (prefers-reduced-motion: reduce) {
   .au * { animation-duration: .01ms !important; animation-iteration-count: 1 !important;
     transition-duration: .01ms !important; }
+}
+
+/* ------------------------------------------------------------ sky greeter */
+/* Sky reacts to the form. She sits in the form column rather than the art
+   panel so she is still there on a phone, where the art panel is hidden. */
+
+.sky-greet {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.sky-greet-art {
+  width: 64px;
+  height: 96px;
+  flex: none;
+  image-rendering: pixelated;
+  /* Drawn at native size on a whole-pixel grid; scaling would smear her. */
+  animation: sky-bob 3.6s ease-in-out infinite;
+}
+@keyframes sky-bob { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-3px) } }
+/* Nothing bobs while she is looking away — stillness is the point. */
+.sky-greet.is-secret .sky-greet-art { animation: none; }
+
+.sky-greet-line {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin: 0 0 10px;
+  padding: 11px 14px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-up);
+  clip-path: var(--px-clip);
+}
+.sky-greet-line b {
+  display: block;
+  font-family: var(--display);
+  font-size: 10px;
+  color: var(--pt-accent-ink);
+  margin-bottom: 4px;
+}
+.sky-greet-line span { font-family: var(--pt-prose); color: var(--dim); }
+
+/* The tail, drawn as a stepped pixel wedge rather than a smooth triangle. */
+.sky-greet-line::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--px-border) * -1 - 6px);
+  bottom: 14px;
+  width: 6px;
+  height: 6px;
+  background: var(--panel);
+  border-left: var(--px-border) solid var(--px-ink);
+  border-top: var(--px-border) solid var(--px-ink);
+  border-bottom: var(--px-border) solid var(--px-ink);
+}
+
+.sky-greet.is-error .sky-greet-line { border-color: var(--danger); }
+.sky-greet.is-happy .sky-greet-line { border-color: var(--accent); }
+
+/* ------------------------------------------------------------- caps lock */
+.au-caps {
+  margin: -6px 0 16px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--pt-accent-ink);
+  background: var(--pt-accent-wash);
+  border: var(--px-border) solid var(--accent);
+  clip-path: var(--px-clip);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-greet-art { animation: none; }
+}
+@media (max-width: 420px) {
+  .sky-greet-art { width: 48px; height: 72px; }
 }

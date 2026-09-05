@@ -12,8 +12,9 @@ import './styles.css'
 
 // The landing page is the first paint, so it ships in the entry chunk. The
 // game's art and the older mentor demo are pulled down only when visited.
-const Game = lazy(() => import('./game/Game'))
 const Onboarding = lazy(() => import('./onboarding/Onboarding'))
+// Owns the loading screen and waits for the artwork as well as the code.
+const TownGate = lazy(() => import('./game/TownGate'))
 const DemoEntry = lazy(() => import('./game/DemoEntry'))
 const MentorDemo = lazy(() => import('./App'))
 
@@ -32,14 +33,14 @@ createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <BrowserRouter>
         <ThemeProvider>
-        <AuthProvider>
+          <AuthProvider>
           <Suspense fallback={<div className="route-fallback">Opening PaceTown…</div>}>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<AuthPage mode="login" />} />
               <Route path="/signup" element={<AuthPage mode="signup" />} />
               <Route path="/welcome" element={<RequireAuth><Onboarding /></RequireAuth>} />
-              <Route path="/town" element={<RequireAuth><Game /></RequireAuth>} />
+              <Route path="/town" element={<RequireAuth><TownGate /></RequireAuth>} />
               {/* The presenter's one-click front door, and the "try it now"
                   link: signs in as a guest and opens the seeded week. */}
               <Route path="/game" element={<DemoEntry />} />
@@ -47,7 +48,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
-        </AuthProvider>
+          </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>
     </ErrorBoundary>

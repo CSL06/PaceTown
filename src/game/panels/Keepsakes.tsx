@@ -327,8 +327,8 @@ export function Collection({ state, load, update, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Private collection</div>
-      <h2>Pace Keepsakes <HelpDot view="collection" state={state} load={load} /></h2>
       <p className="lede">
+        <HelpDot view="collection" state={state} load={load} />{' '}
         Cosmetic memories, not proof. No public feed, trading, rarity, or completion target.
         Self-confirmed and photo quests earn the same place here.
       </p>

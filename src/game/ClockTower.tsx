@@ -250,7 +250,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
           <p>{task.flexibility === 'fixed' ? 'Locked: this is a fixed commitment.' : `Flexible · deadline in ${task.deadlineDays} day(s) from its scheduled day.`}</p>
           <p>{task.notes}</p><button type="button" onClick={() => setInspected(null)}>Close details</button>
         </section> })()}
-        <img src="/game/portraits/kai.png" alt="Kai" />
+        <img src="/game/portraits/kai.webp" alt="Kai" />
         <div className="kai-copy">
           <span className="clock-kicker">Kai · planning guardian</span>
           {!previewOpen && !state.rebalanceSeen ? (
@@ -339,7 +339,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
 
   return (
     <div ref={room} className={`clock-scene${boardOpen ? ' is-board-open' : ''}`}>
-      <img className="clock-room" src="/game/scenes/clock-tower/interior.png"
+      <img className="clock-room" src="/game/scenes/clock-tower/interior.webp"
         alt="A bright, sunlit planning room inside the Clock Tower" />
       <div className="clock-sun" aria-hidden="true" />
 
@@ -370,7 +370,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
       </button>
 
       <div ref={avatar} className="clock-player avatar f-up" aria-label="Your avatar"
-        style={{ left: '50%', top: '92%', backgroundImage: 'url(/game/world/player-sheet.png)' }} />
+        style={{ left: '50%', top: '92%', backgroundImage: 'url(/game/world/player-sheet.webp)' }} />
       <div className="clock-dpad" aria-label="Room movement">
         {(['up', 'left', 'down', 'right'] as const).map((direction) => (
           <button key={direction} type="button" aria-label={`Move ${direction}`}

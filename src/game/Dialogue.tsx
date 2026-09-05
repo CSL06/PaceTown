@@ -65,7 +65,7 @@ export function Dialogue({ script, reducedMotion, onClose }: Props) {
   return (
     <div className="dlg" onClick={advance} role="dialog" aria-live="polite">
       <div className="dlg-inner">
-        <img className="dlg-face" src={`/game/portraits/${script.who}.png`} alt="" />
+        <img className="dlg-face" src={`/game/portraits/${script.who}.webp`} alt="" />
         <div className="dlg-body">
           <div className="dlg-name">{who.name}<span>{who.role}</span></div>
           <p className="dlg-text">

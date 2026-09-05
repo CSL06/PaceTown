@@ -201,11 +201,11 @@ function App() {
   }, [breathing, completed, remaining])
 
   const skyMood: SkyMood = completed ? 'happy' : breathingOpen ? 'breathe' : dialogueStep !== null ? (dialogueStep === 0 ? 'talk' : 'tea') : 'idle'
-  const skyFrame = skyMood === 'happy' ? '/game/sky/happy-0.png' : `/game/sky/${skyMood}-${frame}.png`
+  const skyFrame = skyMood === 'happy' ? '/game/sky/happy-0.webp' : `/game/sky/${skyMood}-${frame}.webp`
   const playerSpriteDirection = direction === 'left' ? 'right' : direction === 'right' ? 'left' : direction
   const playerFrame = playerSpriteDirection === 'down'
-    ? `/game/player/idle-down-${frame}.png`
-    : `/game/player/idle-${playerSpriteDirection}-0.png`
+    ? `/game/player/idle-down-${frame}.webp`
+    : `/game/player/idle-${playerSpriteDirection}-0.webp`
 
   const visitSky = () => {
     setPlayer({ x: 39, y: 67 })

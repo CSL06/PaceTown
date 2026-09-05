@@ -19,9 +19,9 @@ import {
 } from '../game/layout'
 import type { GuardianId } from '../domain'
 
-const MAP = '/game/world/campus-daylight.png'
-const PLAYER_SHEET = '/game/world/player-sheet.png'
-const CAST_SHEET = '/game/world/cast-sheet.png'
+const MAP = '/game/world/campus-daylight.webp'
+const PLAYER_SHEET = '/game/world/player-sheet.webp'
+const CAST_SHEET = '/game/world/cast-sheet.webp'
 
 const SPEED = 430
 const ARRIVE = 26

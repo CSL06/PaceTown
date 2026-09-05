@@ -30,7 +30,7 @@
 .hotspot-kai { left: 76%; top: 67%; padding-top: 5px; }
 .hotspot-door { left: 77%; top: 41%; }
 .clock-kai-sprite { width: 64px; height: 96px; margin-top: -92px; pointer-events: none;
-  background: url('/game/world/cast-sheet.png') 25% 0 / 500% 100% no-repeat;
+  background: url('/game/world/cast-sheet.webp') 25% 0 / 500% 100% no-repeat;
   image-rendering: pixelated; filter: drop-shadow(0 4px 2px rgba(61,40,24,.25)); }
 
 .clock-player { position: absolute; z-index: 4; width: 64px; height: 96px;
@@ -57,7 +57,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(260px, 330px); grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 10px 14px; padding: 18px; color: #273746;
   background: linear-gradient(rgba(255,248,226,.94), rgba(247,231,194,.97)),
-    url('/game/scenes/clock-tower/interior.png') center / cover; overflow: auto; }
+    url('/game/scenes/clock-tower/interior.webp') center / cover; overflow: auto; }
 .clock-board-head { grid-column: 1 / -1; display: flex; align-items: start; gap: 20px; }
 .clock-board-head > div { flex: 1; }
 .clock-kicker { display: block; color: #89602f; font-size: 10px; font-weight: 750;
@@ -73,7 +73,7 @@
 .week-tabs b { font-family: var(--mono); font-size: 11px; }
 
 .week-frame { position: relative; grid-column: 1; grid-row: 3; min-width: 0; min-height: 480px; padding: 0;
-  background: url('/game/scenes/clock-tower/week-board-frame.png') center / 100% 100% no-repeat; }
+  background: url('/game/scenes/clock-tower/week-board-frame.webp') center / 100% 100% no-repeat; }
 .week-grid { position: absolute; inset: 14% 7.2% 27%; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(108px, 1fr));
   gap: 1px; overflow-x: auto; background: rgba(129,92,52,.25); border: 1px solid rgba(106,75,43,.35); }
 .week-day { min-width: 108px; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr);

@@ -1,0 +1,185 @@
+/* Loading screen. Uses the pixel kit's tokens so it belongs to the same world
+   as the landing and sign-in pages, and follows light/dark like everything
+   else. Deliberately draws no artwork: the campus image is the thing being
+   fetched, so using it here would be circular. */
+
+.ld {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 22px;
+  padding: 24px;
+  background: var(--pt-bg);
+  color: var(--pt-text);
+  font-family: var(--pt-ui);
+}
+
+/* A faint checkerboard, the cheapest way to make flat colour feel like a
+   surface rather than an empty div. */
+.ld::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .5;
+  background-image:
+    linear-gradient(45deg, var(--px-lo) 25%, transparent 25% 75%, var(--px-lo) 75%),
+    linear-gradient(45deg, var(--px-lo) 25%, transparent 25% 75%, var(--px-lo) 75%);
+  background-size: calc(var(--px) * 2) calc(var(--px) * 2);
+  background-position: 0 0, var(--px) var(--px);
+}
+
+.ld-panel {
+  position: relative;
+  width: min(430px, calc(100vw - 48px));
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 4vw, 32px);
+  background: var(--pt-surface);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-up);
+  clip-path: var(--px-clip);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+}
+
+/* ------------------------------------------------------------------ brand */
+.ld-brand { display: flex; align-items: center; gap: 12px; }
+.ld-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  background: var(--pt-accent);
+  color: var(--pt-on-accent);
+  font-family: var(--pt-display);
+  font-weight: 700;
+  font-size: 16px;
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+}
+.ld-word { font-family: var(--pt-display); font-size: 15px; letter-spacing: 0; }
+
+/* ------------------------------------------------------------------ stage */
+.ld-stage {
+  margin: 0;
+  font-size: 13px;
+  color: var(--pt-text-2);
+  letter-spacing: .02em;
+}
+/* Stepped, so the dots tick rather than glide. */
+.ld-dots { display: inline-block; width: 1.4em; text-align: left; }
+.ld-dots::after { content: ""; animation: ld-dots 1.6s steps(1) infinite; }
+@keyframes ld-dots {
+  0% { content: "" }
+  25% { content: "." }
+  50% { content: ".." }
+  75% { content: "..." }
+}
+
+/* -------------------------------------------------------------------- bar */
+/* Twenty discrete blocks in a sunken well: each block is exactly 5%, so the
+   bar can be read as a number, not just a feeling. */
+.ld-bar {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 2px;
+  padding: 4px;
+  background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-down);
+}
+.ld-bar span {
+  height: 16px;
+  background: var(--px-lo);
+  opacity: .35;
+}
+.ld-bar span.is-lit {
+  background: var(--pt-accent);
+  opacity: 1;
+  /* No transition: a block is on or it is off. */
+}
+
+/* ---------------------------------------------------------------- readout */
+.ld-readout { display: grid; gap: 8px; }
+.ld-pct {
+  font-family: var(--pt-mono);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--pt-accent-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ld-note { font-size: 11.5px; color: var(--pt-text-3); line-height: 1.5; }
+
+.ld-foot {
+  position: relative;
+  margin: 0;
+  font-family: var(--pt-display);
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--pt-text-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld-dots::after { animation: none; content: "..." }
+}
+
+/* ----------------------------------------------------------------- walker */
+/* A small pixel figure that walks the width of the bar as the town arrives.
+   Drawn in CSS rather than from a sprite, because the sprite sheets are part
+   of what is still downloading — a loading screen must not depend on the
+   thing it is waiting for. */
+.ld-track { position: relative; height: 18px; margin-bottom: -4px; }
+
+.ld-walker {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  height: 8px;
+  margin-left: -3px;
+  background: var(--pt-text-2);
+  /* Follows real progress, so it must ease to the new value, not tick. */
+  transition: left .45s ease-out;
+}
+/* Head. */
+.ld-walker::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -7px;
+  width: 6px;
+  height: 6px;
+  background: var(--pt-accent);
+}
+/* Legs, alternating on a two-step cycle so it reads as a walk cycle. */
+.ld-walker::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  bottom: -3px;
+  width: 10px;
+  height: 3px;
+  background: var(--pt-text-2);
+  animation: ld-step .34s steps(2) infinite;
+}
+@keyframes ld-step {
+  0% { clip-path: inset(0 60% 0 0) }
+  100% { clip-path: inset(0 0 0 60%) }
+}
+
+/* A newly lit block flashes brighter for a moment, so the bar has a pulse
+   even when a large file is arriving steadily. */
+.ld-bar span.is-lit { animation: ld-lit .5s steps(3) 1; }
+@keyframes ld-lit {
+  0% { filter: brightness(1.9) }
+  100% { filter: brightness(1) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld-walker { transition: none }
+  .ld-walker::after { animation: none; clip-path: none }
+  .ld-bar span.is-lit { animation: none }
+}
