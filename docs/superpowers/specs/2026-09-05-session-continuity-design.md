@@ -55,3 +55,6 @@ welcome panel and badge; unit-tested. jsdom tests: welcome-back flow opens
 with the three recorded items and Keep going enters the session; badge
 renders on the in-progress task; ResumeCard shows the "Last time" line.
 `tsc`, full `vitest run`, and `npm run build` stay green.
+
+## Amendment (2026-09-05, user-approved)
+The session panel itself shows what the student typed inside "Save what changed": two fields at the top of the session - "What changed so far" and "Saved next action" - pre-filled from the save on re-entry, editable, live-written to state (same pattern as the scratchpad). The reflect inputs stop using local variables, so no navigation path (including "Take a recovery break") can lose a typed note. The popup trigger ("Pause or record progress") and all other flows stay unchanged.
