@@ -18,6 +18,7 @@ import { Campus, daylight } from './Campus'
 import { ClockTower } from './ClockTower'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
+import { ResumeCard } from './ResumeCard'
 import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
@@ -444,15 +445,7 @@ export default function Game() {
 
       <div className="hud hud-quest">
         {activeCheckpoint && !state.outcome ? (
-          <>
-            <div className="eyebrow">Where you left off</div>
-            <h3>{activeCheckpoint.title}</h3>
-            <p>Your checkpoint is held exactly as you left it.</p>
-            <div className="qa">
-              <button className="go" type="button" onClick={() => go('session')}>Resume session</button>
-              <button type="button" onClick={() => go('recover')}>Recover instead</button>
-            </div>
-          </>
+          <ResumeCard state={state} go={go} />
         ) : foreground ? (
           <>
             <div className="eyebrow">
