@@ -48,21 +48,35 @@ Implemented:
 - Versioned local saves, JSON export, `/reset` demo reset, and production-only offline shell registration
 - **319 tests across 35 files**, with typecheck and production build passing
 
-## Guardians
+## Guardian System
 
-Each guardian changes what the student can do rather than repeating dashboard
-numbers:
+PaceTown uses five recurring guardians as functional product guides. Each one
+owns a different type of decision in the student journey: understanding work,
+planning time, sustaining capacity, accompanying focused work, or finishing
+loose ends. Guardians do not act as mascots, productivity judges, or clinical
+advisors. They provide contextual suggestions while the student remains in
+control of every plan and action.
 
-| Guardian | Place | Specialty |
-| --- | --- | --- |
-| Mira | Library | Understand briefs, explain concepts, and create checkpoints |
-| Kai | Clock Tower | Plan time, forecast load, and rebalance flexible work |
-| Sol | Garden and Park | Reduce scope, protect breaks, and recover |
-| Sky | Café | Provide quiet company and low-pressure body doubling |
-| Goh | Market | Gather materials, group errands, and finish loose ends |
+| Guardian | Location | Product role | Primary responsibilities |
+| --- | --- | --- | --- |
+| **Mira** | Library | Understand | Interprets assignment briefs, organizes requirements, explains difficult concepts, and turns an unclear task into one checkpoint with a visible definition of done. |
+| **Kai** | Clock Tower | Plan | Makes schedule pressure understandable, estimates realistic capacity, identifies flexible work, previews safe calendar moves, and requires approval before anything is rearranged. |
+| **Sol** | Garden and Park | Sustain | Helps the student reduce scope, choose a smaller action, protect breaks, and use recovery activities without treating rest as failure or measuring health. |
+| **Sky** | Café | Accompany | Provides quiet body-doubling-style presence, gentle check-ins, and low-pressure encouragement for students who benefit from company while working. |
+| **Goh** | Market | Complete | Organizes missing materials, groups errands, tracks final requirements, and helps close small outstanding details without creating additional urgency. |
 
-Guardian guidance is local and deterministic. It is always framed as a
-suggestion, never as submitted academic work or a health assessment.
+### How Guardians Participate
+
+- **Before work:** the selected blocker routes the student to a relevant guardian; the student can override that default when another style of support is more useful.
+- **During work:** the active guardian remains available through contextual help modes such as Plan, Explain, Brainstorm, Review, Debug, and What next?
+- **When the student is stuck:** guardian actions perform concrete, reversible support — for example, splitting a checkpoint, shrinking its scope, drafting an outline into the scratchpad, starting a shared timer, or adding a gathering checklist.
+- **When the student returns:** the active guardian summarizes the task, checkpoint, time spent, saved progress, and next action without missed-day messaging, streaks, or guilt.
+- **When pressures compete:** the Guardian Council combines the relevant specialties into one foreground recommendation while preserving alternative choices.
+
+Guardian guidance is local, deterministic, and editable. It distinguishes
+suggestions from the student's own work, never claims that generated text
+satisfies an academic requirement, and never provides a diagnosis or health
+assessment.
 
 ## Routes
 
