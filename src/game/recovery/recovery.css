@@ -48,6 +48,19 @@
 .chime-note { position:absolute; animation:note-float 3.2s ease-out forwards; }
 .note-0{left:25%;top:48%}.note-1{left:39%;top:35%}.note-2{left:53%;top:52%}.note-3{left:67%;top:39%}.note-4{left:78%;top:52%}
 .chime-clock { position:absolute; left:48%; top:18%; transform:scale(1.5); filter:drop-shadow(2px 3px 0 rgba(25,30,35,.35)); }
+.chime-production { display:inline-block; width:clamp(140px,22vw,290px); aspect-ratio:3/2; background-image:url('/game/recovery/atlases/chime-drift-production-v2.png'); background-size:400% 200%; background-repeat:no-repeat; image-rendering:pixelated; filter:drop-shadow(4px 7px 3px rgba(24,27,30,.35)); }
+.chime-main { position:absolute; z-index:3; left:50%; top:8%; width:clamp(250px,37vw,500px); transform:translateX(-50%); animation:chime-sway 3.8s ease-in-out infinite alternate; transform-origin:50% 5%; }
+.chime-pulse { position:absolute; z-index:2; left:50%; top:42%; width:clamp(220px,36vw,470px); transform:translate(-50%,-50%); opacity:.86; pointer-events:none; }
+.chime-pulse.gathering { animation:chime-gather 4s ease-in-out infinite; }
+.chime-pulse.releasing { animation:chime-release 6s ease-out infinite; }
+.chime-kai { position:absolute; right:2%; bottom:3%; width:clamp(190px,28vw,370px); }
+.chime-harmony { position:absolute; z-index:4; width:clamp(110px,16vw,210px); pointer-events:none; animation:harmony-bloom 2.2s ease-out forwards; }
+.harmony-0{left:18%;top:43%}.harmony-1{left:35%;top:28%}.harmony-2{left:58%;top:45%}.harmony-3{left:70%;top:27%}
+.chime-purpose-card { position:absolute; z-index:6; left:5%; top:24%; width:min(470px,42vw); padding:20px; border:3px solid #76522e; background:rgba(255,248,222,.96); box-shadow:6px 7px 0 rgba(42,28,18,.35); }
+.pt-game .chime-purpose-card h2 { margin:5px 0; color:#17364a; font:700 clamp(23px,3vw,34px)/1.05 var(--serif); }
+.chime-purpose-card>div { display:grid; gap:8px; margin-top:13px; }
+.chime-purpose-card button { padding:10px 12px; text-align:left; color:#17364a; border:2px solid #86613a; background:#fffbea; box-shadow:2px 3px 0 rgba(50,35,18,.25); cursor:pointer; }
+.chime-purpose-card button b,.chime-purpose-card button small { display:block; }.chime-purpose-card button small{margin-top:3px}
 .cup-table { display:grid; place-items:center; }
 .warm-production { display:inline-block; width:clamp(110px,18vw,230px); aspect-ratio:3/2; background-image:url('/game/recovery/atlases/warm-cup-production-v2.png'); background-size:400% 200%; background-repeat:no-repeat; image-rendering:pixelated; filter:drop-shadow(4px 6px 2px rgba(46,27,20,.3)); }
 .warm-cup-sprite { position:absolute; left:18%; top:40%; width:clamp(220px,31vw,410px); transform:translate(-50%,-50%); }
@@ -96,9 +109,13 @@
 @keyframes fish-drift{to{transform:translateX(38vw) translateY(-18px)}}
 @keyframes breathe{0%,100%{transform:scale(.65)}45%{transform:scale(1.25)}}
 @keyframes chime-pass{0%{left:-8%;opacity:0}20%{opacity:1}100%{left:100%;opacity:0}}
+@keyframes chime-sway{from{transform:translateX(-50%) rotate(-1.5deg)}to{transform:translateX(-50%) rotate(1.5deg)}}
+@keyframes chime-gather{from{transform:translate(-50%,-50%) scale(.68);opacity:.35}to{transform:translate(-50%,-50%) scale(.95);opacity:.92}}
+@keyframes chime-release{from{transform:translate(-50%,-50%) scale(.72);opacity:.95}to{transform:translate(-50%,-50%) scale(1.2);opacity:.18}}
+@keyframes harmony-bloom{to{transform:scale(1.45);opacity:0}}
 @keyframes note-float{to{transform:translateY(-90px);opacity:0}}
 @keyframes steam{to{transform:scale(2) translateY(-8px);opacity:.55}}
 @keyframes pour-bob{to{transform:translateY(5px) rotate(-1deg)}}
 @keyframes firefly{to{transform:translate(18px,-12px)}}
-@media(max-width:700px){.recovery-header-actions span{display:none}.recovery-header h1{font-size:25px}.recovery-controls span{display:none}.ripple-purpose-card{top:13%;padding:14px}.ripple-purpose-card>div{grid-template-columns:1fr}.ripple-purpose-card button{min-height:59px}.ripple-purpose-card button .ripple-production{width:48px;flex-basis:48px}.ripple-sol{right:-7%;bottom:13%;width:145px}.ripple-breath-art{top:42%;width:280px}.cup-step-card{right:16px;top:auto;bottom:75px}.warm-cup-sprite{left:24%;top:25%;width:180px}.warm-pour{left:38%;top:13%;width:180px}.warm-sky{left:0;bottom:42%;width:160px}.lantern-workbench{left:12px;top:20%;width:calc(100vw - 24px);max-height:54vh}.lantern-preview{left:80%;top:14%}.recovery-instruction{bottom:13%}}
+@media(max-width:700px){.recovery-header-actions span{display:none}.recovery-header h1{font-size:25px}.recovery-controls span{display:none}.ripple-purpose-card{top:13%;padding:14px}.ripple-purpose-card>div{grid-template-columns:1fr}.ripple-purpose-card button{min-height:59px}.ripple-purpose-card button .ripple-production{width:48px;flex-basis:48px}.ripple-sol{right:-7%;bottom:13%;width:145px}.ripple-breath-art{top:42%;width:280px}.chime-purpose-card{left:12px;top:19%;width:calc(100vw - 24px);padding:14px}.chime-main{top:4%;width:240px}.chime-kai{right:-7%;bottom:11%;width:150px}.chime-pulse{top:43%;width:260px}.cup-step-card{right:16px;top:auto;bottom:75px}.warm-cup-sprite{left:24%;top:25%;width:180px}.warm-pour{left:38%;top:13%;width:180px}.warm-sky{left:0;bottom:42%;width:160px}.lantern-workbench{left:12px;top:20%;width:calc(100vw - 24px);max-height:54vh}.lantern-preview{left:80%;top:14%}.recovery-instruction{bottom:13%}}
 @media(prefers-reduced-motion:reduce){.recovery-scene *{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}.chime-wave.passed{left:70%;opacity:.55}.ripple-ring{width:72px;height:30px;margin:-15px -36px;opacity:.6}}

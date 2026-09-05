@@ -210,39 +210,89 @@ function RipplesGame(props: PanelProps) {
   </Shell>
 }
 
+type ChimeMode = 'breathe' | 'tap' | 'listen'
+
+function ChimeAsset({ index, className = '', label }: { index: number; className?: string; label?: string }) {
+  const col = index % 4
+  const row = Math.floor(index / 4)
+  return <span className={`chime-production ${className}`} role={label ? 'img' : undefined}
+    aria-label={label} aria-hidden={label ? undefined : true}
+    style={{ backgroundPosition: `${col * (100 / 3)}% ${row * 100}%` }} />
+}
+
+function playChimeTone(harmony = false) {
+  if (typeof AudioContext === 'undefined') return
+  const context = new AudioContext()
+  const gain = context.createGain()
+  gain.gain.setValueAtTime(0.0001, context.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.075, context.currentTime + .03)
+  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 1.7)
+  gain.connect(context.destination)
+  ;[harmony ? 392 : 329.63, harmony ? 493.88 : 415.3].forEach((frequency, index) => {
+    const oscillator = context.createOscillator()
+    oscillator.type = 'sine'; oscillator.frequency.value = frequency
+    const partial = context.createGain(); partial.gain.value = index ? .34 : 1
+    oscillator.connect(partial); partial.connect(gain); oscillator.start(); oscillator.stop(context.currentTime + 1.8)
+  })
+  window.setTimeout(() => void context.close(), 2000)
+}
+
 function ChimeGame(props: PanelProps) {
   const { state, go } = props
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-  const [wave, setWave] = useState(0)
-  const [notes, setNotes] = useState<number[]>([])
+  const [mode, setMode] = useState<ChimeMode | null>(null)
+  const [tick, setTick] = useState(0)
+  const [resonances, setResonances] = useState<number[]>([])
+  const [sound, setSound] = useState(false)
   const [done, setDone] = useState(false)
   const [response, setResponse] = useState<Response | null>(null)
   const finish = useRecoveryFinish(props, 'chime')
-  const complete = done || wave >= 4
+  const complete = done || tick >= 40
   useEffect(() => {
-    if (reduced || complete) return
-    const timer = window.setInterval(() => setWave((value) => Math.min(4, value + 1)), 3200)
+    if (!mode || complete) return
+    const timer = window.setInterval(() => setTick((value) => value + 1), reduced ? 1500 : 1000)
     return () => window.clearInterval(timer)
-  }, [reduced, complete])
-  const resonate = () => setNotes((items) => [...items.slice(-7), Date.now() + Math.random()])
+  }, [mode, complete, reduced])
+  useEffect(() => {
+    if (sound && !state.quiet && tick > 0 && tick % 10 === 0) playChimeTone()
+  }, [tick, sound, state.quiet])
+  const phraseTick = tick % 10
+  const breathingIn = phraseTick < 4
+  const phrase = Math.min(4, Math.floor(tick / 10) + 1)
+  const resonate = () => {
+    if (mode !== 'tap') return
+    setResonances((items) => [...items.slice(-4), Date.now() + Math.random()])
+    if (sound && !state.quiet) playChimeTone(true)
+  }
   return <Shell view="chime" state={state} go={go}>
-    <section className="recovery-playfield chime-room" role="button" tabIndex={0}
-      aria-label="Chime room. Listen, or press Space to add a soft resonance."
+    <section className="recovery-playfield chime-room" role={mode === 'tap' ? 'button' : undefined}
+      tabIndex={mode === 'tap' ? 0 : undefined} aria-label={mode === 'tap' ? 'Chime room. Tap anywhere to add a gentle harmony; timing is not scored.' : undefined}
       onPointerDown={resonate} onKeyDown={(event) => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); resonate() } }}>
-      {[0, 1, 2, 3].map((item) => <span key={item} className={`chime-wave wave-${item}${wave > item ? ' passed' : ''}`} />)}
-      {notes.map((note, index) => <Sprite key={note} game="chime" index={index % 8} className={`chime-note note-${index % 5}`} />)}
-      <Sprite game="chime" index={8 + (wave % 4)} className="chime-clock" />
-      <div className="recovery-instruction"><b>{wave < 4 ? 'Let the next chime pass.' : 'The room has gone quiet.'}</b>
-        <span>Tap to resonate, or do nothing and listen. Timing is never scored.</span></div>
+      <ChimeAsset index={tick % 4} className="chime-main" label="Clock-tower chime swinging slowly" />
+      <ChimeAsset index={4 + Math.min(2, Math.floor(phraseTick / 3))} className={`chime-pulse ${breathingIn ? 'gathering' : 'releasing'}`} />
+      <ChimeAsset index={7} className="chime-kai" label="Kai sitting and listening" />
+      {resonances.map((item, index) => <ChimeAsset key={item} index={4 + index % 3} className={`chime-harmony harmony-${index}`} />)}
+      {!mode ? <div className="chime-purpose-card">
+        <span className="recovery-kicker">Kai · borrow a slower rhythm</span><h2>How would you like to meet the chime?</h2>
+        <p>The phrase moves at the same pace whichever you choose.</p><div>
+          <button type="button" onClick={() => setMode('breathe')}><b>Breathe with it</b><small>Four in, six out. The light shows the whole cycle.</small></button>
+          <button type="button" onClick={() => setMode('tap')}><b>Tap along gently</b><small>Every tap adds harmony. Nothing is early or late.</small></button>
+          <button type="button" onClick={() => setMode('listen')}><b>Just listen</b><small>No input required. Let four phrases pass.</small></button>
+        </div></div>
+        : <div className="recovery-instruction"><b>{mode === 'breathe'
+          ? breathingIn ? 'Breathe in · the chime gathers' : 'Breathe out · let the sound travel'
+          : mode === 'tap' ? 'Tap anywhere if joining the rhythm feels good' : 'Nothing to do · let this phrase pass'}</b>
+          <span>Phrase {phrase} of 4 · {mode === 'tap' ? 'your timing is never measured' : 'you can stop at any time'}</span></div>}
     </section>
-    <nav className="recovery-controls">
-      {reduced && wave < 4 && <button type="button" onClick={() => setWave((value) => value + 1)}>Let the next chime pass</button>}
+    {mode && <nav className="recovery-controls">
+      {!state.quiet && <button type="button" aria-pressed={sound} onClick={() => { setSound((value) => !value); if (!sound) playChimeTone() }}>{sound ? 'Sound on' : 'Turn sound on'}</button>}
+      {state.quiet && <span>Quiet Mode · visual rhythm only</span>}
       <button className="primary" type="button" onClick={() => setDone(true)}>Enough for now</button>
-    </nav>
+    </nav>}
     {complete && <Completion response={response} setResponse={setResponse} finish={finish}
-      onBack={() => { setDone(false); if (wave >= 4) setWave(0) }} options={[
-        { label: 'Choose one next action', detail: 'Return to Mira’s work plan.', view: 'work' },
-        { label: 'Rebalance the week', detail: 'Open the Clock Tower calendar.', view: 'rebalance' },
+      onBack={() => { setDone(false); if (tick >= 40) setTick(0) }} options={[
+        { label: 'Choose one next action', detail: 'Return to Mira with a slower starting point.', view: 'work' },
+        { label: 'Rebalance the week', detail: 'Use the Clock Tower calendar to make space.', view: 'rebalance' },
         { label: 'Return to town', detail: 'Keep exploring at your own pace.', view: null },
       ]} />}
   </Shell>

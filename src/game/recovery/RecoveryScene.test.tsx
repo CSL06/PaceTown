@@ -41,7 +41,8 @@ describe('recovery activity scenes', () => {
   it('allows Chime Drift to be watched or ended without tapping notes', async () => {
     const user = userEvent.setup()
     render(<Harness view="chime" />)
-    expect(screen.getByText(/do nothing and listen/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /just listen/i }))
+    expect(screen.getByText(/nothing to do/i)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /enough for now/i }))
     expect(screen.getByRole('dialog', { name: /recovery check-in/i })).toBeInTheDocument()
   })
