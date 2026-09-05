@@ -86,13 +86,28 @@ describe('Clock Tower scene', () => {
     render(<Harness />)
     await user.click(screen.getByRole('button', { name: /open week board/i }))
     await screen.findByRole('dialog', {}, { timeout: 3000 })
-    expect(screen.queryByText('Preview here')).not.toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Ask Kai to rebalance' }))
     expect((await screen.findAllByText('Preview here', {}, { timeout: 3000 })).length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: /approve \d+ moves/i }))
 
     expect(await screen.findByRole('heading', { name: /week is telling the truth/i })).toBeInTheDocument()
     expect(screen.queryByText('Preview here')).not.toBeInTheDocument()
     expect(parseFloat(document.querySelector('.clock-load strong')!.textContent!)).toBeLessThanOrEqual(95)
+  })
+
+  it('re-opens the preview after dismissing it', async () => {
+    const user = userEvent.setup()
+    render(<Harness />)
+    await user.click(screen.getByRole('button', { name: /open week board/i }))
+    await screen.findByRole('dialog', {}, { timeout: 3000 })
+    expect(screen.getByRole('button', { name: 'Dismiss preview' })).toBeInTheDocument()
+    expect((await screen.findAllByText('Preview here', {}, { timeout: 3000 })).length).toBeGreaterThan(0)
+
+    await user.click(screen.getByRole('button', { name: 'Dismiss preview' }))
+    expect(screen.queryByText('Preview here')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ask Kai to rebalance' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Ask Kai to rebalance' }))
+    expect(screen.getByRole('button', { name: 'Dismiss preview' })).toBeInTheDocument()
+    expect((await screen.findAllByText('Preview here', {}, { timeout: 3000 })).length).toBeGreaterThan(0)
   })
 })

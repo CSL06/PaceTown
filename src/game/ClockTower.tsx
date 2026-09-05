@@ -21,6 +21,13 @@ interface Props {
   onExit: () => void
 }
 
+/** True when the Week Board should open on Kai's proposal preview first. */
+export function shouldAutoOpenPreview(state: Pick<GameState, 'tasks' | 'capacity' | 'rebalanceSeen'>): boolean {
+  if (state.rebalanceSeen) return false
+  const waking = wakingMinutes(state.capacity)
+  return proposeRebalance(state.tasks, { day: SOURCE_DAY, destination: DEFAULT_DESTINATION, waking }).moves.length > 0
+}
+
 function pct(value: number): string {
   return Number.isFinite(value) ? value.toFixed(0) : '∞'
 }
@@ -72,7 +79,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
   const [destination, setDestination] = useState(DEFAULT_DESTINATION)
   const [selected, setSelected] = useState<string[] | null>(null)
   const [mobileDay, setMobileDay] = useState(SOURCE_DAY)
-  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(() => shouldAutoOpenPreview(state))
   const [inspected, setInspected] = useState<string | null>(null)
   const [undoTasks, setUndoTasks] = useState<Task[] | null>(null)
   const [dropTarget, setDropTarget] = useState<{ day: string; beforeId?: string } | null>(null)

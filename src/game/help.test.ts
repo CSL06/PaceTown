@@ -56,4 +56,8 @@ describe('HELP', () => {
   it('rebalance describes the real proposal', () => {
     expect(adaptiveLine('rebalance', base(), fakeLoad(108))).toMatch(/Kai can move|Nothing can safely move/)
   })
+
+  it('work names the chosen guardian when overridden', () => {
+    expect(adaptiveLine('work', base({ blocker: 'too_large', guardianOverride: 'sol' }), fakeLoad(91))).toContain('Sol')
+  })
 })

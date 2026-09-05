@@ -115,3 +115,32 @@ export const GUARDIANS: Record<GuardianId, { name: string; role: string }> = {
   sky: { name: 'Sky', role: 'Café · Accompany' },
   goh: { name: 'Goh', role: 'Market · Complete' },
 }
+
+/** The guardian who owns the shared-rule next step — used to focus the dock. */
+export function focusGuardianFor(view: ViewId | null): GuardianId | null {
+  switch (view) {
+    case 'rebalance': case 'load': return 'kai'
+    case 'recover': case 'garden': return 'sol'
+    case 'session': case 'work': return 'mira'
+    case 'warmcup': return 'sky'
+    case 'lanterns': return 'goh'
+    default: return null
+  }
+}
+
+/** One-line title-hook copy mirroring the quest card's recommendation. */
+export function nextStepFor(view: ViewId | null): string {
+  switch (view) {
+    case 'rebalance': return 'Kai found things that can move — start there.'
+    case 'recover': return 'You banked work — recovery is next.'
+    case 'garden': return 'The garden is ready for you.'
+    case 'session': return 'Your checkpoint is waiting.'
+    default: return 'One checkpoint next — the Library is waiting.'
+  }
+}
+
+/** Where Kai's first-run intro should point: brand-new saves start at intake. */
+export function firstStepForIntro(state: { journal: unknown[]; rebalanceSeen: boolean }): ViewId {
+  if (state.journal.length === 0) return 'intake'
+  return state.rebalanceSeen ? 'work' : 'rebalance'
+}

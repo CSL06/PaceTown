@@ -58,6 +58,10 @@
 .library-choices strong { font-size: 14px; }
 .library-choices span { color: #746858; font-size: 11px; }
 .library-choices.compact button { justify-content: flex-start; min-height: 50px; }
+.library-return-summary { display: grid; gap: 10px; margin-top: 18px; }
+.library-return-work, .library-return-item { display: grid; gap: 4px; padding: 11px 13px; background: #f4e5c4; border-left: 4px solid #3e8b81; }
+.library-return-work span, .library-return-item span { color: #86623a; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.library-return-work strong, .library-return-item strong { display: block; color: #173348; font: 700 15px/1.35 var(--display); overflow-wrap: anywhere; }
 .library-text-button { margin-top: 14px; padding: 7px 10px; border-color: transparent !important; background: transparent !important; color: #795433 !important; text-decoration: underline; }
 .library-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
 .library-actions button { min-height: 42px; padding: 9px 13px; }

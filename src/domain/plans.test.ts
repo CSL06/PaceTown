@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { BLOCKERS, PLAN_TEMPLATES, buildCheckpoints, guardianFor, resolveCheckpoint } from './plans'
-import type { BlockerKind } from './types'
+import { BLOCKERS, PLAN_TEMPLATES, buildCheckpoints, guardianFor, resolveCheckpoint, effectiveGuardian, splitCheckpoint } from './plans'
+import type { BlockerKind, Checkpoint } from './types'
 
 const ALL: BlockerKind[] = BLOCKERS.map((b) => b.id)
 
@@ -133,5 +133,56 @@ describe('resolveCheckpoint', () => {
     const before = plan.map((c) => c.status)
     resolveCheckpoint(plan, plan[0].id, 'completed')
     expect(plan.map((c) => c.status)).toEqual(before)
+  })
+})
+
+describe('effectiveGuardian', () => {
+  it('follows the blocker routing when nothing is picked', () => {
+    expect(effectiveGuardian('unclear_start', null)).toBe('mira')
+    expect(effectiveGuardian(null, null)).toBe('kai')
+  })
+
+  it('honours an explicit pick over the routing', () => {
+    expect(effectiveGuardian('too_large', 'sol')).toBe('sol')
+    expect(effectiveGuardian('low_capacity', 'sky')).toBe('sky')
+  })
+})
+
+describe('splitCheckpoint', () => {
+  const one = (): Checkpoint[] => ([
+    { id: 'c1', title: 'Do the part', definitionOfDone: 'Done.', estimatedMinutes: 20, status: 'pending' },
+  ])
+
+  it('splits minutes across two checkpoints that sum to the original', () => {
+    const next = splitCheckpoint(one(), 'c1')
+    expect(next).toHaveLength(2)
+    expect(next[0].estimatedMinutes + next[1].estimatedMinutes).toBe(20)
+    expect(next[1].title).toBe('Do the part (part 2)')
+    expect(next[1].status).toBe('pending')
+  })
+
+  it('rounds odd minutes without losing any', () => {
+    const list: Checkpoint[] = ([
+      { id: 'c1', title: 'Do the part', definitionOfDone: 'Done.', estimatedMinutes: 25, status: 'pending' },
+    ])
+    const next = splitCheckpoint(list, 'c1')
+    expect(next[0].estimatedMinutes + next[1].estimatedMinutes).toBe(25)
+  })
+
+  it('leaves the list unchanged when the id is unknown', () => {
+    expect(splitCheckpoint(one(), 'nope')).toEqual(one())
+  })
+
+  it('never mutates the caller’s list', () => {
+    const list = one()
+    splitCheckpoint(list, 'c1')
+    expect(list).toEqual(one())
+  })
+
+  it('leaves tiny checkpoints unchanged instead of splitting to zero', () => {
+    const list: Checkpoint[] = ([
+      { id: 'c1', title: 'Do the part', definitionOfDone: 'Done.', estimatedMinutes: 1, status: 'pending' },
+    ])
+    expect(splitCheckpoint(list, 'c1')).toEqual(list)
   })
 })

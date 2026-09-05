@@ -19,7 +19,8 @@ import { ClockTower } from './ClockTower'
 import { Library } from './Library'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
-import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
+import { ResumeCard } from './ResumeCard'
+import { GUARDIANS, PLACES, doorstep, firstStepForIntro, focusGuardianFor, nextStepFor, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
@@ -65,7 +66,6 @@ const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
 /** Greetings fire once per place, then never again. */
 const GREETINGS: Partial<Record<string, [GuardianId, string]>> = {
   library: ['mira', 'I am Mira, and I explain things. Tell me what blocks you — we start with one small visible step.'],
-  clock: ['kai', 'I am Kai, and I plan time. Two flexible tasks can move to Saturday — want to see?'],
   garden: ['sol', 'I am Sol, and I keep effort sustainable. This water achieves nothing, and that is the point — sit a minute?'],
   market: ['goh', 'I am Goh, and I finish small things. Errands group well — bring me the list in your head.'],
   cafe: ['sky', 'I am Sky, and I keep you company. Work if you want — I will not ask how it is going.'],
@@ -189,8 +189,27 @@ export default function Game() {
 
   const enter = useCallback((place: Place) => {
     moveTo(doorstep(place))
+    if (state.greeted[place.id]) { go(place.view); return }
+    if (place.id === 'clock') {
+      const n = proposeRebalance(state.tasks, {
+        day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(state.capacity),
+      }).moves.length
+      const line = n > 0
+        ? `I am Kai, and I plan time. ${n} flexible task${n === 1 ? '' : 's'} can move to Saturday — want to see?`
+        : 'I am Kai, and I plan time. The week is settled — nothing can move safely.'
+      setState((s) => ({ ...s, greeted: { ...s.greeted, clock: true } }))
+      setScript({
+        who: 'kai',
+        lines: [line],
+        choices: [
+          { label: 'Yes', onPick: () => go(place.view) },
+          { label: 'Not now', onPick: () => {} },
+        ],
+      })
+      return
+    }
     const greeting = GREETINGS[place.id]
-    if (!greeting || state.greeted[place.id]) { go(place.view); return }
+    if (!greeting) { go(place.view); return }
     setState((s) => ({ ...s, greeted: { ...s.greeted, [place.id]: true } }))
     setScript({
       who: greeting[0],
@@ -200,7 +219,7 @@ export default function Game() {
         { label: 'Not now', onPick: () => {} },
       ],
     })
-  }, [moveTo, go, state.greeted])
+  }, [moveTo, go, state.greeted, state.tasks, state.capacity])
 
   /* First run: Kai explains the number the whole week turns on. Fired from the
      click rather than an effect — an effect that also sets `introSeen` would
@@ -209,19 +228,41 @@ export default function Game() {
     const firstTime = !state.introSeen
     setState((s) => ({ ...s, started: true, introSeen: true }))
     if (!firstTime) return
+    const firstStep = firstStepForIntro(state)
     window.setTimeout(() => setScript({
       who: 'kai',
-      lines: [
-        'You made it. Take a breath before you look at any of it.',
-        `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
-        'Two of the flexible ones can. I will show you exactly which, and nothing changes until you say so.',
-      ],
-      choices: [
-        { label: 'Show me what can move', onPick: () => go('rebalance') },
-        { label: 'Let me look around first', onPick: () => {} },
-      ],
+      lines: firstStep === 'intake'
+        ? [
+            'You made it. Take a breath before you look at any of it.',
+            'Your week is already waiting at Town Hall — one plain-language list. Look at it with me, and then we decide what Thursday really needs.',
+          ]
+        : firstStep === 'work'
+          ? [
+              'You made it. Take a breath before you look at any of it.',
+              `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
+              'Your checkpoint is waiting — let us pick it up together.',
+            ]
+          : [
+              'You made it. Take a breath before you look at any of it.',
+              `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
+              'Two of the flexible ones can. I will show you exactly which, and nothing changes until you say so.',
+            ],
+      choices: firstStep === 'intake'
+        ? [
+            { label: 'Show me my week', onPick: () => go('intake') },
+            { label: 'Let me look around first', onPick: () => {} },
+          ]
+        : firstStep === 'work'
+          ? [
+              { label: 'Show me my checkpoint', onPick: () => go(firstStep) },
+              { label: 'Let me look around first', onPick: () => {} },
+            ]
+          : [
+              { label: 'Show me what can move', onPick: () => go(firstStep) },
+              { label: 'Let me look around first', onPick: () => {} },
+            ],
     }), 400)
-  }, [state.introSeen, load.percentage, go])
+  }, [state, load.percentage, go])
 
   /* E enters what you are standing next to; Escape backs out of anything. */
   useEffect(() => {
@@ -241,10 +282,6 @@ export default function Game() {
 
   const stepsDone = LOOP_STEPS.filter(([, done]) => done(state)).length
   const level = levelOf(state.xp)
-  // Title hook counts the live week, never a hardcoded script.
-  const lockedCount = state.tasks.filter((t) => t.day === 'thu' && t.flexibility === 'fixed').length
-  const moverCount = proposeRebalance(state.tasks,
-    { day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(state.capacity) }).moves.length
   const activeCheckpoint = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
 
   const waking = wakingMinutes(state.capacity)
@@ -272,6 +309,7 @@ export default function Game() {
     : state.outcome && !state.questOutcome ? 'recover'
     : (foreground?.view as ViewId | undefined) ?? 'work'
   const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
+  const focusGuardian = focusGuardianFor(leadView)
 
   const panelProps: PanelProps = { state, load, update, go, toast }
   const Panel = state.view ? PANELS[state.view] : null
@@ -305,11 +343,7 @@ export default function Game() {
             </p>
 
             <p className="title-hook">
-              Thursday is at <b style={{ color: 'var(--accent)' }}>{load.percentage.toFixed(0)}%</b>.
-              {' '}{lockedCount} commitment{lockedCount === 1 ? ' is' : 's are'} already locked in.
-              {moverCount > 0
-                ? <> Kai thinks {moverCount} thing{moverCount === 1 ? '' : 's'} can move — pick one checkpoint to begin.</>
-                : ' Nothing can move safely — pick one checkpoint to begin.'}
+              Thursday is at <b style={{ color: 'var(--accent)' }}>{load.percentage.toFixed(0)}%</b>. {nextStepFor(leadView)}
             </p>
 
             {returning && (
@@ -488,15 +522,7 @@ export default function Game() {
 
       <div className="hud hud-quest">
         {activeCheckpoint && !state.outcome ? (
-          <>
-            <div className="eyebrow">Where you left off</div>
-            <h3>{activeCheckpoint.title}</h3>
-            <p>Your checkpoint is held exactly as you left it.</p>
-            <div className="qa">
-              <button className="go" type="button" onClick={() => go('session')}>Resume session</button>
-              <button type="button" onClick={() => go('recover')}>Recover instead</button>
-            </div>
-          </>
+          <ResumeCard state={state} go={go} />
         ) : foreground ? (
           <>
             <div className="eyebrow">
@@ -526,7 +552,7 @@ export default function Game() {
         )}
       </div>
 
-      <GuardianDock state={state} load={load} go={go} />
+      <GuardianDock state={state} load={load} go={go} focus={focusGuardian} />
 
       <div className="gains" aria-hidden="true">
         {gains.map((g) => <span key={g.id}>{g.text}</span>)}

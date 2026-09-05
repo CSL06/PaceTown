@@ -10,7 +10,7 @@ import {
   DEFAULT_COSMETICS, DEMO_BRIEF, DEMO_CAPACITY, DEMO_SCHEDULE_TEXT, demoTasks,
   seededActivityKind,
   type BlockerKind, type Capacity, type Checkpoint, type CosmeticSlot,
-  type RegulationId, type Task,
+  type GuardianId, type RegulationId, type Task,
 } from '../domain'
 import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
@@ -51,6 +51,8 @@ export interface GameState {
   activeCheckpointId: string | null
   /** The task the active plan and session belong to. */
   activeTaskId: string | null
+  /** Explicit guardian pick; null follows the blocker routing. */
+  guardianOverride: GuardianId | null
   notes: string
   outcome: 'completed' | 'partial' | 'blocked' | 'rescheduled' | null
   /** Last checkpoint+outcome saved — an exact re-save is skipped, never re-paid. */
@@ -152,11 +154,16 @@ export function initialState(): GameState {
     checkpoints: [],
     activeCheckpointId: null,
     activeTaskId: null,
+    guardianOverride: null,
     notes: '',
     outcome: null,
     savedSessionKey: null,
-    progressNote: 'Listed 6 entities. Mapped Student–Course as many-to-many.',
-    nextAction: 'Add the enrolment junction entity.',
+    /* Demo seeds once pre-filled these with sample progress; they start blank
+       now, so a first-ever desk visit never shows "Welcome back" with text the
+       student never wrote (the welcome panel, HUD badge, and reflect pre-fill
+       all read these fields). */
+    progressNote: '',
+    nextAction: '',
 
     rippleTaps: 0,
     questOutcome: null,

@@ -3,8 +3,9 @@
  *
  * The schedule is produced by running the real parser over the text below,
  * so the demo can never drift from what intake would actually do. If the
- * parser regresses, the 108% figure the whole story rests on moves with it —
- * which is the point.
+ * parser regresses, the seeded Thursday figure the whole story rests on
+ * moves with it — computed live, never a hard-coded constant — which is
+ * the point.
  */
 
 import { parseSchedule } from './parse'

@@ -455,3 +455,9 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 @media (prefers-reduced-motion: reduce) {
   .scrim, .sheet { animation: none }
 }
+
+/* pixel-dialogue message box (Library work plan) */
+.msgbox { border: 2px solid var(--edge-hi); border-radius: 10px; background: var(--sunk); padding: 14px 16px; margin-top: 18px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18) }
+.msgbox-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px }
+.msgbox-back { font-size: 12px; color: var(--dim); border: 1px solid var(--edge); border-radius: 6px; padding: 4px 10px; background: transparent; cursor: pointer }
+.msgbox-back:hover { border-color: var(--accent); color: var(--accent) }
