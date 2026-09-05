@@ -19,7 +19,7 @@ import { ClockTower } from './ClockTower'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { ResumeCard } from './ResumeCard'
-import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
+import { GUARDIANS, PLACES, doorstep, focusGuardianFor, nextStepFor, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
@@ -222,10 +222,6 @@ export default function Game() {
 
   const stepsDone = LOOP_STEPS.filter(([, done]) => done(state)).length
   const level = levelOf(state.xp)
-  // Title hook counts the live week, never a hardcoded script.
-  const lockedCount = state.tasks.filter((t) => t.day === 'thu' && t.flexibility === 'fixed').length
-  const moverCount = proposeRebalance(state.tasks,
-    { day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(state.capacity) }).moves.length
   const activeCheckpoint = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
 
   const waking = wakingMinutes(state.capacity)
@@ -253,6 +249,7 @@ export default function Game() {
     : state.outcome && !state.questOutcome ? 'recover'
     : (foreground?.view as ViewId | undefined) ?? 'work'
   const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
+  const focusGuardian = focusGuardianFor(leadView)
 
   const panelProps: PanelProps = { state, load, update, go, toast }
   const Panel = state.view ? PANELS[state.view] : null
@@ -285,11 +282,7 @@ export default function Game() {
             </p>
 
             <p className="title-hook">
-              Thursday is at <b style={{ color: 'var(--accent)' }}>{load.percentage.toFixed(0)}%</b>.
-              {' '}{lockedCount} commitment{lockedCount === 1 ? ' is' : 's are'} already locked in.
-              {moverCount > 0
-                ? <> Kai thinks {moverCount} thing{moverCount === 1 ? '' : 's'} can move — pick one checkpoint to begin.</>
-                : ' Nothing can move safely — pick one checkpoint to begin.'}
+              Thursday is at <b style={{ color: 'var(--accent)' }}>{load.percentage.toFixed(0)}%</b>. {nextStepFor(leadView)}
             </p>
 
             {returning && (
@@ -475,7 +468,7 @@ export default function Game() {
         )}
       </div>
 
-      <GuardianDock state={state} load={load} go={go} />
+      <GuardianDock state={state} load={load} go={go} focus={focusGuardian} />
 
       <div className="gains" aria-hidden="true">
         {gains.map((g) => <span key={g.id}>{g.text}</span>)}

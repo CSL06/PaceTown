@@ -102,25 +102,24 @@ interface Props {
   state: GameState
   load: DailyLoad
   go: (view: ViewId) => void
+  focus: GuardianId | null
 }
 
-export function GuardianDock({ state, load, go }: Props) {
+export function GuardianDock({ state, load, go, focus }: Props) {
   const [open, setOpen] = useState<GuardianId | null>(null)
   const entries = useMemo(() => build(state, load), [state, load])
-  const waiting = entries.filter((e) => e.waiting).length
 
   return (
     <div className="dock" aria-label="Guardians">
       <div className="dock-head">
         <span>Guardians</span>
-        {waiting > 0 && <b>{waiting} waiting</b>}
       </div>
 
       {entries.map((entry) => {
         const guardian = GUARDIANS[entry.id]
         const isOpen = open === entry.id
         return (
-          <div key={entry.id} className={`dock-row${isOpen ? ' is-open' : ''}${entry.waiting ? ' is-waiting' : ''}`}>
+          <div key={entry.id} className={`dock-row${isOpen ? ' is-open' : ''}${focus === entry.id ? ' is-waiting' : ''}`}>
             <button
               type="button"
               className="dock-face"
@@ -128,7 +127,7 @@ export function GuardianDock({ state, load, go }: Props) {
               onClick={() => setOpen(isOpen ? null : entry.id)}
             >
               <img src={`/game/portraits/${entry.id}.webp`} alt="" width="190" height="285" />
-              {entry.waiting && <span className="dock-dot" aria-hidden="true" />}
+              {focus === entry.id && <span className="dock-dot" aria-hidden="true" />}
               <span className="dock-name">{guardian.name}</span>
               <span className="sr">
                 {guardian.role}. {entry.status}. {entry.waiting ? 'Waiting on you.' : ''}
