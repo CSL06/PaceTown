@@ -2,9 +2,9 @@
  * @vitest-environment jsdom
  */
 import { useEffect, useState } from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { dailyLoad, wakingMinutes } from '../../domain'
 import type { ViewId } from '../layout'
 import { initialState, type GameState } from '../state'
@@ -22,18 +22,26 @@ function Harness({ view, onState, go = vi.fn() }: {
 }
 
 describe('recovery activity scenes', () => {
-  it('lets a tactile ripple reset finish early without demanding reflection', async () => {
-    const user = userEvent.setup()
+  afterEach(() => vi.useRealTimers())
+
+  it('clears the Ripple pond in three waves without demanding reflection', async () => {
+    vi.useFakeTimers()
     let latest = initialState()
     const go = vi.fn()
     render(<Harness view="ripples" go={go} onState={(state) => { latest = state }} />)
 
-    expect(screen.getByText(/nothing to explain and nothing to solve/i)).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /start at the water/i }))
-    expect(screen.getByRole('button', { name: /press and hold to gather a wave/i })).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /enough for now/i }))
-    expect(screen.getByText(/stopping is allowed/i)).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /stay by the water/i }))
+    expect(screen.getByText(/pond is carrying too much/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /step closer/i }))
+    for (let wave = 0; wave < 3; wave += 1) {
+      const water = screen.getByRole('button', { name: /hold anywhere on the water/i })
+      fireEvent.pointerDown(water, { pointerId: 1 })
+      fireEvent.pointerUp(water, { pointerId: 1 })
+      await act(async () => { await vi.advanceTimersByTimeAsync(2000) })
+    }
+    await act(async () => { await vi.advanceTimersByTimeAsync(5200) })
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
+    expect(screen.getByText(/a little more room/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /^stay$/i }))
 
     expect(latest.regulationSessions.at(-1)?.activity).toBe('gentle_ripples')
     expect(latest.regulationSessions.at(-1)?.response).toBe('not_sure')

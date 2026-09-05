@@ -117,23 +117,82 @@ function RippleAsset({ index, className = '', label, style }: {
     }} />
 }
 
+function RippleV5Asset({ kind, index, className = '', label, style }: {
+  kind: 'leaf' | 'wave' | 'lotus' | 'shimmer'; index: number; className?: string; label?: string; style?: CSSProperties
+}) {
+  const col = index % 4
+  const row = Math.floor(index / 4)
+  return <span className={`ripple-v5-asset ripple-v5-${kind} ${className}`} role={label ? 'img' : undefined}
+    aria-label={label} aria-hidden={label ? undefined : true} style={{
+      backgroundImage: `url(/game/recovery/atlases/gentle-ripples-${kind === 'leaf' ? 'leaves' : kind}-v5.png)`,
+      backgroundPosition: `${col * (100 / 3)}% ${row * 100}%`,
+      ...style,
+    }} />
+}
+
+const RIPPLE_LEAVES = [
+  [0, 13, 18, -56, -42, 0], [1, 27, 14, -39, -54, 1], [2, 43, 20, -12, -58, 2],
+  [3, 61, 16, 22, -55, 0], [4, 78, 21, 48, -45, 1], [5, 88, 34, 58, -24, 2],
+  [6, 17, 39, -61, -15, 2], [7, 32, 36, -45, -23, 0], [1, 69, 38, 47, -17, 1],
+  [3, 84, 51, 61, 3, 0], [5, 19, 59, -58, 17, 1], [0, 36, 63, -43, 28, 2],
+  [6, 64, 61, 39, 27, 0], [2, 79, 69, 55, 35, 2], [4, 24, 78, -51, 49, 0],
+  [7, 46, 76, -9, 57, 1], [1, 61, 82, 28, 54, 2], [3, 89, 77, 62, 46, 1],
+] as const
+
 function RipplesGame(props: PanelProps) {
   const { state, go } = props
   const [started, setStarted] = useState(false)
   const [holding, setHolding] = useState(false)
   const [releasing, setReleasing] = useState(false)
   const [waves, setWaves] = useState(0)
+  const [waveFrame, setWaveFrame] = useState(0)
+  const [shimmerFrame, setShimmerFrame] = useState(0)
+  const [cleared, setCleared] = useState(false)
+  const [bloomFrame, setBloomFrame] = useState<number | null>(null)
   const [complete, setComplete] = useState(false)
   const holdingRef = useRef(false)
   const releaseTimer = useRef<number | null>(null)
+  const waveTimer = useRef<number | null>(null)
+  const bloomDelay = useRef<number | null>(null)
+  const bloomTimer = useRef<number | null>(null)
+  const completionDelay = useRef<number | null>(null)
+  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
   const finish = useRecoveryFinish(props, 'ripples')
 
   useEffect(() => {
-    return () => { if (releaseTimer.current !== null) window.clearTimeout(releaseTimer.current) }
+    if (reduced) return
+    const timer = window.setInterval(() => setShimmerFrame((frame) => (frame + 1) % 8), 520)
+    return () => window.clearInterval(timer)
+  }, [reduced])
+  useEffect(() => () => {
+    if (releaseTimer.current !== null) window.clearTimeout(releaseTimer.current)
+    if (waveTimer.current !== null) window.clearInterval(waveTimer.current)
+    if (bloomDelay.current !== null) window.clearTimeout(bloomDelay.current)
+    if (bloomTimer.current !== null) window.clearInterval(bloomTimer.current)
+    if (completionDelay.current !== null) window.clearTimeout(completionDelay.current)
   }, [])
 
+  const beginBloom = () => {
+    setCleared(true)
+    if (reduced) {
+      bloomDelay.current = window.setTimeout(() => { setBloomFrame(7); setComplete(true) }, 1100)
+      return
+    }
+    bloomDelay.current = window.setTimeout(() => {
+      setBloomFrame(0)
+      bloomTimer.current = window.setInterval(() => setBloomFrame((current) => {
+        const next = Math.min(7, (current ?? 0) + 1)
+        if (next === 7 && bloomTimer.current !== null) {
+          window.clearInterval(bloomTimer.current); bloomTimer.current = null
+          completionDelay.current = window.setTimeout(() => setComplete(true), 900)
+        }
+        return next
+      }), 300)
+    }, 1800)
+  }
+
   const gather = () => {
-    if (!started || complete || releasing || holdingRef.current) return
+    if (!started || complete || cleared || releasing || holdingRef.current) return
     holdingRef.current = true
     setHolding(true)
   }
@@ -142,10 +201,13 @@ function RipplesGame(props: PanelProps) {
     holdingRef.current = false
     setHolding(false)
     setReleasing(true)
+    setWaveFrame(0)
+    if (!reduced) waveTimer.current = window.setInterval(() => setWaveFrame((frame) => Math.min(7, frame + 1)), 230)
     releaseTimer.current = window.setTimeout(() => {
+      if (waveTimer.current !== null) { window.clearInterval(waveTimer.current); waveTimer.current = null }
       setWaves((current) => {
         const next = Math.min(3, current + 1)
-        if (next === 3) setComplete(true)
+        if (next === 3) beginBloom()
         return next
       })
       setReleasing(false)
@@ -154,35 +216,40 @@ function RipplesGame(props: PanelProps) {
   const repeat = () => {
     holdingRef.current = false
     if (releaseTimer.current !== null) window.clearTimeout(releaseTimer.current)
-    setHolding(false); setReleasing(false); setWaves(0); setComplete(false); setStarted(true)
+    if (bloomDelay.current !== null) window.clearTimeout(bloomDelay.current)
+    if (bloomTimer.current !== null) window.clearInterval(bloomTimer.current)
+    if (completionDelay.current !== null) window.clearTimeout(completionDelay.current)
+    setHolding(false); setReleasing(false); setWaves(0); setWaveFrame(0); setCleared(false)
+    setBloomFrame(null); setComplete(false); setStarted(true)
   }
 
   return <Shell view="ripples" state={state} go={go}>
     <section className="recovery-playfield ripple-water">
-      <span className="ripple-pond-focus" role="img" aria-label="A calm sunlit pond" />
-      <span className={`ripple-restless-layer${releasing ? ' settling' : ''}`} aria-hidden="true" style={{ '--calm-progress': waves / 3 } as CSSProperties} />
-      <RippleAsset index={3} className="ripple-sol" label="Sol sitting peacefully beside the pond" />
-      {!started && <div className="ripple-intent-card">
-        <span className="recovery-kicker">Gentle Ripples · a tactile reset</span>
-        <h2>Settle the pond, one wave at a time.</h2>
-        <p>Hold the water while you breathe in. Release while you breathe out. Each slow wave clears some visual noise—nothing to explain and nothing to solve.</p>
-        <div><button className="primary" type="button" onClick={() => setStarted(true)}>Start at the water</button><button type="button" onClick={() => go(null)}>Not now</button></div>
+      <span className="ripple-water-scene" role="img" aria-label="Sunlit water covered with drifting leaves" />
+      <RippleV5Asset kind="shimmer" index={shimmerFrame} className="ripple-shimmer" />
+      <div className="ripple-leaf-field" aria-hidden="true">{RIPPLE_LEAVES.map(([asset, x, y, dx, dy, group], index) =>
+        <RippleV5Asset key={index} kind="leaf" index={asset} className={`ripple-leaf leaf-${index}${group < waves || cleared ? ' cleared' : ''}${releasing && group === waves ? ' scattering' : ''}`}
+          style={{ '--leaf-x': `${x}%`, '--leaf-y': `${y}%`, '--leaf-dx': `${dx}vw`, '--leaf-dy': `${dy}vh` } as CSSProperties} />
+      )}</div>
+      {!started && <div className="ripple-dialogue ripple-dialogue-intro">
+        <RippleAsset index={3} className="ripple-sol-portrait" label="Sol" />
+        <div><span className="recovery-kicker">Sol</span><p>The pond is carrying too much on its surface. Hold anywhere to gather a current, then let it go.</p>
+          <button className="primary" type="button" onClick={() => setStarted(true)}>E · Step closer</button></div>
       </div>}
-      {started && !complete && <>
-        <button className={`ripple-touch-target${holding ? ' gathering' : ''}${releasing ? ' releasing' : ''}`} type="button"
-          aria-label={holding ? 'Release to send the wave' : releasing ? 'Wave moving across the pond' : 'Press and hold to gather a wave'}
-          disabled={releasing} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); gather() }} onPointerUp={release} onPointerCancel={release}
+      {started && !complete && !cleared && <>
+        <button className="ripple-water-hit" type="button"
+          aria-label={holding ? 'Release to send the wave' : releasing ? 'Wave moving across the water' : 'Hold anywhere on the water to gather a current'}
+          disabled={releasing} onPointerDown={(event) => { event.currentTarget.setPointerCapture?.(event.pointerId); gather() }} onPointerUp={release} onPointerCancel={release}
           onKeyDown={(event) => { if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) { event.preventDefault(); gather() } }}
           onKeyUp={(event) => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); release() } }}>
-          <span>{holding ? 'Hold · breathe in' : releasing ? 'Release · breathe out' : waves ? 'Hold for the next wave' : 'Press and hold'}</span>
-        </button>
-        <div className={`ripple-action-wave${releasing ? ' releasing' : ''}`} aria-hidden="true" />
-        <div className="recovery-instruction"><b>{holding ? 'Let the water gather inward.' : releasing ? 'Let the wave finish. There is nowhere to hurry.' : waves ? `${waves} of 3 waves · the pond is quieter.` : 'Press and hold. Release when your inhale feels full.'}</b>
-          <span>{holding ? 'Release with your exhale.' : releasing ? 'Watch the surface open and settle.' : 'A short hold is fine. This is not a breathing test.'}</span></div>
+          <span className="sr-only">Interact with the water</span></button>
+        {releasing && <RippleV5Asset kind="wave" index={reduced ? 6 : waveFrame} className="ripple-wave-animation" label="A wave moving across the water" />}
+        <div className="ripple-dialogue"><RippleAsset index={3} className="ripple-sol-portrait" label="Sol" /><div><span className="recovery-kicker">Sol</span><p>{holding ? 'Hold gently. Let the current gather.' : releasing ? 'Now let it travel. Watch what moves.' : waves ? 'The water has more room. When you are ready, make another.' : 'Hold anywhere on the water. Release when your inhale feels full.'}</p><small>{waves} / 3 waves</small></div></div>
       </>}
-      {complete && <div className="ripple-result-card"><span className="recovery-kicker">Sol</span><h2>{waves ? 'A little more room.' : 'Stopping is allowed.'}</h2><p>{waves ? 'You did not have to explain or fix anything. Stay with the quieter pond for as long as it helps.' : 'You listened to what you needed. There is no minimum amount of recovery to earn.'}</p><div className="ripple-result-actions"><button type="button" onClick={repeat}>{waves ? 'Make three more waves' : 'Try the water again'}</button><button type="button" onClick={() => finish('calm', 'not_sure')}>Stay by the water</button><button className="primary" type="button" onClick={() => finish(null, 'not_sure')}>Return to town</button></div></div>}
+      {cleared && bloomFrame === null && <div className="ripple-clear-pause" role="status">The water is clear.</div>}
+      {bloomFrame !== null && <RippleV5Asset kind="lotus" index={bloomFrame} className="ripple-lotus-bloom" label={complete ? 'A lotus in full bloom' : 'A lotus opening on the clear water'} />}
+      {complete && <div className="ripple-dialogue ripple-dialogue-result"><RippleAsset index={3} className="ripple-sol-portrait" label="Sol" /><div><span className="recovery-kicker">Sol</span><p>A little more room.</p><div className="ripple-result-actions"><button type="button" onClick={repeat}>Again</button><button type="button" onClick={() => finish('calm', 'not_sure')}>Stay</button><button className="primary" type="button" onClick={() => finish(null, 'not_sure')}>Leave</button></div></div></div>}
     </section>
-    {started && !complete && <nav className="recovery-controls"><span>{waves} of 3 settling waves</span><button type="button" onClick={() => setComplete(true)}>Enough for now</button></nav>}
   </Shell>
 }
 

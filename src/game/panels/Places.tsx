@@ -619,7 +619,7 @@ export function Calm({ state, load, go }: PanelProps) {
       <div className="opts">
         <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◉</span>
-          <span>Gentle Ripples<small>The paced sensory pause at the fountain</small></span>
+          <span>Gentle Ripples<small>Clear drifting leaves with three slow waves, then watch the pond bloom</small></span>
         </button>
         {PREVIEWS.map(([name, view, play]) => (
           <button key={name} className="opt" type="button" onClick={() => go(view as 'firefly' | 'chime' | 'warmcup' | 'lanterns')}>

@@ -88,8 +88,8 @@ export const HELP: Record<ViewId, HelpContent> = {
   },
   ripples: {
     title: 'Gentle Ripples',
-    what: 'A paced sensory pause at the fountain. No score, no failure state.',
-    how: 'Tap the water, say how it feels, then choose where to return.',
+    what: 'Clear drifting leaves with three slow waves, rest with the open water, and watch a lotus bloom. No score, no failure state.',
+    how: 'Hold anywhere on the water to gather a current, then release it. Three waves clear the leaves before the water rests and blooms.',
     guardian: { who: 'sol', why: 'Sol hosts this water. Achieving nothing here is the point.' },
   },
   pocket: {
