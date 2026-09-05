@@ -8,7 +8,7 @@ import {
   BLOCKERS, DEMO_DESTINATION, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
   extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
-  resolveCheckpoint, sessionReward, effectiveGuardian,
+  resolveCheckpoint, sessionReward, effectiveGuardian, splitCheckpoint,
   wakingMinutes, type GuardianId, type HelpMode, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
@@ -589,7 +589,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
       </div>
     )
   }
-  const guardian = guardianFor(state.blocker)
+  const guardian = effectiveGuardian(state.blocker, state.guardianOverride)
   const help = state.session.helpMode as HelpMode | null
   const ses = state.session
   const remaining = ses.timerLenSec - ses.elapsedSec
@@ -684,11 +684,57 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
       {help && (
         <div className="capacity" style={{ borderLeft: '2px solid var(--mental)' }}>
           <div><span>{GUARDIANS[guardian].name} · local guidance for this task, no AI provider connected</span></div>
-          {guideLines(state.blocker, help, guideCtx, guardianFor(state.blocker)).map((p) => (
+          {guideLines(state.blocker, help, guideCtx, guardian).map((p) => (
             <div key={p} style={{ display: 'block', color: 'var(--dim)', marginTop: 6 }}>{p}</div>
           ))}
         </div>
       )}
+
+      <div className="eyebrow" style={{ marginTop: 18 }}>{GUARDIANS[guardian].name}’s action</div>
+      <div className="actions">
+        {guardian === 'mira' && (
+          <button className="secondary" type="button" onClick={() => {
+            const lines = (state.deliverables.length ? state.deliverables : ['Smallest visible piece first'])
+              .map((d) => `- ${d}`)
+            update((s) => ({
+              ...s,
+              session: { ...s.session, scratchpad: [s.session.scratchpad.trim(), `Outline for “${sessionTask?.title ?? 'this task'}”:\n${lines.join('\n')}`].filter(Boolean).join('\n\n') },
+            }))
+            toast('Outline drafted — edit freely.')
+          }}>Draft outline into scratchpad</button>
+        )}
+        {guardian === 'kai' && (
+          <button className="secondary" type="button" disabled={active.estimatedMinutes < 10}
+            title={active.estimatedMinutes < 10 ? 'Too small to split further' : undefined}
+            onClick={() => {
+              update((s) => ({ ...s, checkpoints: splitCheckpoint(s.checkpoints, active.id) }))
+              toast('Checkpoint split in two.')
+            }}>Split checkpoint in two</button>
+        )}
+        {guardian === 'sol' && (
+          <button className="secondary" type="button" onClick={() => {
+            update((s) => ({ ...s, checkpoints: s.checkpoints.map((c) => c.id === active.id ? { ...c, estimatedMinutes: 5 } : c) }))
+            toast('Shrunk to a 5-minute step.')
+          }}>Shrink to a 5-minute step</button>
+        )}
+        {guardian === 'sky' && (
+          <button className="secondary" type="button" onClick={() => {
+            update((s) => ({ ...s, session: { ...s.session, timerMode: 'up', elapsedSec: 0 } }))
+            toast('Sky sits with you — press Start timer when ready.')
+          }}>Sit with me — start together</button>
+        )}
+        {guardian === 'goh' && (
+          <button className="secondary" type="button" onClick={() => {
+            const id = `manual-${Date.now()}`
+            update((s) => ({ ...s, checkpoints: [...s.checkpoints, {
+              id, title: 'Gather what is missing',
+              definitionOfDone: 'A short list of every missing item.',
+              estimatedMinutes: 10, status: 'pending' as const,
+            }] }))
+            toast('Gathering step added.')
+          }}>Add gathering checklist</button>
+        )}
+      </div>
 
       <div className="eyebrow" style={{ marginTop: 20 }}>Stuck? These are always available</div>
       <div className="actions">

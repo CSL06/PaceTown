@@ -8,7 +8,7 @@
  */
 
 import {
-  BLOCKERS, DEMO_DESTINATION, guardianFor, proposeRebalance, wakingMinutes,
+  BLOCKERS, DEMO_DESTINATION, effectiveGuardian, guardianFor, proposeRebalance, wakingMinutes,
   type DailyLoad, type GuardianId,
 } from '../domain'
 import { GUARDIANS, type ViewId } from './layout'
@@ -64,7 +64,7 @@ export const HELP: Record<ViewId, HelpContent> = {
     adaptive: (s) => {
       if (!s.blocker) return 'No blocker picked yet. Choosing one calls the right guardian.'
       const b = BLOCKERS.find((x) => x.id === s.blocker)
-      return `${name(guardianFor(s.blocker))} is with you here: you picked “${b?.label ?? s.blocker}”.`
+      return `${name(effectiveGuardian(s.blocker, s.guardianOverride))} is with you here: you picked “${b?.label ?? s.blocker}”.`
     },
   },
   session: {
@@ -75,7 +75,7 @@ export const HELP: Record<ViewId, HelpContent> = {
     adaptive: (s) => {
       if (!s || !Array.isArray(s.checkpoints)) return null
       if (!s.blocker) return 'Pick a checkpoint in the Library first. Sessions attach to one checkpoint.'
-      const g = name(guardianFor(s.blocker))
+      const g = name(effectiveGuardian(s.blocker, s.guardianOverride))
       const c = s.checkpoints.find((x) => x.id === s.activeCheckpointId)
       return c ? `${g} is with you. Current checkpoint: “${c.title}”.` : `${g} is with you. Choose a checkpoint in the Library to begin.`
     },
