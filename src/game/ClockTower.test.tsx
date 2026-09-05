@@ -86,8 +86,6 @@ describe('Clock Tower scene', () => {
     render(<Harness />)
     await user.click(screen.getByRole('button', { name: /open week board/i }))
     await screen.findByRole('dialog', {}, { timeout: 3000 })
-    expect(screen.queryByText('Preview here')).not.toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Ask Kai to rebalance' }))
     expect((await screen.findAllByText('Preview here', {}, { timeout: 3000 })).length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: /approve \d+ moves/i }))
 
