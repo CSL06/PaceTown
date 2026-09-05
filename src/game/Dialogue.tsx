@@ -63,12 +63,16 @@ export function Dialogue({ script, reducedMotion, onClose }: Props) {
   const who = GUARDIANS[script.who]
 
   return (
-    <div className="dlg" onClick={advance} role="dialog" aria-live="polite">
+    /* Narration with choices, not a dialog: it is non-modal, it advances on a
+       click anywhere, and it does not trap focus. Claiming role="dialog"
+       alongside the real modals made five different things answer to the same
+       role, which is confusing to a screen reader and ambiguous to a test. */
+    <div className="dlg" onClick={advance} role="group" aria-label="Conversation">
       <div className="dlg-inner">
         <img className="dlg-face" src={`/game/portraits/${script.who}.webp`} alt="" />
         <div className="dlg-body">
           <div className="dlg-name">{who.name}<span>{who.role}</span></div>
-          <p className="dlg-text">
+          <p className="dlg-text" aria-live="polite">
             {shown}
             {typing && <span className="dlg-caret" aria-hidden="true" />}
           </p>

@@ -12,6 +12,7 @@ import {
 } from '../../domain'
 import { useTheme, type ThemeSetting } from '../../theme/ThemeProvider'
 import { clearState, resetDemo } from '../state'
+import { clearProblems, problemsAsText, recentProblems } from '../../ui/errorLog'
 import { HelpDot } from './HelpDot'
 import type { PanelProps } from './types'
 
@@ -37,6 +38,8 @@ const THEME_CHOICES: [ThemeSetting, string][] = [
 export function Settings({ state, load, update, toast }: PanelProps) {
   const { setting: themeSetting, setSetting: setThemeSetting } = useTheme()
   const [confirmingReset, setConfirmingReset] = useState(false)
+  const [showProblems, setShowProblems] = useState(false)
+  const problems = recentProblems()
   const waking = wakingMinutes(state.capacity)
 
   const togglePref = (id: RegulationId) => {
@@ -173,6 +176,40 @@ export function Settings({ state, load, update, toast }: PanelProps) {
               onClick={() => setThemeSetting(value)}>{label}</button>
           ))}
         </div>
+      </div>
+
+      {/* ---------------------------------------------------------- problems */}
+      <div className="card">
+        <div className="eyebrow">Problem log</div>
+        <h3 style={{ fontSize: 17, marginTop: 5 }}>
+          {problems.length === 0
+            ? 'Nothing has gone wrong'
+            : `${problems.length} problem${problems.length === 1 ? '' : 's'} recorded`}
+        </h3>
+        <p className="note">
+          If something breaks, it is written down here rather than disappearing into a
+          console. Nothing is sent anywhere — this is yours to read, and to copy if you
+          want to report it.
+        </p>
+        {problems.length > 0 && (
+          <div className="actions">
+            <button className="secondary" type="button"
+              onClick={() => setShowProblems((v) => !v)}>
+              {showProblems ? 'Hide details' : 'Show details'}
+            </button>
+            <button className="secondary" type="button" onClick={() => {
+              void navigator.clipboard?.writeText(problemsAsText())
+              toast('Problem log copied')
+            }}>Copy for a report</button>
+            <button className="secondary" type="button" onClick={() => {
+              clearProblems()
+              toast('Problem log cleared')
+            }}>Clear</button>
+          </div>
+        )}
+        {showProblems && (
+          <pre className="problem-log">{problemsAsText()}</pre>
+        )}
       </div>
 
       {/* -------------------------------------------------------------- data */}

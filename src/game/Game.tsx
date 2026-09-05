@@ -38,6 +38,7 @@ import type { ReactElement } from 'react'
 import './game.css'
 import './hud.css'
 import './overlays.css'
+import './panels.css'
 import './cosmetics.css'
 
 const VIEW_TITLE: Record<ViewId, string> = {
@@ -85,6 +86,11 @@ export default function Game() {
   const { account, isGuest, signOut } = useAuth()
   const [state, setState] = useState<GameState>(() => loadState())
   const [menuOpen, setMenuOpen] = useState(false)
+
+  /* Scene changes used to cut instantly, which is the most jarring thing a
+     game can do between locations. Bumping this key replays the wipe. */
+  const [wipeKey, setWipeKey] = useState(0)
+  const lastScene = useRef(state.scene)
   const [script, setScript] = useState<DialogueScript | null>(null)
   const [toasts, setToasts] = useState<{ id: number; text: string }[]>([])
   const [moved, setMoved] = useState(false)
@@ -102,6 +108,12 @@ export default function Game() {
 
   /* Quiet Mode already promises no ambient life. Sound belongs to that promise. */
   useEffect(() => { setSfxEnabled(!state.quiet) }, [state.quiet])
+
+  useEffect(() => {
+    if (lastScene.current === state.scene) return
+    lastScene.current = state.scene
+    setWipeKey((k) => k + 1)
+  }, [state.scene])
 
   const update = useCallback((fn: (s: GameState) => GameState) => setState(fn), [])
 
@@ -151,6 +163,11 @@ export default function Game() {
     () => dailyLoad(state.tasks, 'thu', wakingMinutes(state.capacity)),
     [state.tasks, state.capacity],
   )
+
+  /* Rendered in every scene branch, so a change is covered wherever it lands. */
+  const sceneWipe = wipeKey > 0
+    ? <div className="scene-wipe" key={wipeKey} aria-hidden="true" />
+    : null
 
   const panelOpen = state.view !== null
   const dialogueOpen = script !== null
@@ -270,6 +287,7 @@ export default function Game() {
   if (!state.started) {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        {sceneWipe}
         <div className="title">
           <div className="title-art" style={{ backgroundImage: 'url(/game/world/campus-daylight.webp)' }} />
           <div className="title-veil" />
@@ -333,6 +351,7 @@ export default function Game() {
   if (state.scene === 'clock-tower') {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        {sceneWipe}
         <ClockTower state={state} update={update} go={go} toast={toast}
           onExit={() => {
             setState((s) => ({ ...s, scene: 'campus', view: null }))
@@ -349,6 +368,7 @@ export default function Game() {
   if (state.scene === 'library') {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        {sceneWipe}
         <Library state={state} update={update} go={go} toast={toast}
           onExit={() => {
             setState((s) => ({ ...s, scene: 'campus', view: null }))
@@ -364,6 +384,7 @@ export default function Game() {
 
   return (
     <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        {sceneWipe}
       <Campus refs={{ stage, world, avatar }} load={load} tasks={state.tasks} day="thu"
         near={near} leadPlace={leadPlace} quiet={state.quiet} stepsDone={stepsDone}
         equipped={state.equipped} onEnter={enter} />
@@ -546,7 +567,16 @@ export default function Game() {
               <button className="iconbtn" type="button" aria-label="Back to campus"
                 onClick={() => go(null)}>✕</button>
             </div>
-            <div className="sheet-body"><Panel {...panelProps} /></div>
+            <div
+              className="sheet-body"
+              onClickCapture={(e) => {
+                // Delegated rather than wired into each panel: 84 buttons, and
+                // the next one added gets it for free.
+                if ((e.target as HTMLElement).closest('button')) { sfx.click(); haptic(5) }
+              }}
+            >
+              <Panel {...panelProps} />
+            </div>
           </div>
         </>
       )}

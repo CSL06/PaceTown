@@ -163,6 +163,25 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equip
         ))}
       </div>
       <div className="cos-rain" aria-hidden="true" />
+
+      {/* Ambient life. Until now the only thing that moved through the world
+          was the player: the guardians bob at fixed posts and the weather sits
+          still. These are motes in the late-afternoon light — slow enough to
+          read as air rather than as particles demanding attention. Quiet Mode
+          removes them, as it does everything else that moves. */}
+      {!quiet && (
+        <div className="motes" aria-hidden="true">
+          {Array.from({ length: 16 }, (_, i) => (
+            <span key={i}
+              style={{
+                left: `${(i * 6.3) % 100}%`,
+                top: `${(i * 11.7) % 100}%`,
+                animationDelay: `${(i % 8) * 2.4}s`,
+                animationDuration: `${16 + (i % 5) * 4}s`,
+              }} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

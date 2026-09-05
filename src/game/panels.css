@@ -1,0 +1,195 @@
+/* Panel interiors.
+ *
+ * Everything outside the sheet — the HUD rail, the dock, the quest card, the
+ * landing and sign-in pages — wears the pixel kit. Inside the sheet it stopped:
+ * 84 buttons across the panels were flat web controls with `border: none`.
+ * Since the panels are where nearly all the actual time is spent, the effect
+ * was a game-shaped shell wrapped around a generic form.
+ *
+ * This file closes that gap. Same chamfer, same two-tone bevel, same physical
+ * press as everywhere else — and the form controls, which had no styling at
+ * all and were falling through to browser defaults.
+ */
+
+/* ------------------------------------------------------------- buttons */
+
+.sheet-body .primary,
+.sheet-body .secondary {
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+  box-shadow: var(--px-bevel-up);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  /* Stepped, not eased — a pixel button snaps between two states. */
+  transition: transform .06s steps(2), filter .06s steps(2);
+}
+
+.sheet-body .primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.sheet-body .secondary {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.sheet-body .primary:hover:not(:disabled),
+.sheet-body .secondary:hover:not(:disabled) {
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow)) brightness(1.06);
+}
+
+/* Pressed buttons move onto their own shadow and invert the bevel. */
+.sheet-body .primary:active:not(:disabled),
+.sheet-body .secondary:active:not(:disabled) {
+  transform: translate(var(--px-drop), var(--px-drop));
+  filter: none;
+  box-shadow: var(--px-bevel-down);
+}
+
+.sheet-body .primary:disabled,
+.sheet-body .secondary:disabled {
+  filter: none;
+  transform: translate(var(--px-drop), var(--px-drop));
+  box-shadow: var(--px-bevel-down);
+  opacity: .45;
+}
+
+.sheet-body .big {
+  padding: 15px 32px;
+  font-size: 15px;
+  box-shadow: var(--px-bevel-up);
+}
+
+/* --------------------------------------------------------- option rows */
+/* The choice lists carry most of the consent decisions in the product, so
+   they need to read as pressable rather than as text. */
+.sheet-body .opt {
+  border: var(--px-border) solid var(--edge);
+  clip-path: var(--px-clip);
+  transition: border-color .14s ease, background .14s ease, transform .12s ease;
+}
+.sheet-body .opt:hover {
+  border-color: var(--accent);
+  background: var(--panel);
+  transform: translateX(2px);
+}
+.sheet-body .opt[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--pt-accent-wash);
+}
+.sheet-body .opt .k {
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------- form controls */
+/* These had no rules at all and were rendering as browser defaults — a
+   system-chrome dropdown in the middle of a pixel-art town. */
+.sheet-body select,
+.sheet-body input[type="text"],
+.sheet-body input[type="number"],
+.sheet-body input[type="email"],
+.sheet-body textarea {
+  background: var(--pt-sunk);
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  padding: 10px 12px;
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-down);
+  clip-path: var(--px-clip);
+}
+.sheet-body textarea { resize: vertical; line-height: 1.55; min-height: 84px; }
+.sheet-body select:focus,
+.sheet-body input:focus,
+.sheet-body textarea:focus {
+  outline: var(--px-border) solid var(--accent);
+  outline-offset: 0;
+  background: var(--panel);
+}
+.sheet-body input[type="checkbox"],
+.sheet-body input[type="radio"] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+/* Range inputs appear in the session timer and the capacity controls. */
+.sheet-body input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  background: transparent;
+  cursor: ew-resize;
+}
+.sheet-body input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink);
+}
+.sheet-body input[type="range"]::-moz-range-track {
+  height: 12px;
+  background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink);
+}
+.sheet-body input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 22px;
+  margin-top: -8px;
+  background: var(--accent);
+  border: var(--px-border) solid var(--px-ink);
+}
+.sheet-body input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 22px;
+  border-radius: 0;
+  background: var(--accent);
+  border: var(--px-border) solid var(--px-ink);
+}
+
+/* --------------------------------------------------------- scene wipe */
+/* Campus and Clock Tower used to cut instantly, which is the most jarring
+   thing a game can do between locations. A hard-edged wipe, in keeping with
+   everything else here, rather than a soft cross-fade. */
+.scene-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background: var(--px-ink);
+  animation: scene-wipe var(--pt-dur-slow) steps(8) forwards;
+  transform-origin: left center;
+}
+@keyframes scene-wipe {
+  0% { transform: scaleX(0) }
+  45% { transform: scaleX(1) }
+  55% { transform: scaleX(1); transform-origin: right center }
+  100% { transform: scaleX(0); transform-origin: right center }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-body .primary,
+  .sheet-body .secondary,
+  .sheet-body .opt { transition: none }
+  .scene-wipe { animation: none; display: none }
+}
+
+/* ------------------------------------------------------------ problem log */
+.problem-log {
+  margin: 12px 0 0;
+  padding: 12px;
+  max-height: 220px;
+  overflow: auto;
+  background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-down);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--dim);
+  white-space: pre-wrap;
+  word-break: break-word;
+}

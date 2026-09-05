@@ -161,3 +161,30 @@
   .shop-row { flex-wrap: wrap; }
   .shop-act { width: 100%; justify-content: flex-end; }
 }
+
+/* ------------------------------------------------------------- ambient life */
+/* Dust in the afternoon light. The one thing in the world that moves without
+   being bought, without being weather, and without being the player. Kept very
+   low contrast on purpose — this should register as atmosphere, never as
+   something asking to be looked at. */
+.motes { position: absolute; inset: 0; z-index: 7; pointer-events: none; overflow: hidden; }
+.motes span {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 248, 224, .75);
+  box-shadow: 0 0 4px 1px rgba(255, 244, 206, .35);
+  animation-name: mote-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes mote-drift {
+  0% { opacity: 0; transform: translate(0, 0) }
+  12% { opacity: .8 }
+  70% { opacity: .55 }
+  100% { opacity: 0; transform: translate(46px, -70px) }
+}
+:root[data-theme="dark"] .motes span { background: rgba(226, 236, 255, .5) }
+
+.is-quiet .motes { display: none }
+@media (prefers-reduced-motion: reduce) { .motes { display: none } }

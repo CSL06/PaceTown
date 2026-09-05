@@ -3,20 +3,26 @@
      fallback never flash a colour from the other one. */
   color: var(--pt-text);
   background: var(--pt-bg);
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: var(--pt-ui);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --ink: #182738;
-  --ink-soft: #243a4e;
-  --cream: #f7edcf;
-  --paper: #fff8e4;
-  --amber: #e7a23b;
-  --amber-dark: #9a5b24;
-  --teal: #4f9c98;
-  --moss: #607d4c;
-  --plum: #6d4968;
-  --line: rgba(247, 237, 207, 0.2);
-  --shadow: 0 18px 45px rgba(5, 13, 20, 0.34);
+
+  /* The mentor demo predates the design system and had its own palette and
+     its own fonts, so anyone arriving from the landing footer met what looked
+     like a different product. Its local names now resolve to the shared
+     tokens, which brings it into the family and gives it dark mode for free
+     without rewriting the page. */
+  --ink: var(--pt-text);
+  --ink-soft: var(--pt-text-2);
+  --cream: var(--pt-text);
+  --paper: var(--pt-surface);
+  --amber: var(--pt-accent);
+  --amber-dark: var(--pt-accent-ink);
+  --teal: var(--pt-teal);
+  --moss: var(--pt-moss);
+  --plum: var(--pt-plum);
+  --line: var(--pt-border);
+  --shadow: var(--pt-shadow-soft);
 }
 
 * { box-sizing: border-box; }
@@ -28,9 +34,10 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px s
 
 .app {
   min-height: 100vh;
+  color: var(--pt-text);
   background:
-    radial-gradient(circle at 20% 0%, rgba(79, 156, 152, 0.16), transparent 36rem),
-    linear-gradient(160deg, #142535, #0e1722 70%);
+    radial-gradient(circle at 20% 0%, var(--pt-accent-wash), transparent 36rem),
+    var(--pt-bg);
   position: relative;
   overflow: hidden;
 }
@@ -46,7 +53,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px s
   align-items: center;
   padding: .75rem clamp(1rem, 2vw, 2rem);
   border-bottom: 1px solid var(--line);
-  background: rgba(17, 30, 43, .95);
+  background: var(--pt-surface);
   position: relative;
   z-index: 20;
 }
@@ -54,8 +61,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px s
 .brand-mark { display: grid; place-items: center; width: 46px; aspect-ratio: 1; background: var(--amber); color: var(--ink); border: 3px solid var(--cream); box-shadow: 4px 4px 0 #0a121b; font-weight: 900; font-size: 1.35rem; }
 .prototype-caption { margin: .23rem 0 0; color: #d9cba8; font-size: .62rem; }
 h1, h2, p { margin-top: 0; }
-h1 { margin-bottom: 0; color: var(--cream); font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.3rem, 2vw, 1.72rem); line-height: 1; }
-.brand-line { margin: 0; color: #cfc6ab; font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: .92rem; }
+h1 { margin-bottom: 0; color: var(--pt-text); font-family: var(--pt-display); font-size: clamp(1.3rem, 2vw, 1.72rem); line-height: 1; }
+.brand-line { margin: 0; color: var(--pt-text-2); font-family: var(--pt-display); font-style: italic; font-size: .92rem; }
 .topbar-actions { display: flex; align-items: center; gap: .65rem; }
 .pace-chip { display: flex; align-items: center; gap: .6rem; padding: .55rem .8rem; background: #203547; border: 1px solid var(--line); color: var(--cream); font-size: .78rem; }
 .pace-chip small { display: block; color: #b9c9c5; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; }

@@ -12,6 +12,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { SAVE_KEY } from '../game/state'
+import { recordProblem } from './errorLog'
 import './error.css'
 
 interface Props {
@@ -35,8 +36,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     this.setState({ componentStack: info.componentStack ?? null })
-    // Nothing is sent anywhere: there is no error service wired up, and
-    // inventing one silently would be worse than the console.
+    // Recorded locally so it survives the console being closed. Nothing is
+    // sent anywhere — see errorLog.ts for the single opt-in seam.
+    recordProblem('react', error.message, info.componentStack ?? error.stack)
     console.error('PaceTown crashed:', error, info.componentStack)
   }
 

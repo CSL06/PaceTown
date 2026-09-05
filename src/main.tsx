@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, RequireAuth } from './auth/AuthContext'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { ErrorBoundary } from './ui/ErrorBoundary'
+import { installErrorLog } from './ui/errorLog'
 import AuthPage from './auth/AuthPage'
 import Landing from './landing/Landing'
 import './theme/theme.css'
@@ -17,6 +18,8 @@ const Onboarding = lazy(() => import('./onboarding/Onboarding'))
 const TownGate = lazy(() => import('./game/TownGate'))
 const DemoEntry = lazy(() => import('./game/DemoEntry'))
 const MentorDemo = lazy(() => import('./App'))
+
+installErrorLog()
 
 // Offline shell in production builds only — a dev-time worker would serve
 // stale bundles while iterating.
