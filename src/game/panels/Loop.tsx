@@ -426,7 +426,7 @@ export function Work({ state, load, update, go }: PanelProps) {
       )}
 
       {step === 'plan' && template && (
-        <div className="msgbox">
+        <div className="msgbox" role="group" aria-label="Guardian work plan">
           <div className="msgbox-head">
             <span>Library · {GUARDIANS[template.guardian].name}</span>
             <button type="button" className="msgbox-back" onClick={() => setStep('blockers')}>← Back</button>

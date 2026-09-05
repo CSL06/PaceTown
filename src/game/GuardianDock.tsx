@@ -26,7 +26,6 @@ interface Entry {
   /** The screen worth opening, given that status. */
   view: ViewId
   action: string
-  waiting: boolean
 }
 
 function build(state: GameState, load: DailyLoad): Entry[] {
@@ -51,7 +50,6 @@ function build(state: GameState, load: DailyLoad): Entry[] {
           : `Thursday sits at ${load.percentage.toFixed(0)}%`,
       view: rebalanceOpen ? 'rebalance' : 'load',
       action: rebalanceOpen ? 'See what can move' : 'Show the arithmetic',
-      waiting: rebalanceOpen,
     },
     {
       id: 'mira',
@@ -62,7 +60,6 @@ function build(state: GameState, load: DailyLoad): Entry[] {
           : 'Every checkpoint closed',
       view: 'work',
       action: state.checkpoints.length === 0 ? 'Make one startable' : 'Open the plan',
-      waiting: state.checkpoints.length === 0,
     },
     {
       id: 'sky',
@@ -73,7 +70,6 @@ function build(state: GameState, load: DailyLoad): Entry[] {
           : 'Here whenever you want company',
       view: state.activeCheckpointId && !state.outcome ? 'session' : 'warmcup',
       action: state.activeCheckpointId && !state.outcome ? 'Resume the session' : 'Sit a while',
-      waiting: !!state.activeCheckpointId && !state.outcome,
     },
     {
       id: 'sol',
@@ -84,7 +80,6 @@ function build(state: GameState, load: DailyLoad): Entry[] {
           : 'Rest has no prerequisite here',
       view: recoveryDue ? 'recover' : 'garden',
       action: recoveryDue ? 'Take the recovery' : 'Visit the garden',
-      waiting: recoveryDue,
     },
     {
       id: 'goh',
@@ -93,7 +88,6 @@ function build(state: GameState, load: DailyLoad): Entry[] {
         : 'Nothing small left outstanding',
       view: 'lanterns',
       action: errands.length ? 'Group them up' : 'Light the lanterns',
-      waiting: false,
     },
   ]
 }
@@ -130,7 +124,7 @@ export function GuardianDock({ state, load, go, focus }: Props) {
               {focus === entry.id && <span className="dock-dot" aria-hidden="true" />}
               <span className="dock-name">{guardian.name}</span>
               <span className="sr">
-                {guardian.role}. {entry.status}. {entry.waiting ? 'Waiting on you.' : ''}
+                {entry.status}{focus === entry.id ? ' Waiting on you.' : ''}
               </span>
             </button>
 

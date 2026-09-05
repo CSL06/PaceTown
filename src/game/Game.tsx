@@ -64,7 +64,6 @@ const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
 /** Greetings fire once per place, then never again. */
 const GREETINGS: Partial<Record<string, [GuardianId, string]>> = {
   library: ['mira', 'I am Mira, and I explain things. Tell me what blocks you — we start with one small visible step.'],
-  clock: ['kai', 'I am Kai, and I plan time. Two flexible tasks can move to Saturday — want to see?'],
   garden: ['sol', 'I am Sol, and I keep effort sustainable. This water achieves nothing, and that is the point — sit a minute?'],
   market: ['goh', 'I am Goh, and I finish small things. Errands group well — bring me the list in your head.'],
   cafe: ['sky', 'I am Sky, and I keep you company. Work if you want — I will not ask how it is going.'],
@@ -170,8 +169,27 @@ export default function Game() {
 
   const enter = useCallback((place: Place) => {
     moveTo(doorstep(place))
+    if (state.greeted[place.id]) { go(place.view); return }
+    if (place.id === 'clock') {
+      const n = proposeRebalance(state.tasks, {
+        day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(state.capacity),
+      }).moves.length
+      const line = n > 0
+        ? `I am Kai, and I plan time. ${n} flexible task${n === 1 ? '' : 's'} can move to Saturday — want to see?`
+        : 'I am Kai, and I plan time. The week is settled — nothing can move safely.'
+      setState((s) => ({ ...s, greeted: { ...s.greeted, clock: true } }))
+      setScript({
+        who: 'kai',
+        lines: [line],
+        choices: [
+          { label: 'Yes', onPick: () => go(place.view) },
+          { label: 'Not now', onPick: () => {} },
+        ],
+      })
+      return
+    }
     const greeting = GREETINGS[place.id]
-    if (!greeting || state.greeted[place.id]) { go(place.view); return }
+    if (!greeting) { go(place.view); return }
     setState((s) => ({ ...s, greeted: { ...s.greeted, [place.id]: true } }))
     setScript({
       who: greeting[0],
@@ -181,7 +199,7 @@ export default function Game() {
         { label: 'Not now', onPick: () => {} },
       ],
     })
-  }, [moveTo, go, state.greeted])
+  }, [moveTo, go, state.greeted, state.tasks, state.capacity])
 
   /* First run: Kai explains the number the whole week turns on. Fired from the
      click rather than an effect — an effect that also sets `introSeen` would
@@ -198,20 +216,31 @@ export default function Game() {
             'You made it. Take a breath before you look at any of it.',
             'Your week is already waiting at Town Hall — one plain-language list. Look at it with me, and then we decide what Thursday really needs.',
           ]
-        : [
-            'You made it. Take a breath before you look at any of it.',
-            `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
-            'Two of the flexible ones can. I will show you exactly which, and nothing changes until you say so.',
-          ],
+        : firstStep === 'work'
+          ? [
+              'You made it. Take a breath before you look at any of it.',
+              `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
+              'Your checkpoint is waiting — let us pick it up together.',
+            ]
+          : [
+              'You made it. Take a breath before you look at any of it.',
+              `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
+              'Two of the flexible ones can. I will show you exactly which, and nothing changes until you say so.',
+            ],
       choices: firstStep === 'intake'
         ? [
             { label: 'Show me my week', onPick: () => go('intake') },
             { label: 'Let me look around first', onPick: () => {} },
           ]
-        : [
-            { label: 'Show me what can move', onPick: () => go(firstStep) },
-            { label: 'Let me look around first', onPick: () => {} },
-          ],
+        : firstStep === 'work'
+          ? [
+              { label: 'Show me my checkpoint', onPick: () => go(firstStep) },
+              { label: 'Let me look around first', onPick: () => {} },
+            ]
+          : [
+              { label: 'Show me what can move', onPick: () => go(firstStep) },
+              { label: 'Let me look around first', onPick: () => {} },
+            ],
     }), 400)
   }, [state.introSeen, state.rebalanceSeen, state.journal.length, load.percentage, go])
 
