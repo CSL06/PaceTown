@@ -7,16 +7,11 @@ import { grow, record, type GameState } from './state'
 import type { ViewId } from './layout'
 import './clock-tower.css'
 import { useRoomMovement } from './useRoomMovement'
-import { dayIndex } from '../domain/calendar'
+import { dayIndex, moveCalendarTask } from '../domain/calendar'
+import { STATION_POSITION, STATION_LABEL } from './clockLayout'
 
 const SOURCE_DAY = 'thu'
 const DEFAULT_DESTINATION = 'sat'
-const STATION_POSITION = {
-  entry: { x: 50, y: 92 },
-  board: { x: 50, y: 57 },
-  kai: { x: 68, y: 73 },
-  door: { x: 72, y: 54 },
-} as const
 
 interface Props {
   state: GameState
@@ -30,13 +25,14 @@ function pct(value: number): string {
   return Number.isFinite(value) ? value.toFixed(0) : '∞'
 }
 
-function TaskBlock({ task, selected, suggested, leaving, onToggle, draggable = false }: {
+function TaskBlock({ task, selected, suggested, leaving, onToggle, onInspect, draggable = false }: {
   task: Task
   selected?: boolean
   suggested?: boolean
   leaving?: boolean
   onToggle?: () => void
   draggable?: boolean
+  onInspect?: () => void
 }) {
   const time = taskTime(task)
   const className = [
@@ -54,14 +50,16 @@ function TaskBlock({ task, selected, suggested, leaving, onToggle, draggable = f
     </>
   )
 
-  return <div draggable={draggable && task.flexibility === 'flexible'}
+  return <div data-task-id={suggested ? undefined : task.id} draggable={draggable && task.flexibility === 'flexible'}
     onDragStart={(event) => { event.dataTransfer.setData('text/plain', task.id); event.dataTransfer.effectAllowed = 'move' }}>
-    {onToggle ? (
-    <button type="button" className={className} aria-pressed={selected} onClick={onToggle}
-      aria-label={`${selected ? 'Remove' : 'Select'} ${task.title} for moving`}>
+    {onInspect ? (
+    <button type="button" className={className} onClick={onInspect} aria-label={`Details for ${task.title}`}>
       {content}
     </button>
   ) : <div className={className}>{content}</div>}
+    {draggable && task.flexibility === 'flexible' && <span className="task-drag-handle" data-drag-id={task.id} aria-label={`Drag ${task.title}`}>⠿</span>}
+    {onToggle && <button type="button" className="preview-select" aria-pressed={selected} onClick={onToggle}>
+      {selected ? 'Include in preview ✓' : 'Include in preview'}</button>}
   </div>
 }
 
@@ -70,29 +68,46 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
   const [destination, setDestination] = useState(DEFAULT_DESTINATION)
   const [selected, setSelected] = useState<string[] | null>(null)
   const [mobileDay, setMobileDay] = useState(SOURCE_DAY)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [inspected, setInspected] = useState<string | null>(null)
+  const [undoTasks, setUndoTasks] = useState<Task[] | null>(null)
+  const [dropTarget, setDropTarget] = useState<{ day: string; beforeId?: string } | null>(null)
+  const touchDrag = useRef<string | null>(null)
+  const [dragLabel, setDragLabel] = useState('')
   const [moveMessage, setMoveMessage] = useState('Drag flexible tasks to another day. Fixed commitments stay locked.')
-  const moveTask = (id: string, day: string) => {
+  const moveTask = (id: string, day: string, beforeId?: string) => {
     const task = state.tasks.find((item) => item.id === id)
-    if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || task.day === day) return
+    if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || beforeId === id) return
     const shift = dayIndex(day) - dayIndex(task.day)
     if (shift > task.deadlineDays) {
       setMoveMessage(`${task.title} cannot move past its deadline.`)
       return
     }
-    update((current) => ({ ...current, tasks: current.tasks.map((item) => item.id === id
-      ? { ...item, day, deadlineDays: item.deadlineDays - shift } : item) }))
+    setUndoTasks(state.tasks)
+    update((current) => ({ ...current, tasks: moveCalendarTask(current.tasks, id, day, beforeId) }))
+    setPreviewOpen(false)
     setSelected([])
     setMoveMessage(`${task.title} moved to ${WEEK_DAYS.find((entry) => entry.key === day)?.label}.`)
   }
+  const locateDrop = (element: Element | null, y: number, day: string) => {
+    const card = element?.closest<HTMLElement>('[data-task-id]')
+    if (!card) return { day }
+    const after = y >= card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2
+    const cards = Array.from(card.closest('.week-day-body')?.querySelectorAll<HTMLElement>('[data-task-id]') ?? [])
+    const next = after ? cards[cards.indexOf(card) + 1] : card
+    return { day, beforeId: next?.dataset.taskId }
+  }
   const dropOn = (event: React.DragEvent, day: string) => {
     event.preventDefault()
-    moveTask(event.dataTransfer.getData('text/plain'), day)
+    const target = locateDrop(event.target as Element, event.clientY, day)
+    moveTask(event.dataTransfer.getData('text/plain'), day, target.beforeId)
+    setDropTarget(null)
   }
 
   const proposal = useMemo(() => proposeRebalance(state.tasks, {
     day: SOURCE_DAY, destination, waking,
   }), [state.tasks, destination, waking])
-  const selectedIds = selected ?? proposal.moves.map((move) => move.taskId)
+  const selectedIds = previewOpen ? selected ?? proposal.moves.map((move) => move.taskId) : []
   const selectedMoves = proposal.moves.filter((move) => selectedIds.includes(move.taskId))
   const previewTasks = applySelected(state.tasks, proposal, selectedIds)
   const loads = weekLoads(previewTasks, waking)
@@ -119,6 +134,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
     const applied = applySelected(state.tasks, proposal, selectedIds)
     const titles = selectedMoves.map((move) => move.title).join(', ')
     const afterSource = dailyLoad(applied, SOURCE_DAY, waking)
+    const reward = state.rebalanceApproved ? { xp: 0, coins: 0 } : REWARDS.rebalance
     update((current) => grow(record({
       ...current,
       tasks: applied,
@@ -127,14 +143,44 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
     }, 'Rebalanced an overloaded day',
     `${titles} — moved to ${WEEK_DAYS.find((day) => day.key === destination)?.label}. ` +
       `Thursday ${pct(originalLoads.thu.percentage)}% → ${pct(afterSource.percentage)}%.`,
-    REWARDS.rebalance)))
-    toast(`Week rebalanced · +${REWARDS.rebalance.xp} XP`)
+    reward)))
+    toast(`Week rebalanced${reward.xp ? ` · +${reward.xp} XP` : ''}`)
+    setUndoTasks(null)
     setSelected([])
+    setPreviewOpen(false)
   }
 
   return (
     <section className="clock-board-screen" role="dialog" aria-modal="true"
+      onDragEnd={() => setDropTarget(null)}
+      onPointerDown={(event) => {
+        const handle = (event.target as Element).closest<HTMLElement>('[data-drag-id]')
+        if (!handle || event.pointerType === 'mouse') return
+        event.preventDefault()
+        touchDrag.current = handle.dataset.dragId!
+        setDragLabel(state.tasks.find((task) => task.id === touchDrag.current)?.title ?? '')
+        event.currentTarget.setPointerCapture(event.pointerId)
+      }}
+      onPointerMove={(event) => {
+        if (!touchDrag.current) return
+        const hit = document.elementFromPoint(event.clientX, event.clientY)
+        const day = hit?.closest<HTMLElement>('[data-day]')?.dataset.day
+        if (day) { setMobileDay(day); setDropTarget(locateDrop(hit, event.clientY, day)) }
+        else setDropTarget(null)
+        const scroller = hit?.closest<HTMLElement>('.week-day-body')
+        if (scroller) {
+          const rect = scroller.getBoundingClientRect()
+          if (event.clientY < rect.top + 40) scroller.scrollTop -= 12
+          if (event.clientY > rect.bottom - 40) scroller.scrollTop += 12
+        }
+      }}
+      onPointerUp={() => {
+        if (touchDrag.current && dropTarget) moveTask(touchDrag.current, dropTarget.day, dropTarget.beforeId)
+        touchDrag.current = null; setDropTarget(null); setDragLabel('')
+      }}
+      onPointerCancel={() => { touchDrag.current = null; setDropTarget(null); setDragLabel('') }}
       aria-label="Weekly planning board">
+      {dragLabel && <div className="drag-feedback">Moving {dragLabel} · release at the highlighted position</div>}
       <header className="clock-board-head">
         <div>
           <span className="clock-kicker">Clock Tower · Week Board</span>
@@ -147,8 +193,8 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
 
       <nav className="week-tabs" aria-label="Choose day to view">
         {WEEK_DAYS.map((day) => (
-          <button key={day.key} type="button" aria-pressed={mobileDay === day.key}
-            onDragOver={(event) => event.preventDefault()} onDrop={(event) => dropOn(event, day.key)}
+          <button key={day.key} data-day={day.key} type="button" aria-pressed={mobileDay === day.key}
+            onDragOver={(event) => { event.preventDefault(); setMobileDay(day.key); setDropTarget({ day: day.key }) }} onDrop={(event) => dropOn(event, day.key)}
             onClick={() => setMobileDay(day.key)}>
             <span>{day.short}</span>
             <b className={`load-${loads[day.key].band.key}`}>{pct(loads[day.key].percentage)}%</b>
@@ -165,10 +211,10 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
               ? selectedMoves.map((move) => state.tasks.find((task) => task.id === move.taskId)!).filter(Boolean)
               : []
             return (
-              <section key={day.key} role="listitem"
-                aria-label={day.label} onDragOver={(event) => event.preventDefault()}
+              <section key={day.key} role="listitem" data-day={day.key}
+                aria-label={day.label} onDragOver={(event) => { event.preventDefault(); setDropTarget(locateDrop(event.target as Element, event.clientY, day.key)) }}
                 onDrop={(event) => dropOn(event, day.key)}
-                className={`week-day${mobileDay === day.key ? ' is-mobile-active' : ''}`}>
+                className={`week-day${mobileDay === day.key ? ' is-mobile-active' : ''}${dropTarget?.day === day.key ? ' is-drop-target' : ''}`}>
                 <header>
                   <div><strong>{day.short}</strong><span>{day.label}</span></div>
                   <span className={`day-load load-${load.band.key}`}>
@@ -177,13 +223,16 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
                 </header>
                 <div className="week-day-body">
                   {tasks.length === 0 && ghosts.length === 0 && <p className="week-empty">Open space</p>}
-                  {tasks.map((task) => (
+                  {tasks.map((task) => <div key={task.id} style={{display:'contents'}}>
+                    {dropTarget?.day === day.key && dropTarget.beforeId === task.id && <div className="drop-line" />}
                     <TaskBlock key={task.id} task={task}
+                      onInspect={() => setInspected(task.id)}
                       draggable
                       selected={selectedSet.has(task.id)}
                       leaving={day.key === SOURCE_DAY && selectedSet.has(task.id)}
-                      onToggle={day.key === SOURCE_DAY && movableIds.has(task.id) ? () => toggle(task.id) : undefined} />
-                  ))}
+                      onToggle={previewOpen && day.key === SOURCE_DAY && movableIds.has(task.id) ? () => toggle(task.id) : undefined} />
+                  </div>)}
+                  {dropTarget?.day === day.key && !dropTarget.beforeId && <div className="drop-line" />}
                   {ghosts.map((task) => <TaskBlock key={`ghost-${task.id}`} task={task} suggested />)}
                 </div>
               </section>
@@ -194,10 +243,19 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
 
       <aside className="kai-plan" aria-label="Kai's rebalancing suggestion">
         <p role="status">{moveMessage}</p>
+        {undoTasks && <button type="button" onClick={() => { update((current) => ({ ...current, tasks: undoTasks })); setUndoTasks(null); setMoveMessage('Move undone.'); setPreviewOpen(false) }}>Undo last move</button>}
+        <button type="button" onClick={() => { setPreviewOpen((open) => !open); setSelected(null) }}>{previewOpen ? 'Dismiss preview' : 'Ask Kai to rebalance'}</button>
+        {inspected && (() => { const task = state.tasks.find((item) => item.id === inspected); return task && <section className="task-details" aria-label="Task details">
+          <h2>{task.title}</h2><p>{taskTime(task) ?? 'No set time'} · {task.estimatedMinutes} minutes</p>
+          <p>{task.flexibility === 'fixed' ? 'Locked: this is a fixed commitment.' : `Flexible · deadline in ${task.deadlineDays} day(s) from its scheduled day.`}</p>
+          <p>{task.notes}</p><button type="button" onClick={() => setInspected(null)}>Close details</button>
+        </section> })()}
         <img src="/game/portraits/kai.png" alt="Kai" />
         <div className="kai-copy">
           <span className="clock-kicker">Kai · planning guardian</span>
-          {state.rebalanceSeen || proposal.moves.length === 0 ? (
+          {!previewOpen && !state.rebalanceSeen ? (
+            <><h2>Your saved week.</h2><p>Drag a flexible task into place, or click any commitment to inspect it. Ask me when you want a suggested rebalance.</p></>
+          ) : state.rebalanceSeen || proposal.moves.length === 0 ? (
             <>
               <h2>The week is telling the truth now.</h2>
               <p>What remains on Thursday is real. We can make the work smaller instead of moving it again.</p>
@@ -210,7 +268,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
           )}
         </div>
 
-        {!state.rebalanceSeen && destinationOptions.length > 0 && (
+        {previewOpen && destinationOptions.length > 0 && (
           <>
             <div className="load-preview" aria-label="Load before and after the selected preview">
               <div><span>Thursday</span><b>{pct(originalLoads.thu.percentage)}%</b><i>→</i><strong>{pct(loads.thu.percentage)}%</strong></div>
@@ -230,7 +288,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
         )}
 
         <div className="clock-actions">
-          {!state.rebalanceSeen && proposal.moves.length > 0 && (
+          {previewOpen && proposal.moves.length > 0 && (
             <button className="clock-primary" type="button" disabled={!selectedMoves.length} onClick={approve}>
               Approve {selectedMoves.length} move{selectedMoves.length === 1 ? '' : 's'}
             </button>
@@ -247,7 +305,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
 export function ClockTower({ state, update, go, toast, onExit }: Props) {
   const [boardOpen, setBoardOpen] = useState(false)
   const [kaiOpen, setKaiOpen] = useState(false)
-  const { room, avatar, position, walkTo, press } = useRoomMovement(boardOpen)
+  const { room, avatar, near, walkTo, press } = useRoomMovement(boardOpen)
   const boardButton = useRef<HTMLButtonElement>(null)
   const waking = wakingMinutes(state.capacity)
   const thursday = dailyLoad(state.tasks, SOURCE_DAY, waking)
@@ -262,16 +320,10 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === 'e' && !event.repeat && !boardOpen) {
-        const bounds = room.current
-        if (!bounds) return
-        const nearest = (['board', 'kai', 'door'] as const).map((id) => ({ id,
-          distance: Math.hypot((STATION_POSITION[id].x - position.current.x) * bounds.clientWidth / 100,
-            (STATION_POSITION[id].y - position.current.y) * bounds.clientHeight / 100),
-        })).sort((a, b) => a.distance - b.distance)[0]
-        if (nearest.distance <= 120) {
+        if (near) {
           event.preventDefault()
-          if (nearest.id === 'board') setBoardOpen(true)
-          else if (nearest.id === 'kai') setKaiOpen((open) => !open)
+          if (near === 'board') setBoardOpen(true)
+          else if (near === 'kai') setKaiOpen((open) => !open)
           else onExit()
         }
         return
@@ -283,7 +335,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [boardOpen, kaiOpen, closeBoard, onExit, position, room])
+  }, [boardOpen, kaiOpen, closeBoard, onExit, near])
 
   return (
     <div ref={room} className={`clock-scene${boardOpen ? ' is-board-open' : ''}`}>
@@ -341,6 +393,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
       )}
 
       <p className="clock-room-hint">WASD / arrows to walk · E near the board, Kai or exit · Esc to step back</p>
+      {near && <div className="clock-near-prompt">E · {STATION_LABEL[near]}</div>}
       </div>
 
       {boardOpen && (

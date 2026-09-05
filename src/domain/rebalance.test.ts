@@ -114,6 +114,20 @@ describe('approval', () => {
 })
 
 describe('when nothing can safely move', () => {
+  it('does not overload the receiving day', () => {
+    const tasks = [...demoTasks(), task({ id: 'busy-saturday', day: 'sat', flexibility: 'fixed', estimatedMinutes: 900 })]
+    expect(proposeRebalance(tasks, opts).moves).toHaveLength(0)
+  })
+
+  it('preserves the absolute deadline when approving a move', () => {
+    const tasks = demoTasks()
+    const proposal = proposeRebalance(tasks, opts)
+    const applied = applyRebalance(tasks, proposal)
+    for (const move of proposal.moves) {
+      expect(applied.find((task) => task.id === move.taskId)!.deadlineDays)
+        .toBe(tasks.find((task) => task.id === move.taskId)!.deadlineDays - 2)
+    }
+  })
   it('returns an empty proposal rather than forcing a move', () => {
     const stuck = [
       task({ id: 'f', flexibility: 'fixed', estimatedMinutes: 800 }),

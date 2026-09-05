@@ -28,6 +28,10 @@ describe('Clock Tower scene', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Weekly groceries moved to Friday')
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
     expect(screen.getByText('Café shift').closest('[draggable]')).toHaveAttribute('draggable', 'false')
+    await user.click(screen.getByRole('button', { name: 'Undo last move' }))
+    expect(within(screen.getByRole('listitem', { name: 'Thursday' })).getByText('Weekly groceries')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Details for Café shift' }))
+    expect(screen.getByRole('region', { name: 'Task details' })).toHaveTextContent('Locked: this is a fixed commitment.')
   })
 
   it('opens the board with E after stepping back beside it', async () => {
@@ -81,7 +85,9 @@ describe('Clock Tower scene', () => {
     const user = userEvent.setup()
     render(<Harness />)
     await user.click(screen.getByRole('button', { name: /open week board/i }))
-
+    await screen.findByRole('dialog', {}, { timeout: 3000 })
+    expect(screen.queryByText('Preview here')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Ask Kai to rebalance' }))
     expect((await screen.findAllByText('Preview here', {}, { timeout: 3000 })).length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: /approve \d+ moves/i }))
 

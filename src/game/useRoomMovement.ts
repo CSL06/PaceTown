@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { STATION_POSITION, type RoomStation } from './clockLayout'
 
 type Direction = 'up' | 'down' | 'left' | 'right'
 const KEYS: Record<string, Direction> = {
@@ -12,6 +13,7 @@ export function useRoomMovement(blocked: boolean) {
   const position = useRef({ x: 50, y: 92 })
   const keys = useRef<Partial<Record<Direction, boolean>>>({})
   const target = useRef<{ x: number; y: number; arrive: () => void } | null>(null)
+  const [near, setNear] = useState<RoomStation | null>(null)
 
   useEffect(() => {
     keys.current = {}
@@ -46,6 +48,11 @@ export function useRoomMovement(blocked: boolean) {
         el.className = `clock-player avatar f-${facing}${!blocked && magnitude > 0 ? ' walking' : ''}`
         el.style.left = `${position.current.x}%`
         el.style.top = `${position.current.y}%`
+        const nearest = (['board', 'kai', 'door'] as const).map((id) => ({ id,
+          distance: Math.hypot((STATION_POSITION[id].x - position.current.x) * width / 100,
+            (STATION_POSITION[id].y - position.current.y) * height / 100),
+        })).sort((a, b) => a.distance - b.distance)[0]
+        setNear(nearest.distance <= 120 ? nearest.id : null)
         if (!blocked && target.current && distance <= 280 * dt) {
           const action = target.current.arrive
           target.current = null
@@ -76,7 +83,7 @@ export function useRoomMovement(blocked: boolean) {
     }
   }, [blocked])
 
-  return { room, avatar, position,
+  return { room, avatar, position, near,
     walkTo: (point: { x: number; y: number }, arrive: () => void) => { target.current = { ...point, arrive } },
     press: (direction: Direction, held: boolean) => { keys.current[direction] = held },
   }

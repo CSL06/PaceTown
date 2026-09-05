@@ -1,8 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { dayDistance, formatMinute, taskTime, tasksForDay, weekLoads } from './calendar'
+import { dayDistance, formatMinute, moveCalendarTask, taskTime, tasksForDay, weekLoads } from './calendar'
 import { demoTasks } from './seed'
 
 describe('weekly calendar', () => {
+  it('preserves a drop order within a day after serialization', () => {
+    const tasks = demoTasks()
+    const laundry = tasks.find((task) => task.day === 'thu' && task.title === 'Laundry')!
+    const pharmacy = tasks.find((task) => task.title === 'Pharmacy')!
+    const moved = moveCalendarTask(tasks, laundry.id, pharmacy.day)
+    expect(tasksForDay(JSON.parse(JSON.stringify(moved)), pharmacy.day).map((task) => task.id).slice(-2)).toEqual([pharmacy.id, laundry.id])
+    const reordered = moveCalendarTask(moved, laundry.id, pharmacy.day, pharmacy.id)
+    const ids = tasksForDay(reordered, pharmacy.day).map((task) => task.id)
+    expect(ids.indexOf(laundry.id)).toBe(ids.indexOf(pharmacy.id) - 1)
+    expect(reordered.find((task) => task.id === laundry.id)?.deadlineDays).toBe(moved.find((task) => task.id === laundry.id)?.deadlineDays)
+  })
   it('formats stored times for the board', () => {
     expect(formatMinute(9 * 60)).toBe('9am')
     expect(formatMinute(17 * 60 + 30)).toBe('5:30pm')

@@ -93,6 +93,17 @@
   border-left: 4px solid var(--task-color, #9a835e); border-radius: 2px; }
 button.week-task { cursor: pointer; }
 .week-day [draggable="true"] { cursor: grab; }
+.week-day [data-task-id] { position: relative; }
+.task-drag-handle { display: block; touch-action: none; user-select: none; padding: 3px 8px; margin-top: -6px;
+  margin-bottom: 6px; text-align: center; background: #e9d7ad; color: #594322; cursor: grab; }
+.drop-line { height: 4px; background: #3f8069; pointer-events: none; }
+.week-day.is-drop-target { outline: 2px solid #3f8069; outline-offset: -2px; }
+.drag-feedback { position: fixed; z-index: 50; bottom: 12px; left: 50%; transform: translateX(-50%);
+  pointer-events: none; padding: 12px; background: #fff3cc; color: #253341; border: 2px solid #a77a45; }
+.preview-select { font-size: 10px; margin-bottom: 8px; }
+.task-details { padding: 10px; border: 1px solid #a77a45; margin: 10px 0; }
+.clock-near-prompt { position: absolute; z-index: 10; bottom: 48px; left: 50%; transform: translateX(-50%);
+  padding: 10px 16px; background: #fff3cc; color: #253341; border: 2px solid #a77a45; }
 button.week-task:hover { border-color: #b67a24; }
 .week-task-top { display: flex; justify-content: space-between; gap: 4px; color: #68716f;
   font: 8.5px var(--mono); text-transform: uppercase; }
@@ -141,9 +152,6 @@ button.week-task:hover { border-color: #b67a24; }
   .clock-hud > div:first-child { display: none; }
   .clock-hud .clock-load { margin-left: 0; margin-right: auto; }
   .clock-hotspot { min-width: 112px; }
-  .hotspot-board { top: 33%; }
-  .hotspot-kai { left: 72%; top: 70%; }
-  .hotspot-door { left: 80%; top: 43%; }
 
   .clock-board-screen { grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
     grid-template-rows: auto auto minmax(0, 1fr) auto; padding: 12px; }
@@ -165,9 +173,6 @@ button.week-task:hover { border-color: #b67a24; }
   .clock-hud { top: 8px; left: 8px; right: 8px; }
   .clock-hud button { padding-inline: 9px; }
   .clock-hotspot small, .clock-room-hint { display: none; }
-  .hotspot-board { left: 49%; top: 31%; }
-  .hotspot-kai { left: 73%; top: 72%; }
-  .hotspot-door { left: 82%; top: 46%; }
   .clock-board-head p { display: none; }
   .clock-board-head h1 { font-size: 24px; }
   .destination-picker { grid-template-columns: repeat(3, minmax(72px, 1fr)); }

@@ -44,11 +44,25 @@ export function tasksForDay(tasks: readonly Task[], day: string): Task[] {
     .filter((task) => task.day === day && task.status !== 'completed')
     .slice()
     .sort((a, b) => {
+      if (a.calendarOrder !== undefined || b.calendarOrder !== undefined) return (a.calendarOrder ?? Infinity) - (b.calendarOrder ?? Infinity)
       if (a.startMinute !== undefined && b.startMinute !== undefined) return a.startMinute - b.startMinute
       if (a.startMinute !== undefined) return -1
       if (b.startMinute !== undefined) return 1
       return a.title.localeCompare(b.title)
     })
+}
+
+/** Shared rescheduling rule; ordering does not change the event's clock time. */
+export function moveCalendarTask(tasks: readonly Task[], id: string, day: string, beforeId?: string): Task[] {
+  const task = tasks.find((item) => item.id === id)
+  if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || beforeId === id) return [...tasks]
+  const shift = dayIndex(day) - dayIndex(task.day)
+  if (shift > task.deadlineDays) return [...tasks]
+  const destination = tasksForDay(tasks, day).filter((item) => item.id !== id)
+  const index = beforeId ? destination.findIndex((item) => item.id === beforeId) : destination.length
+  destination.splice(index < 0 ? destination.length : index, 0, { ...task, day, deadlineDays: task.deadlineDays - shift })
+  const replacements = new Map(destination.map((item, order) => [item.id, { ...item, calendarOrder: order }]))
+  return tasks.map((item) => replacements.get(item.id) ?? item)
 }
 
 export function weekLoads(tasks: readonly Task[], waking: number): Record<string, DailyLoad> {
