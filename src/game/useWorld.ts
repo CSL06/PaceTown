@@ -7,10 +7,11 @@
  * become state.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   BLOCKERS, PLACES, TALK_RADIUS, WORLD_H, WORLD_W, type Place,
 } from './layout'
+import { sfx } from './sfx'
 
 const KEY_MAP: Record<string, 'up' | 'down' | 'left' | 'right'> = {
   w: 'up', a: 'left', s: 'down', d: 'right',
@@ -19,6 +20,18 @@ const KEY_MAP: Record<string, 'up' | 'down' | 'left' | 'right'> = {
 
 /** World pixels per second. Scales with WORLD_W, not with the screen. */
 const SPEED = 495
+
+/* How hard the camera chases the avatar. Higher is tighter; this is loose
+   enough to feel like a camera rather than a rigid frame, and tight enough
+   that you never lose your own character. */
+const CAMERA_CHASE = 7
+
+/* The camera leads slightly in the direction of travel, so you see where you
+   are going rather than where you have been. World pixels. */
+const LOOK_AHEAD = 70
+
+/** Footstep cadence, matched to the two-frame walk animation. */
+const STEP_MS = 340
 
 export type Facing = 'up' | 'down' | 'left' | 'right'
 
@@ -45,16 +58,34 @@ export function useWorld(refs: WorldRefs, opts: Options) {
   const enabled = useRef(opts.enabled)
   enabled.current = opts.enabled
 
-  const applyCamera = useCallback(() => {
+  /* The camera used to be pinned rigidly to the avatar, which reads as the
+     world sliding under a fixed frame. It now trails, and leads a little in
+     the direction of travel. Teleports still snap — easing a jump to the far
+     side of town would only look broken. */
+  const cam = useRef({ x: 0, y: 0, set: false })
+  const lead = useRef({ x: 0, y: 0 })
+
+  const applyCamera = useCallback((dt = 0, snap = false) => {
     const stage = refs.stage.current
     const world = refs.world.current
     if (!stage || !world) return
-    const ax = (pos.current.px / 100) * WORLD_W
-    const ay = (pos.current.py / 100) * WORLD_H
-    const cx = Math.min(0, Math.max(stage.clientWidth - WORLD_W, stage.clientWidth / 2 - ax))
-    const cy = Math.min(0, Math.max(stage.clientHeight - WORLD_H, stage.clientHeight / 2 - ay))
-    world.style.transform = `translate(${Math.round(cx)}px, ${Math.round(cy)}px)`
-  }, [refs.stage, refs.world])
+
+    const ax = (pos.current.px / 100) * WORLD_W + lead.current.x
+    const ay = (pos.current.py / 100) * WORLD_H + lead.current.y
+    const wantX = Math.min(0, Math.max(stage.clientWidth - WORLD_W, stage.clientWidth / 2 - ax))
+    const wantY = Math.min(0, Math.max(stage.clientHeight - WORLD_H, stage.clientHeight / 2 - ay))
+
+    if (snap || !cam.current.set || opts.reducedMotion) {
+      cam.current = { x: wantX, y: wantY, set: true }
+    } else {
+      const ease = Math.min(1, dt * CAMERA_CHASE)
+      cam.current.x += (wantX - cam.current.x) * ease
+      cam.current.y += (wantY - cam.current.y) * ease
+    }
+    // Whole pixels only: a fractional offset resamples the pixel art.
+    world.style.transform =
+      `translate(${Math.round(cam.current.x)}px, ${Math.round(cam.current.y)}px)`
+  }, [refs.stage, refs.world, opts.reducedMotion])
 
   const paint = useCallback((walking: boolean) => {
     const el = refs.avatar.current
@@ -85,16 +116,28 @@ export function useWorld(refs: WorldRefs, opts: Options) {
   const moveTo = useCallback((p: { px: number; py: number }, f: Facing = 'down') => {
     pos.current = { ...p }
     facing.current = f
+    lead.current = { x: 0, y: 0 }
     paint(false)
-    applyCamera()
+    applyCamera(0, true)
     checkProximity()
     opts.onMoved(pos.current, facing.current)
   }, [paint, applyCamera, checkProximity, opts])
+
+  // The hook also runs while the title/interior is mounted. Initialize the
+  // newly mounted campus before paint, including when no movement key is held.
+  useLayoutEffect(() => {
+    keys.current = {}
+    if (!opts.enabled) return
+    paint(false)
+    applyCamera()
+    checkProximity()
+  }, [opts.enabled, paint, applyCamera, checkProximity])
 
   useEffect(() => {
     let raf = 0
     let last = performance.now()
     let saveTimer = 0
+    let lastStep = 0
 
     const step = (now: number) => {
       raf = requestAnimationFrame(step)
@@ -109,7 +152,15 @@ export function useWorld(refs: WorldRefs, opts: Options) {
       if (keys.current.up) vy -= 1
       if (keys.current.down) vy += 1
 
-      if (!vx && !vy) { paint(false); return }
+      if (!vx && !vy) {
+        // Ease the look-ahead back to centre so stopping does not leave the
+        // camera hanging off to one side.
+        lead.current.x += (0 - lead.current.x) * Math.min(1, dt * 4)
+        lead.current.y += (0 - lead.current.y) * Math.min(1, dt * 4)
+        paint(false)
+        applyCamera(dt)
+        return
+      }
 
       const m = Math.hypot(vx, vy)
       vx /= m; vy /= m
@@ -133,8 +184,16 @@ export function useWorld(refs: WorldRefs, opts: Options) {
         ? (vx > 0 ? 'right' : 'left')
         : (vy > 0 ? 'down' : 'up')
 
+      lead.current.x += ((vx / m) * LOOK_AHEAD - lead.current.x) * Math.min(1, dt * 3)
+      lead.current.y += ((vy / m) * LOOK_AHEAD - lead.current.y) * Math.min(1, dt * 3)
+
+      if (!opts.reducedMotion && now - lastStep >= STEP_MS) {
+        lastStep = now
+        sfx.step()
+      }
+
       paint(true)
-      applyCamera()
+      applyCamera(dt)
       checkProximity()
 
       window.clearTimeout(saveTimer)
@@ -154,7 +213,8 @@ export function useWorld(refs: WorldRefs, opts: Options) {
     window.addEventListener('keydown', down)
     window.addEventListener('keyup', up)
     window.addEventListener('blur', release)
-    window.addEventListener('resize', applyCamera)
+    const reframe = () => applyCamera(0, true)
+    window.addEventListener('resize', reframe)
     raf = requestAnimationFrame(step)
 
     paint(false)
@@ -167,7 +227,7 @@ export function useWorld(refs: WorldRefs, opts: Options) {
       window.removeEventListener('keydown', down)
       window.removeEventListener('keyup', up)
       window.removeEventListener('blur', release)
-      window.removeEventListener('resize', applyCamera)
+      window.removeEventListener('resize', reframe)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyCamera, paint, checkProximity])

@@ -8,11 +8,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { useFocusTrap } from '../ui/useFocusTrap'
+import { haptic, setSfxEnabled, sfx } from './sfx'
 import {
   DEMO_DESTINATION, dailyLoad, foregroundQuest, levelOf, proposeRebalance,
   selectQuests, wakingMinutes, type GuardianId,
 } from '../domain'
 import { Campus, daylight } from './Campus'
+import { ClockTower } from './ClockTower'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
@@ -32,6 +35,8 @@ import {
 import type { PanelProps } from './panels/types'
 import type { ReactElement } from 'react'
 import './game.css'
+import './hud.css'
+import './overlays.css'
 import './cosmetics.css'
 
 const VIEW_TITLE: Record<ViewId, string> = {
@@ -94,6 +99,9 @@ export default function Game() {
 
   useEffect(() => { saveState(state) }, [state])
 
+  /* Quiet Mode already promises no ambient life. Sound belongs to that promise. */
+  useEffect(() => { setSfxEnabled(!state.quiet) }, [state.quiet])
+
   const update = useCallback((fn: (s: GameState) => GameState) => setState(fn), [])
 
   const toast = useCallback((text: string) => {
@@ -103,9 +111,38 @@ export default function Game() {
   }, [])
 
   const go = useCallback((view: ViewId | null) => {
-    setState((s) => ({ ...s, view }))
-    setLive(view ? `${VIEW_TITLE[view]} opened.` : 'Back on the campus.')
+    if (view) sfx.enter(); else sfx.close()
+    setState((s) => view === 'rebalance'
+      ? { ...s, scene: 'clock-tower', view: null }
+      : { ...s, scene: view ? 'campus' : s.scene, view })
+    setLive(view === 'rebalance' ? 'Clock Tower entered.'
+      : view ? `${VIEW_TITLE[view]} opened.` : 'View closed.')
   }, [])
+
+  /* Watches the wallet rather than each payout site, so every reward in the
+     game gets the same acknowledgement without eleven call sites having to
+     remember to ask for one. */
+  const [gains, setGains] = useState<{ id: number; text: string }[]>([])
+  const walletRef = useRef({ xp: state.xp, coins: state.coins, level: levelOf(state.xp).level })
+
+  useEffect(() => {
+    const before = walletRef.current
+    const nowLevel = levelOf(state.xp).level
+    const dXp = state.xp - before.xp
+    const dCoins = state.coins - before.coins
+    walletRef.current = { xp: state.xp, coins: state.coins, level: nowLevel }
+    if (dXp <= 0 && dCoins <= 0) return
+
+    const parts: string[] = []
+    if (dXp > 0) parts.push(`+${dXp} XP`)
+    if (dCoins > 0) parts.push(`+${dCoins} coins`)
+    const id = Date.now() + Math.random()
+    setGains((g) => [...g, { id, text: parts.join(' · ') }])
+    window.setTimeout(() => setGains((g) => g.filter((x) => x.id !== id)), 1700)
+
+    if (nowLevel > before.level) sfx.levelUp(); else sfx.reward()
+    haptic(12)
+  }, [state.xp, state.coins])
 
   const load = useMemo(
     () => dailyLoad(state.tasks, 'thu', wakingMinutes(state.capacity)),
@@ -115,10 +152,14 @@ export default function Game() {
   const panelOpen = state.view !== null
   const dialogueOpen = script !== null
 
+  /* The sheet claims aria-modal; this makes that true. Declared here so the
+     hook runs before any of the early returns below. */
+  const sheetRef = useFocusTrap<HTMLDivElement>(panelOpen)
+
   const { near, moveTo, press } = useWorld(
     { stage, world, avatar },
     {
-      enabled: state.started && !panelOpen && !dialogueOpen,
+      enabled: state.started && state.scene === 'campus' && !panelOpen && !dialogueOpen,
       reducedMotion,
       initial: state.avatar,
       initialFacing: state.facing,
@@ -166,7 +207,7 @@ export default function Game() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const k = e.key.toLowerCase()
-      if ((k === 'e' || k === 'enter') && near && !panelOpen && !dialogueOpen) {
+      if ((k === 'e' || k === 'enter') && state.scene === 'campus' && near && !panelOpen && !dialogueOpen) {
         e.preventDefault(); enter(near)
       }
       if (k === 'escape') {
@@ -176,7 +217,7 @@ export default function Game() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [near, panelOpen, dialogueOpen, enter, go])
+  }, [near, panelOpen, dialogueOpen, enter, go, state.scene])
 
   const stepsDone = LOOP_STEPS.filter(([, done]) => done(state)).length
   const level = levelOf(state.xp)
@@ -227,7 +268,7 @@ export default function Game() {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
         <div className="title">
-          <div className="title-art" style={{ backgroundImage: 'url(/game/world/campus.png)' }} />
+          <div className="title-art" style={{ backgroundImage: 'url(/game/world/campus-daylight.webp)' }} />
           <div className="title-veil" />
           <div className="title-inner">
             <div className="logo">
@@ -263,7 +304,7 @@ export default function Game() {
             <ul className="title-cast">
               {(Object.keys(GUARDIANS) as GuardianId[]).map((id) => (
                 <li key={id}>
-                  <img src={`/game/portraits/${id}.png`} alt="" width="190" height="285" />
+                  <img src={`/game/portraits/${id}.webp`} alt="" width="190" height="285" />
                   <b>{GUARDIANS[id].name}</b>
                   <span>{GUARDIANS[id].role.split(' · ')[1]}</span>
                 </li>
@@ -286,6 +327,22 @@ export default function Game() {
     )
   }
 
+  if (state.scene === 'clock-tower') {
+    return (
+      <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        <ClockTower state={state} update={update} go={go} toast={toast}
+          onExit={() => {
+            setState((s) => ({ ...s, scene: 'campus', view: null }))
+            setLive('Back on the campus.')
+          }} />
+        <div className="toasts">
+          {toasts.map((t) => <div className="toast" key={t.id}>{t.text}</div>)}
+        </div>
+        <div className="sr" aria-live="polite">{live}</div>
+      </div>
+    )
+  }
+
   return (
     <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
       <Campus refs={{ stage, world, avatar }} load={load} tasks={state.tasks} day="thu"
@@ -294,37 +351,59 @@ export default function Game() {
       <div className="vignette" aria-hidden="true" />
 
       <div className="hud hud-top">
-        <span className="mark" aria-hidden="true">P</span>
-        <div>
-          <div className="hud-name">PaceTown</div>
-          <div className="hud-day">Thursday</div>
+        {/* Four grouped surfaces on one rail, not five loose slabs: identity,
+            the hero stat, progression, then system. Everything shares
+            --hud-h so the row has a single baseline. */}
+        <div className="hud-group hud-brand">
+          <span className="mark" aria-hidden="true">P</span>
+          <div className="hud-id">
+            <span className="hud-name">PaceTown</span>
+            <span className="hud-day">Thursday</span>
+          </div>
         </div>
-        <button className="pill" type="button" onClick={() => go('load')}>
-          <span className="swatch" style={{ background: `var(--${load.band.key})` }} />
-          <span><span className="lbl">Daily Load</span><b>{load.percentage.toFixed(1)}%</b></span>
+
+        {/* The most important number in the product, weighted like it. The
+            band colours the whole chip, and over capacity it breathes. */}
+        <button
+          className="hud-group load-chip"
+          type="button"
+          data-band={load.band.key}
+          data-over={load.percentage > 100 ? 'true' : undefined}
+          onClick={() => go('load')}
+          title={`${load.percentage.toFixed(1)}% — ${load.band.label}. Open the arithmetic.`}
+        >
+          <span className="load-body">
+            <span className="load-lbl">Daily Load</span>
+            <b className="load-num">{Math.round(load.percentage)}<i>%</i></b>
+          </span>
+          <span className="load-band">{load.band.label}</span>
         </button>
+
         <span className="grow" />
 
-        {/* Level reads as progress, not as a target: the bar has no deadline
-            and nothing here ever goes backwards. */}
-        <div className="coinbar">
-          <div className="lvl">
-            <span className="lbl">Level {level.level}</span>
-            <span className="lvl-track">
-              <span className="lvl-fill" style={{ width: `${(level.into / level.need) * 100}%` }} />
-            </span>
-            <span className="lvl-num">{level.into}/{level.need} XP</span>
-          </div>
-          <span className="coins">Coins <b>{state.coins}</b></span>
+        <div className="hud-group hud-prog">
+          <span className="lvl-badge">Lv{level.level}</span>
+          <span className="lvl-track" role="img"
+            aria-label={`${level.into} of ${level.need} XP toward level ${level.level + 1}`}>
+            <span className="lvl-fill" style={{ width: `${(level.into / level.need) * 100}%` }} />
+          </span>
+          <span className="lvl-num mono">{level.into}<i>/{level.need}</i></span>
+          <span className="hud-div" aria-hidden="true" />
+          {/* Keyed on the value so a change replays the pop. */}
+          <span className="coins">
+            <i className="coin-glyph" aria-hidden="true" />
+            <b key={state.coins} className="mono">{state.coins}</b>
+          </span>
         </div>
 
-        <button className="iconbtn" type="button" aria-pressed={state.quiet} title="Quiet Mode"
-          onClick={() => update((s) => ({ ...s, quiet: !s.quiet }))}>☾</button>
-        <button className="iconbtn" type="button" aria-pressed={state.contrast} title="High contrast"
-          onClick={() => update((s) => ({ ...s, contrast: !s.contrast }))}>◐</button>
-
-        <div className="acct">
-          <button className="acct-btn" type="button" aria-expanded={menuOpen}
+        <div className="hud-group hud-sys">
+          <button className="iconbtn" type="button" aria-pressed={state.quiet} title="Quiet Mode"
+            onClick={() => update((s) => ({ ...s, quiet: !s.quiet }))}>☾</button>
+          <button className="iconbtn" type="button" aria-pressed={state.contrast} title="High contrast"
+            onClick={() => update((s) => ({ ...s, contrast: !s.contrast }))}>◐</button>
+          <span className="hud-div" aria-hidden="true" />
+          <div className="acct">
+            <button className="acct-btn" type="button" aria-expanded={menuOpen}
             aria-label={`Account: ${account?.name ?? 'signed in'}`}
             onClick={() => setMenuOpen((v) => !v)}>
             <span className="acct-av" style={{ background: `hsl(${account?.hue ?? 40} 44% 46%)` }}>
@@ -359,6 +438,7 @@ export default function Game() {
               </div>
             </>
           )}
+          </div>
         </div>
       </div>
 
@@ -404,6 +484,10 @@ export default function Game() {
 
       <GuardianDock state={state} load={load} go={go} />
 
+      <div className="gains" aria-hidden="true">
+        {gains.map((g) => <span key={g.id}>{g.text}</span>)}
+      </div>
+
       <div className="hud hud-tools">
         <button className="tool" type="button" onClick={() => go('townlist')}>☰ Town List</button>
       </div>
@@ -421,7 +505,7 @@ export default function Game() {
         {(['up', 'left', 'down', 'right'] as const).map((dir) => (
           <button key={dir} className={dir === 'up' ? 'up' : undefined} type="button"
             aria-label={`Move ${dir}`}
-            onPointerDown={() => { press(dir, true); setMoved(true) }}
+            onPointerDown={() => { press(dir, true); setMoved(true); haptic(6) }}
             onPointerUp={() => press(dir, false)}
             onPointerLeave={() => press(dir, false)}>
             {{ up: '↑', left: '←', down: '↓', right: '→' }[dir]}
@@ -432,7 +516,8 @@ export default function Game() {
       {panelOpen && Panel && (
         <>
           <div className="scrim" onClick={() => go(null)} />
-          <div className="sheet" role="dialog" aria-modal="true" aria-label={VIEW_TITLE[state.view!]}>
+          <div className="sheet" ref={sheetRef} role="dialog" aria-modal="true"
+            aria-label={VIEW_TITLE[state.view!]}>
             <div className="sheet-head">
               <h2>{VIEW_TITLE[state.view!]}</h2>
               <button className="iconbtn" type="button" aria-label="Back to campus"

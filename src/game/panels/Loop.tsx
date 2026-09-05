@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react'
 import {
-  BLOCKERS, DEMO_DESTINATION, DEMO_DESTINATION_CAPACITY, EFFORT_WEIGHT, PLAN_TEMPLATES,
+  BLOCKERS, DEMO_DESTINATION, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
   extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
   resolveCheckpoint, sessionReward,
@@ -192,8 +192,8 @@ export function Understand({ state, load, go }: PanelProps) {
       <h2>Thursday is at {fmt(load.percentage)}% <HelpDot view="understand" state={state} load={load} /></h2>
       <p className="lede">
         Every number is computed, not written in. The formula is{' '}
-        <span className="mono">estimated minutes × priority × mental effort × urgency</span>, divided
-        by the minutes your fixed commitments leave behind.
+        <span className="mono">(fixed minutes + weighted flexible minutes) ÷ waking minutes × 100</span>.
+        Flexible minutes are weighted by priority, mental effort and urgency. Fixed commitments count once at their full duration.
       </p>
       <div className="scroll">
         <table>
@@ -280,9 +280,8 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
     )
   }
 
-  const moved = selectedMoves.reduce((sum, m) => sum + m.weightedMinutes, 0)
-  const satBefore = (DEMO_DESTINATION_CAPACITY.committedWeighted / DEMO_DESTINATION_CAPACITY.wakingMinutes) * 100
-  const satAfter = ((DEMO_DESTINATION_CAPACITY.committedWeighted + moved) / DEMO_DESTINATION_CAPACITY.wakingMinutes) * 100
+  const satBefore = dailyLoad(state.tasks, DEMO_DESTINATION, waking).percentage
+  const satAfter = dailyLoad(applySelected(state.tasks, proposal, selectedIds), DEMO_DESTINATION, waking).percentage
 
   const DayCard = ({ name, before, after }: { name: string; before: number; after: number }) => (
     <div className="day">

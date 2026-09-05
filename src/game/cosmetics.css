@@ -125,7 +125,7 @@
    so a preview cannot promise something the town will not deliver. */
 .shop-swatch {
   width: 78px; height: 56px; flex: none; border: 1px solid var(--edge-hi);
-  background: #7a8d5a url("/game/world/campus.png") center / 300% no-repeat;
+  background: #7a8d5a url("/game/world/campus-daylight.webp") center / 300% no-repeat;
   image-rendering: pixelated;
 }
 .shop-swatch.small { width: 44px; height: 32px; }

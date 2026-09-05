@@ -82,7 +82,9 @@ export function dailyLoad(tasks: readonly Task[], day: string, waking: number): 
     .sort((a, b) => b.weighted - a.weighted)
 
   const total = contributors.reduce((sum, c) => sum + c.weighted, 0)
-  const percentage = available > 0 ? (total / available) * 100 : total > 0 ? Infinity : 0
+  // Fixed time counts once at face value; flexible work retains its weights.
+  const demand = fixed + total
+  const percentage = waking > 0 ? (demand / waking) * 100 : demand > 0 ? Infinity : 0
 
   return {
     day,
@@ -119,12 +121,13 @@ export function guidedPercentage(load: DailyLoad, energy: number | null | undefi
 /** Plain-language explanation naming the largest contributors (§7.1). */
 export function explainLoad(load: DailyLoad): string {
   if (load.contributors.length === 0) {
-    return `Nothing flexible is scheduled. ${load.fixedMinutes} minutes are already committed.`
+    return `This day is ${load.percentage.toFixed(1)}%. Nothing flexible is scheduled; ${load.fixedMinutes} of ${load.wakingMinutes} waking minutes are already committed.`
   }
   const top = load.contributors.slice(0, 2).map((c) => c.task.title)
   return (
     `This day is ${load.percentage.toFixed(1)}% because ${load.fixedMinutes} minutes are already ` +
     `committed, leaving ${load.availableMinutes} minutes for ${load.contributors.length} ` +
-    `flexible tasks. The largest contributors are ${top.join(' and ')}.`
+    `flexible tasks. Fixed time plus ${load.weightedDemand.toFixed(1)} weighted flexible minutes ` +
+    `is divided by ${load.wakingMinutes} waking minutes. The largest contributors are ${top.join(' and ')}.`
   )
 }

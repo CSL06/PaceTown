@@ -7,13 +7,15 @@
  * prototype must not put a convincing credential prompt in front of anyone.
  */
 
-import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   emailProblem, hasAccounts, passwordProblem, passwordStrength,
   signIn, signInWithGoogle, signUp,
 } from './session'
 import { useAuth } from './AuthContext'
+import { useFocusTrap } from '../ui/useFocusTrap'
+import { SkyGreeter, type SkyMood } from './SkyGreeter'
 import { markOnboarded } from '../game/state'
 import './auth.css'
 
@@ -43,7 +45,14 @@ export default function AuthPage({ mode }: Props) {
   const [googleName, setGoogleName] = useState('')
   const [googleEmail, setGoogleEmail] = useState('')
 
+  /* Sky reacts to what you are actually doing, so these track it. */
+  const [typing, setTyping] = useState(false)
+  const [secretFocus, setSecretFocus] = useState(false)
+  const [capsOn, setCapsOn] = useState(false)
+
   const firstField = useRef<HTMLInputElement>(null)
+  const modalRef = useFocusTrap<HTMLDivElement>(googleOpen)
+  const typingTimer = useRef(0)
   const isSignup = mode === 'signup'
   const from = (location.state as { from?: string } | null)?.from ?? '/town'
 
@@ -58,6 +67,25 @@ export default function AuthPage({ mode }: Props) {
   }, [mode])
 
   const strength = passwordStrength(password)
+
+  /* Typing is a moment, not a state, so it decays back to idle on its own. */
+  const markTyping = () => {
+    setTyping(true)
+    window.clearTimeout(typingTimer.current)
+    typingTimer.current = window.setTimeout(() => setTyping(false), 1400)
+  }
+  useEffect(() => () => window.clearTimeout(typingTimer.current), [])
+
+  const reducedMotion = useMemo(
+    () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false, [],
+  )
+
+  /* Order matters: a problem outranks progress, and privacy outranks chatter. */
+  const mood: SkyMood = error ? 'error'
+    : busy ? 'happy'
+    : secretFocus ? 'secret'
+    : typing ? 'typing'
+    : 'idle'
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
@@ -100,6 +128,8 @@ export default function AuthPage({ mode }: Props) {
         </Link>
 
         <div className="au-form-wrap">
+          <SkyGreeter mood={mood} mode={mode} reducedMotion={reducedMotion} />
+
           <header className="au-head">
             <h1>{isSignup ? 'Make a place to keep your week.' : 'Welcome back.'}</h1>
             <p>
@@ -139,7 +169,7 @@ export default function AuthPage({ mode }: Props) {
                 <input
                   id={`${ids}-name`} ref={isSignup ? firstField : undefined}
                   type="text" autoComplete="name" value={name}
-                  onChange={(e) => setName(e.target.value)} placeholder="Sam"
+                  onChange={(e) => { setName(e.target.value); markTyping() }} placeholder="Sam"
                 />
               </label>
             )}
@@ -149,7 +179,7 @@ export default function AuthPage({ mode }: Props) {
               <input
                 id={`${ids}-email`} ref={isSignup ? undefined : firstField}
                 type="email" inputMode="email" autoComplete="email" value={email}
-                onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu"
+                onChange={(e) => { setEmail(e.target.value); markTyping() }} placeholder="you@university.edu"
               />
             </label>
 
@@ -164,10 +194,18 @@ export default function AuthPage({ mode }: Props) {
                 id={`${ids}-password`}
                 type={reveal ? 'text' : 'password'}
                 autoComplete={isSignup ? 'new-password' : 'current-password'}
-                value={password} onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setSecretFocus(true)}
+                onBlur={() => { setSecretFocus(false); setCapsOn(false) }}
+                onKeyUp={(e) => setCapsOn(e.getModifierState?.('CapsLock') ?? false)}
                 placeholder={isSignup ? 'At least 8 characters' : '••••••••'}
               />
             </label>
+
+            {capsOn && (
+              <p className="au-caps" role="status">Caps Lock is on.</p>
+            )}
 
             {isSignup && password.length > 0 && (
               <div className="au-strength" data-score={strength.score}>
@@ -224,7 +262,7 @@ export default function AuthPage({ mode }: Props) {
           </ul>
           <div className="au-art-cast">
             {(['mira', 'kai', 'sol', 'sky', 'goh'] as const).map((id) => (
-              <img key={id} src={`/game/portraits/${id}.png`} alt="" loading="lazy" />
+              <img key={id} src={`/game/portraits/${id}.webp`} alt="" loading="lazy" />
             ))}
           </div>
         </div>
@@ -233,7 +271,8 @@ export default function AuthPage({ mode }: Props) {
       {googleOpen && (
         <div className="au-modal-scrim" onClick={() => setGoogleOpen(false)}>
           <div
-            className="au-modal" role="dialog" aria-modal="true" aria-labelledby={`${ids}-gtitle`}
+            className="au-modal" ref={modalRef} role="dialog" aria-modal="true"
+            aria-labelledby={`${ids}-gtitle`}
             onClick={(e) => e.stopPropagation()}
           >
             <p className="au-modal-tag">Simulated provider</p>

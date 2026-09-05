@@ -71,7 +71,7 @@ h1 { margin-bottom: 0; color: var(--cream); font-family: Georgia, 'Times New Rom
   aspect-ratio: 3 / 2;
   overflow: hidden;
   isolation: isolate;
-  background: #7a8d5a url('/game/campus.png') center / cover no-repeat;
+  background: #7a8d5a url('/game/campus.webp') center / cover no-repeat;
   border: 4px solid #0a131e;
   box-shadow: var(--shadow), inset 0 0 0 2px rgba(255,255,255,.2);
 }
@@ -80,7 +80,7 @@ h1 { margin-bottom: 0; color: var(--cream); font-family: Georgia, 'Times New Rom
 
 .location-label { position: absolute; z-index: 7; display: flex; align-items: center; gap: .45rem; padding: .46rem .66rem; color: var(--ink); background: rgba(255, 248, 228, .93); border: 2px solid var(--ink); box-shadow: 3px 3px 0 rgba(24,39,56,.5); font-size: clamp(.58rem, .9vw, .78rem); font-weight: 800; }
 .cafe-label { left: 16%; top: 46%; }
-.tea-counter { position: absolute; left: 23.5%; top: 70%; z-index: 5; width: 64px; height: 64px; image-rendering: pixelated; background: url('/game/objects/tea-counter.png') 0 0 / auto 64px no-repeat; filter: drop-shadow(3px 5px 2px rgba(18,25,28,.35)); transform: translate(-50%, -50%) scale(.92); }
+.tea-counter { position: absolute; left: 23.5%; top: 70%; z-index: 5; width: 64px; height: 64px; image-rendering: pixelated; background: url('/game/objects/tea-counter.webp') 0 0 / auto 64px no-repeat; filter: drop-shadow(3px 5px 2px rgba(18,25,28,.35)); transform: translate(-50%, -50%) scale(.92); }
 
 .character { position: absolute; z-index: 8; width: 64px; height: 96px; transform: translate(-50%, -84%); }
 .player { will-change: left, top; }
@@ -105,7 +105,7 @@ kbd, .key-cluster { min-width: 28px; padding: .2rem .34rem; text-align: center; 
 .place-card strong { font-size: .76rem; }
 .place-card small { margin-top: .22rem; color: #c5cfca; font-size: .62rem; line-height: 1.35; }
 .place-icon { display: grid; place-items: center; width: 34px; height: 34px; background: var(--cream); color: var(--ink); border: 2px solid var(--ink); }
-.tea-place-icon { background: var(--cream) url('/game/objects/tea-counter.png') left center / auto 30px no-repeat; image-rendering: pixelated; }
+.tea-place-icon { background: var(--cream) url('/game/objects/tea-counter.webp') left center / auto 30px no-repeat; image-rendering: pixelated; }
 .coming-place-icon i { width: 10px; height: 10px; background: var(--ink-soft); box-shadow: 5px 5px 0 var(--teal); }
 .active-place { border-color: rgba(231, 162, 59, .75); }
 .disabled-place { opacity: .56; cursor: default; }

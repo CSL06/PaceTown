@@ -44,16 +44,16 @@ export const HELP: Record<ViewId, HelpContent> = {
     adaptive: (_s, load) => `Thursday reads ${load.percentage.toFixed(1)}%. Over 100 means more planned than fits — never a grade.`,
   },
   rebalance: {
-    title: 'Rebalance Workshop',
-    what: 'Kai’s proposal to move flexible work to Saturday. Locked times stay; deadlines hold.',
-    how: 'Uncheck moves to preview the result, then approve or reject. Reject leaves the week untouched.',
+    title: 'Clock Tower Week Board',
+    what: 'Your real Monday-to-Sunday commitments and Kai’s optional placement preview. Locked times stay; deadlines hold.',
+    how: 'Select flexible Thursday work, compare a destination day, then approve. Dashed blocks are previews only.',
     guardian: { who: 'kai', why: 'Kai wrote this proposal. He never moves anything without your approval.' },
     adaptive: (s) => {
       if (s.rebalanceSeen) return 'You already decided this. What is left is real work in the Library.'
       const p = proposeRebalance(s.tasks, { day: 'thu', destination: DEMO_DESTINATION, waking: wakingMinutes(s.capacity) })
       return p.moves.length === 0
         ? 'Nothing can safely move. Continue to the Library.'
-        : `Kai can move ${p.moves.length} ${p.moves.length === 1 ? 'thing' : 'things'}. Uncheck any move to preview.`
+        : `Kai can move ${p.moves.length} ${p.moves.length === 1 ? 'thing' : 'things'}. Open the board to compare days.`
     },
   },
   work: {

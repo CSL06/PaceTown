@@ -121,6 +121,7 @@ export interface GameState {
   facing: 'up' | 'down' | 'left' | 'right'
   quiet: boolean
   contrast: boolean
+  scene: 'campus' | 'clock-tower'
   view: ViewId | null
 }
 
@@ -186,6 +187,7 @@ export function initialState(): GameState {
     facing: 'down',
     quiet: false,
     contrast: false,
+    scene: 'campus',
     view: null,
   }
 }
@@ -277,6 +279,7 @@ export function loadState(): GameState {
     // Every load opens on the title screen, as a game should. Progress is
     // restored; only the entry point resets.
     started: false,
+    scene: 'campus',
     view: null,
   } as GameState
 }

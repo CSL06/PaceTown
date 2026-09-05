@@ -1,0 +1,200 @@
+/* The two things that sit on top of the world: the guardian dock and the
+ * quest card.
+ *
+ * Both were plain slabs before. The dock had a real structural bug — it was
+ * centred with translateY(-50%) and had no max-height, so on any viewport
+ * shorter than its own content it silently clipped off both the top and the
+ * bottom card. It is now laid out inside an explicit safe zone between the HUD
+ * rail and the bottom row, and it shrinks and then hides rather than clipping.
+ */
+
+/* ============================================================ safe zone */
+.pt-game {
+  --rail-h: 68px;   /* the HUD rail plus its padding */
+  --foot-h: 88px;   /* the quest card / town list row */
+}
+
+/* ========================================================= guardian dock */
+.dock {
+  position: absolute;
+  right: 12px;
+  /* Anchored between the rail and the footer instead of to the middle of the
+     screen, so it can never reach under either of them. */
+  top: var(--rail-h);
+  bottom: var(--foot-h);
+  transform: none;
+  z-index: 21;
+  width: 56px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  /* Deliberately visible: the detail card flies out to the left. */
+  overflow: visible;
+}
+
+.dock-head { display: grid; gap: 1px; text-align: center; padding-bottom: 2px }
+.dock-head span {
+  font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint);
+}
+.dock-head b { font-size: 8.5px; color: var(--accent-ink); font-weight: 600 }
+
+.dock-row { position: relative; animation: dock-in .4s cubic-bezier(.2, .9, .3, 1) both }
+.dock-row:nth-child(2) { animation-delay: .04s }
+.dock-row:nth-child(3) { animation-delay: .08s }
+.dock-row:nth-child(4) { animation-delay: .12s }
+.dock-row:nth-child(5) { animation-delay: .16s }
+.dock-row:nth-child(6) { animation-delay: .20s }
+@keyframes dock-in { from { opacity: 0; transform: translateX(16px) } }
+
+/* Same glass as the HUD rail, so the two read as one system and neither
+   outshouts the artwork. */
+.dock-face {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  display: grid;
+  justify-items: center;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--pt-surface) 76%, transparent);
+  backdrop-filter: blur(8px) saturate(1.1);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+  transition: transform .16s ease, filter .16s ease;
+}
+.dock-face:hover { transform: translateX(-3px); filter: brightness(1.06) }
+.dock-face img {
+  width: 38px; height: 46px;
+  object-fit: cover; object-position: center top;
+  image-rendering: pixelated;
+  margin-top: 3px;
+}
+.dock-name {
+  display: block; width: 100%;
+  font-size: 8.5px; font-weight: 600; color: var(--dim);
+  padding: 2px 0 3px;
+  background: color-mix(in srgb, var(--pt-sunk) 70%, transparent);
+}
+
+/* Waiting is the dock's only alert state, so it gets the accent outright. */
+.dock-row.is-waiting .dock-face { border-color: var(--accent) }
+.dock-row.is-waiting .dock-name { color: var(--accent-ink) }
+.dock-row.is-open .dock-face { border-color: var(--accent); transform: translateX(-3px) }
+
+.dock-dot {
+  position: absolute; top: 3px; right: 3px;
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border: 1.5px solid var(--px-ink);
+  animation: dock-pulse 2.2s ease-in-out infinite;
+}
+@keyframes dock-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
+
+/* The flyout. */
+.dock-card {
+  position: absolute;
+  right: calc(100% + 9px);
+  top: 0;
+  width: 244px;
+  z-index: 3;
+  padding: 13px 15px;
+  background: var(--panel);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-up);
+  clip-path: var(--px-clip);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  animation: dock-card-in .2s cubic-bezier(.2, 1.1, .4, 1) both;
+}
+@keyframes dock-card-in { from { opacity: 0; transform: translateX(8px) } }
+.dock-role {
+  font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink);
+}
+.dock-card p { margin: 7px 0 12px; font-size: 12.5px; color: var(--dim); line-height: 1.5 }
+.dock-go {
+  width: 100%; padding: 8px 13px;
+  background: var(--accent); color: var(--on-accent);
+  font-size: 11.5px; font-weight: 600;
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+}
+.dock-go:hover { filter: brightness(1.08) }
+
+/* Rather than clipping, the dock tightens and then leaves. */
+@media (max-height: 560px) {
+  .dock-face img { width: 32px; height: 38px }
+  .dock-head { display: none }
+}
+@media (max-width: 900px), (max-height: 440px) {
+  .dock { display: none }
+}
+
+/* ============================================================ quest card */
+/* The one thing on screen asking you to do something, so it is allowed to
+   look like it. */
+.hud-quest {
+  left: 13px;
+  bottom: 13px;
+  width: min(340px, calc(100vw - 26px));
+  padding: 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--pt-surface) 88%, transparent);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-up);
+  clip-path: var(--px-clip);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  animation: quest-in .5s cubic-bezier(.2, .9, .3, 1) both .25s;
+}
+@keyframes quest-in { from { opacity: 0; transform: translateY(14px) } }
+
+/* A band of accent along the top edge, so the card reads as a call to action
+   at a glance rather than as another panel. */
+.hud-quest::before {
+  content: "";
+  display: block;
+  height: var(--px-border);
+  background: var(--accent);
+}
+
+.hud-quest .eyebrow,
+.hud-quest h3,
+.hud-quest p,
+.hud-quest .qa { margin-left: 15px; margin-right: 15px }
+.hud-quest .eyebrow { margin-top: 12px; color: var(--accent-ink); font-size: 9px }
+.hud-quest h3 { font-size: 15px; margin-top: 5px; color: var(--text) }
+.hud-quest p {
+  margin-top: 5px; font-size: 12px; line-height: 1.5;
+  color: var(--dim); font-family: var(--pt-prose);
+}
+
+.qa { display: flex; gap: 7px; margin-top: 12px; margin-bottom: 13px; flex-wrap: wrap }
+/* One primary, the rest quiet. They used to be near-identical in weight, which
+   left no obvious next move. */
+.qa button {
+  background: none;
+  border: var(--px-border) solid var(--edge);
+  padding: 7px 11px;
+  font-size: 11.5px;
+  color: var(--dim);
+  transition: color .14s ease, border-color .14s ease, transform .06s steps(2);
+}
+.qa button:hover { border-color: var(--edge-hi); color: var(--text) }
+.qa button.go {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--px-ink);
+  font-weight: 700;
+  clip-path: var(--px-clip);
+  filter: drop-shadow(3px 3px 0 var(--px-shadow));
+}
+.qa button.go:hover { color: var(--on-accent); filter: drop-shadow(3px 3px 0 var(--px-shadow)) brightness(1.07) }
+.qa button.go:active { transform: translate(3px, 3px); filter: none }
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-row, .dock-card, .hud-quest { animation: none !important }
+  .dock-dot { animation: none }
+  .dock-face, .qa button { transition: none }
+}

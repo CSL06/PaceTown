@@ -112,3 +112,13 @@
   line-height: 1.55;
   color: var(--pt-text-2, #665844);
 }
+
+/* The crash screen has no animation of its own today, but anything added here
+   must still respect the preference. */
+@media (prefers-reduced-motion: reduce) {
+  .eb *, .eb *::before, .eb *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

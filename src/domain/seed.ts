@@ -22,8 +22,8 @@ export const DEMO_CAPACITY: Capacity = {
 }
 
 export const DEMO_SCHEDULE_TEXT =
-  'Database Systems lecture from 9 to 12, 90 minute commute, Film Society at 5, ' +
-  'café shift from 6 to 10, ERD assignment due tomorrow takes 120 minutes, ' +
+  'Database Systems lecture from 9 am to 12 pm, 90 minute commute, Film Society at 5 pm, ' +
+  'café shift from 6 pm to 10 pm, ERD assignment due tomorrow takes 120 minutes, ' +
   'revise normalisation notes for 62 minutes, weekly groceries 45 minutes, ' +
   'bursary form due next week 30 minutes, laundry 30 minutes'
 
@@ -37,8 +37,17 @@ export const DEMO_BRIEF =
   'Diagrams should be legible and submitted as PDF.'
 
 export function demoTasks(): Task[] {
-  return parseSchedule(DEMO_SCHEDULE_TEXT, DEMO_DAY).tasks
+  const thursday = parseSchedule(DEMO_SCHEDULE_TEXT, DEMO_DAY).tasks
+  const surrounding: Record<string, string> = {
+    mon: 'Algorithms lecture from 10 am to 12 pm, gym 45 minutes',
+    tue: 'Design tutorial from 2 pm to 3 pm, pharmacy 20 minutes',
+    wed: 'Project meeting from 4 pm to 5 pm, laundry 30 minutes',
+    fri: 'Software lab from 11 am to 1 pm, dinner with friends at 7 pm',
+    sat: 'Morning run 45 minutes, family dinner at 6 pm',
+    sun: 'Meal prep 60 minutes, call family 30 minutes',
+  }
+  const week = Object.entries(surrounding).flatMap(([day, text]) =>
+    parseSchedule(text, day).tasks.map((task, index) => ({ ...task, id: `${day}-${index}` })),
+  )
+  return [...week, ...thursday.map((task, index) => ({ ...task, id: `thu-${index}` }))]
 }
-
-/** A quieter Saturday, so rebalancing has somewhere real to move work to. */
-export const DEMO_DESTINATION_CAPACITY = { wakingMinutes: 780, committedWeighted: 120 }

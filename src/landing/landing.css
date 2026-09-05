@@ -256,16 +256,16 @@
   z-index: 6; will-change: transform; }
 .lt-avatar.f-down { background-position-x: 0% }
 .lt-avatar.f-up { background-position-x: 27.27% }
-.lt-avatar.f-left { background-position-x: 54.54% }
-.lt-avatar.f-right { background-position-x: 81.81% }
+.lt-avatar.f-left { background-position-x: 81.81% }
+.lt-avatar.f-right { background-position-x: 54.54% }
 .lt-avatar.walking.f-down { animation: lt-wd .34s steps(2) infinite }
 .lt-avatar.walking.f-up { animation: lt-wu .34s steps(2) infinite }
 .lt-avatar.walking.f-left { animation: lt-wl .34s steps(2) infinite }
 .lt-avatar.walking.f-right { animation: lt-wr .34s steps(2) infinite }
 @keyframes lt-wd { from { background-position-x: 9.09% } to { background-position-x: 27.27% } }
 @keyframes lt-wu { from { background-position-x: 36.36% } to { background-position-x: 54.54% } }
-@keyframes lt-wl { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
-@keyframes lt-wr { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes lt-wl { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes lt-wr { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
 
 .lt-tag { position: absolute; left: 50%; top: -16px; transform: translateX(-50%);
   white-space: nowrap; background: rgba(12, 20, 28, .9); color: #EFE3CC;
@@ -676,3 +676,143 @@
     transition-duration: .01ms !important; }
   .lp-meter-fill { animation: none; }
 }
+
+/* ------------------------------------------------------------------ try it */
+/* The hands-on section. Shares the pixel language of the rest of the page:
+   sunken wells for anything you type into, raised panels for anything the app
+   is telling you. */
+
+.lp-try-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.lp-try-input, .lp-try-out {
+  background: var(--panel);
+  padding: clamp(18px, 2.4vw, 26px);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-up);
+  clip-path: var(--px-clip);
+}
+
+.lp-try-label {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  font-size: 12px; color: var(--dim); margin-bottom: 8px;
+}
+.lp-try-label b { color: var(--accent-warm); font-size: 15px; }
+
+.lp-try-input textarea {
+  width: 100%; resize: vertical; min-height: 92px;
+  background: var(--pt-sunk); color: var(--text);
+  font: inherit; font-size: 14px; line-height: 1.55; padding: 12px 13px;
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-down);
+  clip-path: var(--px-clip);
+}
+.lp-try-input textarea:focus { outline: var(--px-border) solid var(--accent); outline-offset: 0; }
+
+/* one-tap additions */
+.lp-try-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 20px; }
+.lp-try-chips button {
+  background: var(--raised); color: var(--dim);
+  padding: 6px 11px; font-size: 11.5px; font-family: var(--ui);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-up);
+  clip-path: var(--px-clip);
+  transition: transform .06s steps(2);
+}
+.lp-try-chips button:hover { color: var(--text); filter: brightness(1.06); }
+.lp-try-chips button:active { transform: translate(2px, 2px); box-shadow: var(--px-bevel-down); }
+.lp-try-clear { margin-left: auto; color: var(--faint) !important; }
+
+/* The slider is the argument of the whole section, so it is chunky on purpose. */
+.lp-try-slider-label { margin-top: 4px; }
+.lp-try-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 18px; background: transparent; cursor: ew-resize;
+}
+.lp-try-slider::-webkit-slider-runnable-track {
+  height: 14px; background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink); box-shadow: var(--px-bevel-down);
+}
+.lp-try-slider::-moz-range-track {
+  height: 14px; background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink);
+}
+.lp-try-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 24px; margin-top: -8px;
+  background: var(--accent);
+  border: var(--px-border) solid var(--px-ink);
+}
+.lp-try-slider::-moz-range-thumb {
+  width: 18px; height: 24px; border-radius: 0;
+  background: var(--accent); border: var(--px-border) solid var(--px-ink);
+}
+.lp-try-slider:focus-visible { outline: var(--px-border) solid var(--accent); outline-offset: 4px; }
+.lp-try-hint { margin-top: 10px; font-size: 12px; color: var(--faint); font-family: var(--pt-prose); }
+
+/* ---- the readout ---- */
+.lp-try-num { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.lp-try-pct {
+  font-size: clamp(38px, 5vw, 54px); line-height: 1; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.lp-try-pct small { font-size: .4em; color: var(--faint); margin-left: 2px; }
+.lp-try-pct[data-band="open"] { color: var(--open) }
+.lp-try-pct[data-band="steady"] { color: var(--steady) }
+.lp-try-pct[data-band="heavy"] { color: var(--heavy) }
+.lp-try-pct[data-band="over"] { color: var(--over) }
+.lp-try-pct[data-band="unsust"] { color: var(--unsust) }
+
+/* 24 blocks over a 0-120% scale, so going over capacity is visible rather
+   than clamped away. The marker sits where 100% falls. */
+.lp-try-bar {
+  position: relative;
+  display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px;
+  margin: 16px 0 18px; padding: 4px;
+  background: var(--pt-sunk);
+  border: var(--px-border) solid var(--px-ink);
+  box-shadow: var(--px-bevel-down);
+}
+.lp-try-bar span { height: 14px; background: var(--px-lo); opacity: .3; }
+.lp-try-bar span.is-lit { opacity: 1; }
+.lp-try-bar span.is-lit[data-band="open"] { background: var(--open) }
+.lp-try-bar span.is-lit[data-band="steady"] { background: var(--steady) }
+.lp-try-bar span.is-lit[data-band="heavy"] { background: var(--heavy) }
+.lp-try-bar span.is-lit[data-band="over"] { background: var(--over) }
+.lp-try-bar span.is-lit[data-band="unsust"] { background: var(--unsust) }
+.lp-try-cap {
+  position: absolute; top: -5px; bottom: -5px; width: 2px;
+  background: var(--text); opacity: .6;
+}
+
+.lp-try-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px;
+  background: var(--edge); border: 1px solid var(--edge); }
+.lp-try-list li {
+  display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px;
+  align-items: center; background: var(--panel); padding: 8px 11px; font-size: 12.5px;
+}
+.lp-try-dot { width: 9px; height: 9px; }
+.lp-try-dot[data-cat="time"] { background: var(--heavy) }
+.lp-try-dot[data-cat="mental"] { background: var(--steady) }
+.lp-try-dot[data-cat="physical"] { background: var(--open) }
+.lp-try-dot[data-cat="social"] { background: var(--over) }
+.lp-try-dot[data-cat="errands"] { background: #A08A63 }
+.lp-try-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-try-meta { color: var(--dim); font-size: 12px; }
+.lp-try-kind { font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+
+.lp-try-foot { margin-top: 12px; font-size: 12px; color: var(--faint); font-family: var(--pt-prose); }
+.lp-try-amb { margin-top: 10px; font-size: 12px; font-family: var(--pt-prose); }
+.lp-try-amb summary { cursor: pointer; color: var(--accent-warm); }
+.lp-try-amb ul { margin: 8px 0 0; padding-left: 18px; color: var(--dim); display: grid; gap: 5px; }
+
+.lp-try-empty { display: grid; gap: 10px; color: var(--dim); font-size: 13.5px;
+  font-family: var(--pt-prose); }
+.lp-try-empty b { color: var(--text); font-family: var(--ui); }
+
+@media (max-width: 900px) { .lp-try-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .lp-try-chips button { transition: none } }

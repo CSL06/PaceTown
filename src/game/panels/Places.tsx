@@ -7,7 +7,7 @@ import {
   DEMO_DESTINATION, REWARDS, guidedPercentage, proposeRebalance,
   wakingMinutes, weightedDemand,
 } from '../../domain'
-import { PLACES, doorstep } from '../layout'
+import { GUARDIANS, PLACES, doorstep } from '../layout'
 import { clearState, record } from '../state'
 import { loadWeather, pressureByArea } from '../Campus'
 import { Guardian } from './Guardian'
@@ -44,6 +44,7 @@ export function LoadPanel({ state, load, go }: PanelProps) {
           <div><span>Fixed commitments</span><span>−{load.fixedMinutes} min</span></div>
           <div className="rule"><span>Available</span><span>{load.availableMinutes} min</span></div>
           <div><span>Weighted demand</span><span>{fmt(load.weightedDemand)} min</span></div>
+          <div><span>Total schedule load</span><span>({load.fixedMinutes} + {fmt(load.weightedDemand)}) ÷ {load.wakingMinutes} × 100</span></div>
         </div>
         {top.length > 0 && (
           <p className="lede">
@@ -518,39 +519,65 @@ export function Home({ state, load, update, go, toast }: PanelProps) {
 
 /* --------------------------------------------------------- town list */
 
+/** Views that exist but have no doorway on the map. */
+const OFF_MAP = [
+  ['load', 'Daily Load', 'The full calculation and Load Weather'],
+  ['briefing', 'Daily Briefing', 'Capacity, energy and today’s check-in'],
+  ['keepsakes', 'Pace Keepsakes', 'Turn a quest photo into private pixel art'],
+  ['collection', 'Collection', 'Your private keepsake grid'],
+] as const
+
+/**
+ * The Town List is the keyboard and screen-reader path through the whole game,
+ * so it has to be genuinely usable rather than a fallback. It used to be
+ * fourteen identical rectangles; now each entry carries who lives there, which
+ * is the fastest way to find anything on a map organised by guardian.
+ */
 export function TownList({ state, load, update, go }: PanelProps) {
+  const visit = (place: (typeof PLACES)[number]) => {
+    update((s) => ({ ...s, avatar: doorstep(place), facing: 'down' }))
+    go(place.view)
+  }
+
   return (
     <div className="card">
-      <h2>Town List <HelpDot view="townlist" state={state} load={load} /></h2>
       <p className="lede">
+        <HelpDot view="townlist" state={state} load={load} />{' '}
         Every spatial interaction has an equivalent here. Nothing on the map is reachable only by
         pointing at it.
       </p>
+
+      <div className="eyebrow tl-head">On the map</div>
       <div className="townlist">
-        {PLACES.map((p) => (
-          <button key={p.id} type="button" onClick={() => {
-            const at = doorstep(p)
-            update((s) => ({ ...s, avatar: at, facing: 'down' }))
-            go(p.view)
-          }}>
-            {p.name}<small>{p.blurb}</small>
+        {PLACES.map((place) => (
+          <button key={place.id} type="button" className="tl-row" onClick={() => visit(place)}>
+            <span className="tl-face" aria-hidden="true">
+              {place.who
+                ? <img src={`/game/portraits/${place.who}.webp`} alt="" />
+                : <i className="tl-pin" />}
+            </span>
+            <span className="tl-text">
+              <b>{place.name}</b>
+              <small>{place.blurb}</small>
+            </span>
+            {place.who && <span className="tl-who">{GUARDIANS[place.who].name}</span>}
+            <span className="tl-go" aria-hidden="true">&rsaquo;</span>
           </button>
         ))}
       </div>
-      <div className="eyebrow" style={{ marginTop: 20 }}>Not on the map</div>
+
+      <div className="eyebrow tl-head">Not on the map</div>
       <div className="townlist">
-        <button type="button" onClick={() => go('load')}>
-          Daily Load<small>The full calculation and Load Weather</small>
-        </button>
-        <button type="button" onClick={() => go('briefing')}>
-          Daily Briefing<small>Capacity, energy and today’s check-in</small>
-        </button>
-        <button type="button" onClick={() => go('keepsakes')}>
-          Pace Keepsakes<small>Turn a quest photo into private pixel art</small>
-        </button>
-        <button type="button" onClick={() => go('collection')}>
-          Collection<small>Your private keepsake grid</small>
-        </button>
+        {OFF_MAP.map(([view, name, blurb]) => (
+          <button key={view} type="button" className="tl-row" onClick={() => go(view)}>
+            <span className="tl-face" aria-hidden="true"><i className="tl-pin is-view" /></span>
+            <span className="tl-text">
+              <b>{name}</b>
+              <small>{blurb}</small>
+            </span>
+            <span className="tl-go" aria-hidden="true">&rsaquo;</span>
+          </button>
+        ))}
       </div>
     </div>
   )

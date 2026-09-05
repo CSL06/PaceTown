@@ -42,6 +42,18 @@ const DAY_WORDS: Record<string, number> = {
   saturday: 2, sunday: 3, monday: 5, tuesday: 6, 'next week': 6,
 }
 
+const EVENING_WORDS = ['café', 'cafe', 'shift', 'society', 'club', 'dinner', 'party']
+
+function clockMinute(hour: number, minute: number, meridiem?: string): number {
+  const h = hour % 12
+  return h * 60 + minute + (meridiem?.toLowerCase() === 'pm' ? 12 * 60 : 0)
+}
+
+function inferredClockMinute(hour: number, minute: number, text: string): number {
+  const evening = hasWord(text, EVENING_WORDS)
+  return clockMinute(hour, minute) + (evening && hour <= 7 ? 12 * 60 : 0)
+}
+
 function hasWord(text: string, words: readonly string[]): boolean {
   return words.some((w) => new RegExp(`\\b${w}\\b`).test(text))
 }
@@ -90,25 +102,44 @@ export function parseSchedule(text: string, day = 'thu'): ParsedTaskResult {
     else category = 'errands'
 
     let minutes: number | null = null
+    let startMinute: number | undefined
+    let endMinute: number | undefined
     let fixed = hasWord(low, FIXED_WORDS)
 
     const range = low.match(
-      /(\d{1,2})(?::(\d{2}))?\s*(?:am|pm)?\s*(?:to|until|till|–|—|-)\s*(\d{1,2})(?::(\d{2}))?\s*(?:am|pm)?/,
+      /(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:to|until|till|–|—|-)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/,
     )
     if (range) {
-      const start = Number(range[1]) + Number(range[2] ?? 0) / 60
-      let end = Number(range[3]) + Number(range[4] ?? 0) / 60
-      if (end <= start) end += 12
-      minutes = Math.round((end - start) * 60)
+      const startHour = Number(range[1])
+      const startPart = Number(range[2] ?? 0)
+      const startMeridiem = range[3]
+      const endHour = Number(range[4])
+      const endPart = Number(range[5] ?? 0)
+      const endMeridiem = range[6]
+      startMinute = startMeridiem
+        ? clockMinute(startHour, startPart, startMeridiem)
+        : inferredClockMinute(startHour, startPart, low)
+      endMinute = endMeridiem
+        ? clockMinute(endHour, endPart, endMeridiem)
+        : inferredClockMinute(endHour, endPart, low)
+      while (endMinute <= startMinute) endMinute += 12 * 60
+      minutes = endMinute - startMinute
       fixed = true
     }
     if (minutes === null) {
       const dur = low.match(/(\d+)\s*(minutes|minute|mins|min|hours|hour|hrs|hr)\b/)
       if (dur) minutes = /^h/.test(dur[2]) ? Number(dur[1]) * 60 : Number(dur[1])
     }
-    if (minutes === null && /\bat\s+\d{1,2}/.test(low)) {
+    const at = low.match(/\bat\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/)
+    if (minutes === null && at) {
       minutes = 60
       fixed = true
+      const hour = Number(at[1])
+      const minute = Number(at[2] ?? 0)
+      startMinute = at[3]
+        ? clockMinute(hour, minute, at[3])
+        : inferredClockMinute(hour, minute, low)
+      endMinute = startMinute + minutes
     }
     if (minutes === null) {
       minutes = 30
@@ -153,6 +184,8 @@ export function parseSchedule(text: string, day = 'thu'): ParsedTaskResult {
       title: titleise(fragment),
       category,
       day,
+      startMinute,
+      endMinute,
       estimatedMinutes: minutes,
       priority,
       mentalEffort,

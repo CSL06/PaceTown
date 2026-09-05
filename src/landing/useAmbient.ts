@@ -10,7 +10,7 @@
  *
  * The generated score is the default and needs no file, no download and no
  * licence. The file path exists only so a licensed track can replace it
- * without touching any code. See public/audio/README.md.
+ * without touching any code. See assets/app-runtime-v1/audio/README.md.
  *
  * Either way, audio only ever starts from a click. Never on load.
  */

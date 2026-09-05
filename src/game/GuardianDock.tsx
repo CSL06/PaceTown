@@ -127,7 +127,7 @@ export function GuardianDock({ state, load, go }: Props) {
               aria-expanded={isOpen}
               onClick={() => setOpen(isOpen ? null : entry.id)}
             >
-              <img src={`/game/portraits/${entry.id}.png`} alt="" width="190" height="285" />
+              <img src={`/game/portraits/${entry.id}.webp`} alt="" width="190" height="285" />
               {entry.waiting && <span className="dock-dot" aria-hidden="true" />}
               <span className="dock-name">{guardian.name}</span>
               <span className="sr">

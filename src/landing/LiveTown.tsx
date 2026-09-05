@@ -19,9 +19,9 @@ import {
 } from '../game/layout'
 import type { GuardianId } from '../domain'
 
-const MAP = '/game/world/campus.png'
-const PLAYER_SHEET = '/game/world/player-sheet.png'
-const CAST_SHEET = '/game/world/cast-sheet.png'
+const MAP = '/game/world/campus-daylight.webp'
+const PLAYER_SHEET = '/game/world/player-sheet.webp'
+const CAST_SHEET = '/game/world/cast-sheet.webp'
 
 const SPEED = 430
 const ARRIVE = 26
@@ -39,8 +39,8 @@ const ROUTE: GuardianId[] = ['kai', 'mira', 'sky', 'goh', 'sol']
 /** What each guardian says on arrival — their real job, in their own voice. */
 const LINES: Record<GuardianId, string[]> = {
   kai: [
-    'Thursday is at 108%. That is arithmetic, not a judgement.',
-    'Two of your flexible things can move to Saturday. Nothing shifts until you say so.',
+    'Thursday is carrying fixed commitments and flexible work. That is arithmetic, not a judgement.',
+    'Some flexible things can move to Saturday. Nothing shifts until you say so.',
   ],
   mira: [
     'Tell me what is blocking you and we will find the first visible step.',

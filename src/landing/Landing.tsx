@@ -20,6 +20,7 @@ import { useTheme } from '../theme/ThemeProvider'
 import { LiveTown } from './LiveTown'
 import { useAmbient } from './useAmbient'
 import { useCountUp, useReveal } from './motion'
+import { TryIt } from './TryIt'
 import './landing.css'
 
 interface RosterEntry {
@@ -228,6 +229,7 @@ export default function Landing() {
 
         <nav className="lp-links" aria-label="Sections">
           <a href="#town">The town</a>
+          <a href="#try">Try it</a>
           <a href="#guardians">Guardians</a>
           <a href="#loop">How it works</a>
         </nav>
@@ -393,6 +395,8 @@ export default function Landing() {
           </p>
         </section>
 
+        <TryIt />
+
         <section className="lp-section" id="guardians">
           <div className="lp-section-head" data-reveal>
             <p className="lp-eyebrow">The cast</p>
@@ -418,7 +422,7 @@ export default function Landing() {
                   className={`lp-tab${g.id === active ? ' is-on' : ''}`}
                   onClick={() => setActive(g.id)}
                 >
-                  <img src={`/game/portraits/${g.id}.png`} alt="" width="190" height="285" loading="lazy" />
+                  <img src={`/game/portraits/${g.id}.webp`} alt="" width="190" height="285" loading="lazy" />
                   <span className="lp-tab-name">{GUARDIANS[g.id].name}</span>
                   <span className="lp-tab-role">{g.title}</span>
                 </button>
@@ -434,7 +438,7 @@ export default function Landing() {
               key={current.id}
             >
               <div className="lp-guardian-art">
-                <img src={`/game/portraits/${current.id}.png`} alt="" width="190" height="285" />
+                <img src={`/game/portraits/${current.id}.webp`} alt="" width="190" height="285" />
               </div>
               <div className="lp-guardian-body">
                 <p className="lp-eyebrow">{GUARDIANS[current.id].role}</p>
@@ -554,6 +558,7 @@ export default function Landing() {
         <p>Find your pace. Grow your place.</p>
         <nav aria-label="Footer">
           <Link to="/demo">Mentor demo</Link>
+          <a href="#try">Try it</a>
           <a href="#guardians">Guardians</a>
           <a href="#loop">How it works</a>
         </nav>

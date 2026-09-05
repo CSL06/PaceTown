@@ -85,11 +85,11 @@
 .world { position: absolute; top: 0; left: 0; width: 3600px; height: 2400px; will-change: transform; }
 .map { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 9;
-  box-shadow: inset 0 -120px 150px -60px rgba(8,14,20,.8), inset 0 90px 120px -60px rgba(8,14,20,.65); }
+  box-shadow: inset 0 -100px 140px -70px rgba(73,50,30,.26), inset 0 70px 110px -70px rgba(255,245,196,.2); }
 .daytint { position: absolute; inset: 0; pointer-events: none; z-index: 8; transition: background 2s ease; }
 .daytint.afternoon { background: linear-gradient(180deg, rgba(255,196,120,.05), rgba(255,170,110,.03)); }
-.daytint.dusk { background: linear-gradient(180deg, rgba(120,60,90,.22), rgba(60,45,95,.30)); }
-.daytint.night { background: linear-gradient(180deg, rgba(28,36,92,.44), rgba(12,18,52,.56)); }
+.daytint.dusk { background: linear-gradient(180deg, rgba(255,201,112,.08), rgba(210,145,83,.12)); }
+.daytint.night { background: linear-gradient(180deg, rgba(92,126,159,.12), rgba(50,77,105,.2)); }
 
 /* Native frame size, drawn 1:1. A fractional sprite size is what smeared the
    pixel art — never give these a percentage width. */
@@ -104,16 +104,16 @@
 .avatar { background-size: 1200% 100%; z-index: 7; }
 .avatar.f-down { background-position-x: 0% }
 .avatar.f-up { background-position-x: 27.27% }
-.avatar.f-left { background-position-x: 54.54% }
-.avatar.f-right { background-position-x: 81.81% }
+.avatar.f-left { background-position-x: 81.81% }
+.avatar.f-right { background-position-x: 54.54% }
 .avatar.walking.f-down { animation: wd .34s steps(2) infinite }
 .avatar.walking.f-up { animation: wu .34s steps(2) infinite }
 .avatar.walking.f-left { animation: wl .34s steps(2) infinite }
 .avatar.walking.f-right { animation: wr .34s steps(2) infinite }
 @keyframes wd { from { background-position-x: 9.09% } to { background-position-x: 27.27% } }
 @keyframes wu { from { background-position-x: 36.36% } to { background-position-x: 54.54% } }
-@keyframes wl { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
-@keyframes wr { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes wl { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
+@keyframes wr { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
 
 .marker { position: absolute; transform: translate(-50%, -50%); background: none; border: none;
   padding: 0; width: 114px; height: 114px; z-index: 4; }
@@ -137,31 +137,15 @@
 .is-quiet .fx { display: none }
 .is-quiet .cast.idle { animation: none }
 
-/* ---------- HUD ---------- */
+/* ---------- HUD ----------
+   The top rail moved to hud.css. These are the pieces the rest of the
+   game shares. */
 .hud { position: absolute; z-index: 20 }
-.hud-top { top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 9px; padding: 11px 13px;
-  flex-wrap: wrap; background: linear-gradient(to bottom, var(--pt-scrim), transparent); }
-.hud-top .mark { width: 30px; height: 30px; font-size: 18px }
-.hud-name { font-family: var(--display); font-size: 16px; color: var(--cream); line-height: 1; white-space: nowrap }
-.hud-day { font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
-  margin-top: 2px; white-space: nowrap }
 .grow { flex: 1 }
-.pill { display: flex; align-items: center; gap: 8px; background: var(--pt-hud);
-  border: 1px solid var(--edge); padding: 7px 11px; color: var(--text); flex: none; margin-left: 6px }
-.pill:hover { border-color: var(--edge-hi) }
-.pill b { font-family: var(--mono); font-size: 14px; font-weight: 600 }
-.pill .lbl { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); display: block }
-.pill .swatch { width: 9px; height: 22px }
-.coinbar { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: 12px;
-  color: var(--dim); background: var(--pt-hud); border: 1px solid var(--edge); padding: 7px 12px }
-.coinbar b { color: var(--accent-ink); font-weight: 600 }
-.lvl { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; min-width: 210px }
-.lvl .lbl { font-family: var(--ui); font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--faint) }
-.lvl-track { height: 5px; background: var(--sunk); border: 1px solid var(--edge); overflow: hidden }
-.lvl-fill { display: block; height: 100%; background: var(--accent); transition: width .5s ease }
-.lvl-num { font-size: 10.5px; color: var(--faint); font-variant-numeric: tabular-nums }
-.coins { white-space: nowrap }
+.iconbtn { width: 32px; height: 32px; display: grid; place-items: center;
+  background: none; border: var(--px-border) solid var(--edge); color: var(--dim);
+  font-size: 15px }
+.iconbtn:hover { color: var(--text); border-color: var(--edge-hi) }
 
 .acct { position: relative }
 .acct-btn { display: flex; align-items: center; gap: 8px; background: var(--pt-hud);
@@ -185,62 +169,17 @@
 .acct-menu button:hover, .acct-menu a:hover { background: var(--raised); color: var(--text) }
 .acct-out { border-top: 1px solid var(--edge) !important; color: #E08497 !important }
 
-/* ---------- guardian dock ---------- */
-.dock { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); z-index: 21;
-  width: 62px; display: grid; gap: 5px; justify-items: stretch }
-.dock-head { display: grid; gap: 2px; text-align: center; padding-bottom: 3px }
-.dock-head span { font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint) }
-.dock-head b { font-size: 9px; color: var(--accent-ink); font-weight: 600 }
-.dock-row { position: relative }
-.dock-face { position: relative; width: 100%; padding: 0; background: var(--pt-hud);
-  border: 1px solid var(--edge); display: grid; justify-items: center; gap: 0; overflow: hidden;
-  transition: border-color .16s ease, transform .16s ease }
-.dock-face:hover { border-color: var(--edge-hi); transform: translateX(-2px) }
-.dock-row.is-open .dock-face { border-color: var(--accent) }
-.dock-face img { width: 46px; height: 58px; object-fit: cover; object-position: center top;
-  image-rendering: pixelated; margin-top: 3px }
-.dock-name { display: block; width: 100%; font-size: 9.5px; font-weight: 600; color: var(--dim);
-  padding: 2px 0 4px; background: var(--sunk) }
-.dock-row.is-waiting .dock-name { color: var(--accent-ink) }
-.dock-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent); box-shadow: 0 0 0 2px var(--pt-hud);
-  animation: dockpulse 2.2s ease-in-out infinite }
-@keyframes dockpulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
-.dock-card { position: absolute; right: calc(100% + 8px); top: 0; width: 246px; z-index: 3;
-  background: var(--panel); border: 1px solid var(--edge-hi); padding: 13px 15px;
-  box-shadow: 0 16px 44px rgba(4,9,14,.6) }
-.dock-role { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink) }
-.dock-card p { margin: 7px 0 12px; font-size: 12.5px; color: var(--dim); line-height: 1.5 }
-.dock-go { background: var(--accent); color: var(--on-accent); border: none; padding: 8px 13px;
-  font-size: 11.5px; font-weight: 600; width: 100% }
-.dock-go:hover { filter: brightness(1.08) }
+/* The guardian dock and the quest card now live in overlays.css.
+   The stray duplicate .iconbtn that sat between them is gone; the one
+   in the HUD section above is the single definition. */
 
-@media (max-width: 900px), (max-height: 620px) {
-  .dock { display: none }
-}
-.iconbtn { width: 38px; height: 38px; display: grid; place-items: center; background: var(--pt-hud);
-  border: 1px solid var(--edge); color: var(--dim); font-size: 15px }
-.iconbtn:hover { color: var(--text); border-color: var(--edge-hi) }
-.iconbtn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent) }
-
-.hud-quest { left: 13px; bottom: 13px; width: min(340px, calc(100vw - 26px));
-  background: var(--pt-hud); border: 1px solid var(--edge-hi); padding: 13px 15px;
-  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); box-shadow: 0 14px 40px rgba(6,12,20,.55) }
-.hud-quest .eyebrow { color: var(--accent-ink) }
-.hud-quest h3 { font-size: 15px; margin: 5px 0 0; color: var(--cream) }
-.hud-quest p { margin: 5px 0 0; font-size: 12px; color: var(--dim); line-height: 1.5 }
-.qa { display: flex; gap: 7px; margin-top: 11px; flex-wrap: wrap }
-.qa button { background: none; border: 1px solid var(--edge); padding: 7px 11px; font-size: 11.5px; color: var(--dim) }
-.qa button.go { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600 }
-.qa button:hover { border-color: var(--edge-hi); color: var(--text) }
-.qa button.go:hover { color: var(--on-accent) }
 
 .hud-tools { right: 13px; bottom: 13px; display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end }
 .tool { background: var(--pt-hud); border: 1px solid var(--edge); padding: 9px 12px;
   font-size: 11.5px; color: var(--dim); display: flex; align-items: center; gap: 7px }
 .tool:hover { color: var(--text); border-color: var(--edge-hi) }
 
-.prompt { position: absolute; left: 50%; bottom: 118px; transform: translateX(-50%) translateY(8px);
+.prompt { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%) translateY(8px);
   display: flex; align-items: center; gap: 9px; background: var(--accent); color: var(--on-accent);
   padding: 10px 18px; font-size: 14px; font-weight: 700; z-index: 25;
   box-shadow: 0 8px 26px rgba(8,14,20,.55); opacity: 0; visibility: hidden;
@@ -385,11 +324,41 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
   padding: 13px 15px; margin-top: 14px }
 .next-action p { margin: 5px 0 0; font-size: 14px }
 
-.townlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(212px,1fr)); gap: 6px; margin-top: 12px }
-.townlist button { background: var(--raised); border: 1px solid var(--edge); padding: 9px 10px;
-  text-align: left; font-size: 12px }
-.townlist button:hover { border-color: var(--edge-hi) }
-.townlist small { display: block; color: var(--faint); font-size: 10.5px; margin-top: 2px }
+/* ---------- town list ----------
+   The keyboard and screen-reader path through the whole game, so it has to be
+   properly usable. Each row now carries who lives there, which is the fastest
+   way to find anything on a map organised by guardian. */
+.tl-head { margin-top: 20px }
+.townlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  gap: 6px; margin-top: 10px }
+
+.tl-row { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center;
+  gap: 11px; width: 100%; text-align: left; padding: 8px 11px 8px 8px;
+  background: var(--raised); border: var(--px-border) solid var(--edge);
+  transition: border-color .14s ease, transform .12s ease, background .14s ease }
+.tl-row:hover { border-color: var(--accent); background: var(--panel); transform: translateX(2px) }
+.tl-row:hover .tl-go { color: var(--accent-ink); transform: translateX(3px) }
+
+.tl-face { display: grid; place-items: center; width: 34px; height: 34px; flex: none;
+  overflow: hidden; background: var(--sunk); border: var(--px-border) solid var(--px-ink) }
+.tl-face img { width: 30px; height: 34px; object-fit: cover; object-position: center top;
+  image-rendering: pixelated }
+/* Places with no guardian get a marker instead of an empty hole. */
+.tl-pin { width: 9px; height: 9px; background: var(--steady) }
+.tl-pin.is-view { background: var(--faint) }
+
+.tl-text { min-width: 0 }
+.tl-text b { display: block; font-size: 13px; color: var(--text); font-weight: 600 }
+.tl-text small { display: block; margin-top: 2px; font-size: 10.5px; color: var(--faint);
+  line-height: 1.4 }
+
+.tl-who { font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent-ink); font-weight: 600; white-space: nowrap }
+.tl-go { font-size: 17px; color: var(--faint); transition: color .14s ease, transform .14s ease }
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-row, .tl-go { transition: none }
+}
 
 .areas { display: flex; flex-direction: column; gap: 9px; margin-top: 12px }
 .area { display: grid; grid-template-columns: 64px 1fr 46px; align-items: center; gap: 9px; font-size: 11.5px }
@@ -468,3 +437,21 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 .helppop b { font-size: 13px }
 .helpguide { color: var(--accent) }
 .helplive { border-top: 1px solid var(--edge); padding-top: 8px }
+
+/* ---------- panel entrance ----------
+   Every one of the ~20 panels used to snap into existence. The scrim fades and
+   the sheet lifts, which is the difference between a dialog arriving and a
+   dialog being teleported in. The sheet keeps its centring transform in the
+   final frame, or it would jump on landing. */
+.scrim { animation: scrim-in var(--pt-dur) var(--pt-ease) both }
+@keyframes scrim-in { from { opacity: 0 } }
+
+.sheet { animation: sheet-in var(--pt-dur-slow) var(--pt-ease-out) both }
+@keyframes sheet-in {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(.975) }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim, .sheet { animation: none }
+}

@@ -17,7 +17,10 @@ import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'node_modules', 'coverage', '*.tsbuildinfo', 'tools', 'assets'],
+    ignores: [
+      'dist', 'node_modules', 'coverage', '*.tsbuildinfo', 'tools',
+      'assets/generated', 'assets/production', 'assets/third-party',
+    ],
   },
 
   js.configs.recommended,
@@ -88,7 +91,7 @@ export default tseslint.config(
 
   {
     // The service worker runs in a worker scope, not the browser one.
-    files: ['public/sw.js'],
+    files: ['assets/app-runtime-v1/sw.js'],
     languageOptions: { globals: { ...globals.serviceworker } },
   },
 )

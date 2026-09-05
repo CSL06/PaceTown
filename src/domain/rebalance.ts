@@ -8,6 +8,7 @@
  */
 
 import { dailyLoad, weightedDemand } from './workload'
+import { dayDistance, moveCalendarTask } from './calendar'
 import type { RebalanceMove, RebalanceProposal, Task } from './types'
 
 const PRIORITY_RANK: Record<Task['priority'], number> = { low: 0, medium: 1, high: 2 }
@@ -28,8 +29,10 @@ export interface RebalanceOptions {
  * `deadlineDays <= 1` covers both fixed commitments and work due imminently,
  * so the engine can never push something past its deadline.
  */
-export function isMovable(task: Task, day: string): boolean {
-  return task.day === day && task.flexibility === 'flexible' && task.deadlineDays > 1
+export function isMovable(task: Task, day: string, destination?: string): boolean {
+  const distance = destination ? dayDistance(day, destination) : 1
+  return task.day === day && task.flexibility === 'flexible' &&
+    task.deadlineDays > 1 && distance > 0 && distance <= task.deadlineDays
 }
 
 export function proposeRebalance(
@@ -44,7 +47,7 @@ export function proposeRebalance(
   }
 
   const candidates = proposed
-    .filter((t) => isMovable(t, day))
+    .filter((t) => isMovable(t, day, destination))
     .sort((a, b) => {
       // Lowest priority first, then the most slack, then the biggest win.
       if (PRIORITY_RANK[a.priority] !== PRIORITY_RANK[b.priority]) {
@@ -57,6 +60,8 @@ export function proposeRebalance(
   const moves: RebalanceMove[] = []
   for (const task of candidates) {
     if (dailyLoad(proposed, day, waking).percentage <= target) break
+    const candidateSchedule = moveCalendarTask(proposed, task.id, destination)
+    if (dailyLoad(candidateSchedule, destination, waking).percentage > target) continue
     moves.push({
       taskId: task.id,
       title: task.title,
@@ -65,6 +70,7 @@ export function proposeRebalance(
       weightedMinutes: weightedDemand(task),
     })
     task.day = destination
+    task.deadlineDays -= dayDistance(day, destination)
   }
 
   return { moves, before, after: dailyLoad(proposed, day, waking), proposed }
@@ -72,8 +78,7 @@ export function proposeRebalance(
 
 /** Apply an approved proposal. Separate from proposing, on purpose. */
 export function applyRebalance(tasks: readonly Task[], proposal: RebalanceProposal): Task[] {
-  const moved = new Map(proposal.moves.map((m) => [m.taskId, m.to]))
-  return tasks.map((t) => (moved.has(t.id) ? { ...t, day: moved.get(t.id)! } : { ...t }))
+  return applySelected(tasks, proposal, proposal.moves.map((move) => move.taskId))
 }
 
 /** Apply only the selected moves of a proposal — partial approval is valid. */
@@ -83,8 +88,6 @@ export function applySelected(
   selectedIds: readonly string[],
 ): Task[] {
   const wanted = new Set(selectedIds)
-  const moved = new Map(
-    proposal.moves.filter((m) => wanted.has(m.taskId)).map((m) => [m.taskId, m.to]),
-  )
-  return tasks.map((t) => (moved.has(t.id) ? { ...t, day: moved.get(t.id)! } : { ...t }))
+  return proposal.moves.filter((move) => wanted.has(move.taskId))
+    .reduce((current, move) => moveCalendarTask(current, move.taskId, move.to), [...tasks])
 }

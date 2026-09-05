@@ -52,7 +52,7 @@ in the browser with no cloud, AI provider, or Google Calendar required.
 
 ### Requirements
 
-- [Node.js](https://nodejs.org/) 20.19 or newer
+- [Node.js](https://nodejs.org/) 24 or newer (CI uses Node 24)
 - npm 10 or newer, included with Node.js
 
 ### Setup
@@ -90,7 +90,7 @@ npm test
 npm run test:watch
 ```
 
-122 cases across ten files. They cover the arithmetic, and they pin the product
+226 cases across 20 files. They cover the arithmetic, and they pin the product
 promises so those cannot quietly rot: self/photo confirmation parity, no
 timer/mini-game/AI academic completion, rebalance previews never mutating tasks,
 bounded energy guidance, and the seeded 108% Thursday.
@@ -98,8 +98,9 @@ bounded energy guidance, and the seeded 108% Thursday.
 ### Campus Grove walkthrough (`/town`)
 
 1. Press **Enter Campus Grove**. Kai explains Thursday at **108%** — calculated, not written in.
-2. Open the **Clock Tower** and approve Kai's proposal (per-move checkboxes). Thursday drops
-   toward **91.5%**; Saturday stays Open. Nothing moves until you approve it.
+2. Enter the sunlit **Clock Tower**, open its seven-day Week Board, compare the real
+   Friday/Saturday/Sunday loads, and approve Kai's preview. Thursday drops toward
+   **91.5%**; Saturday stays Open. Nothing moves until you approve it.
 3. At the **Library**, pick *I do not know where to begin*, review the editable work plan,
    and start a 20-minute checkpoint Pace Session with Mira.
 4. Ask Mira to *Explain*, record **Partial progress**, and save
@@ -153,6 +154,7 @@ feature already has a deterministic local fallback, and the app never requires o
 - `PACETOWN_VISION_MERMAID.md`
 - `PaceTown_Hackathon_Implementation_Plan.md`
 - `assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md`
+- `assets/app-runtime-v1/README.md`
 - `assets/production/character-redesign-v3/README.md`
 - `assets/production/runtime-assets-v1/README.md`
 - `assets/production/runtime-assets-v1/pacetown-runtime-assets-v1-manifest.json`
