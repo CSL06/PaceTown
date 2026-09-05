@@ -122,7 +122,7 @@ stay in charge of every change.*
      always one click.
    - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
      stays Open. *"Nothing moved until I approved it. Reject would have left
-my week exactly as it was."* (103% and 95% are the board's rounded
+      my week exactly as it was."* (103% and 95% are the board's rounded
       on-screen readings; precisely they are 102.9 → 94.6 — Heavy either way
       you read it.)
    - Numbers assume the seeded week, unedited. If you edited anything at Town
@@ -175,7 +175,7 @@ company.*
    the next action, click **Save and leave**.
    - **What just happened (the logic):** partial progress earns 20 XP because in
      this town, naming the next action *is* the success condition — completed,
-partial, blocked, and rescheduled are all valid endings. Watch the HUD
+      partial, blocked, and rescheduled are all valid endings. Watch the HUD
       quest card flip to *Take a short reset* — its single destination is the
       Recover view: work is banked, so the system foregrounds exactly one next
       thing instead of five equal buttons — the map, the dock, and the Council
