@@ -173,6 +173,34 @@ export function guardianFor(blocker: BlockerKind): GuardianId {
 }
 
 /**
+ * The guardian who actually sits with the student: an explicit pick wins,
+ * otherwise the blocker routing decides. Null blocker falls back to 'other'.
+ */
+export function effectiveGuardian(blocker: BlockerKind | null, override: GuardianId | null): GuardianId {
+  return override ?? guardianFor(blocker ?? 'other')
+}
+
+/**
+ * Split one checkpoint into two halves that sum to the original minutes.
+ * Unknown ids return the list unchanged; the caller's list is never mutated.
+ */
+export function splitCheckpoint(checkpoints: readonly Checkpoint[], id: string): Checkpoint[] {
+  const index = checkpoints.findIndex((c) => c.id === id)
+  if (index === -1) return [...checkpoints]
+  const target = checkpoints[index]
+  const first = Math.floor(target.estimatedMinutes / 2)
+  const firstHalf: Checkpoint = { ...target, estimatedMinutes: first }
+  const secondHalf: Checkpoint = {
+    ...target,
+    id: `c${counter++}`,
+    title: `${target.title} (part 2)`,
+    estimatedMinutes: target.estimatedMinutes - first,
+    status: 'pending',
+  }
+  return [...checkpoints.slice(0, index), firstHalf, secondHalf, ...checkpoints.slice(index + 1)]
+}
+
+/**
  * Resolve a checkpoint from a recorded session outcome. Completed work reads
  * as completed; partial and blocked stay visibly open; rescheduled returns to
  * pending — waiting, never failed. Never mutates the caller's list.
