@@ -24,6 +24,28 @@ Its calculations are deterministic and local. Guardians provide contextual
 support, but the student reviews and owns every plan, checkpoint, note, and
 outcome.
 
+## Design Principles
+
+These rules come from the product vision and constrain every feature:
+
+- **No shame, ever.** Pressure changes atmosphere and activity; the town is
+  never damaged, frightening, or degraded. There are no streaks, no missed-day
+  messaging, no overdue shame, and no health scores or diagnoses.
+- **Every number is explainable.** Daily Load, bands, weights, and rebalance
+  previews show their arithmetic. A chart may explain pressure, but the town
+  must always help the student respond to it.
+- **Consent before change.** Rebalance proposals are previews until explicitly
+  approved. Keepsakes are placed only after preview approval. Deletion choices
+  are explicit.
+- **Rest is legitimate work.** Pausing, partial progress, realistic
+  rescheduling, and healthy stopping are valid, rewarded outcomes. Recovery
+  needs no prerequisites and is never gated behind productivity.
+- **Growth never decays.** Progress, help-seeking, and sustainable choices
+  accumulate; absence removes nothing.
+- **Privacy by construction.** Photos are optional and checked only with local
+  heuristics; keepsakes never prove a quest happened; photo users gain no
+  advantage.
+
 ## Current Status
 
 The repository contains a functional browser prototype of the Campus Grove
@@ -59,11 +81,11 @@ control of every plan and action.
 
 | Guardian | Location | Product role | Primary responsibilities |
 | --- | --- | --- | --- |
-| **Mira** | Library | Understand | Interprets assignment briefs, organizes requirements, explains difficult concepts, and turns an unclear task into one checkpoint with a visible definition of done. |
-| **Kai** | Clock Tower | Plan | Makes schedule pressure understandable, estimates realistic capacity, identifies flexible work, previews safe calendar moves, and requires approval before anything is rearranged. |
-| **Sol** | Garden and Park | Sustain | Helps the student reduce scope, choose a smaller action, protect breaks, and use recovery activities without treating rest as failure or measuring health. |
-| **Sky** | Café | Accompany | Provides quiet body-doubling-style presence, gentle check-ins, and low-pressure encouragement for students who benefit from company while working. |
-| **Goh** | Market | Complete | Organizes missing materials, groups errands, tracks final requirements, and helps close small outstanding details without creating additional urgency. |
+| <img src="assets/app-runtime-v1/game/portraits/mira.webp" width="72" alt="Mira" /> | Library | **Mira — Understand** | Interprets assignment briefs, organizes requirements, explains difficult concepts, and turns an unclear task into one checkpoint with a visible definition of done. |
+| <img src="assets/app-runtime-v1/game/portraits/kai.webp" width="72" alt="Kai" /> | Clock Tower | **Kai — Plan** | Makes schedule pressure understandable, estimates realistic capacity, identifies flexible work, previews safe calendar moves, and requires approval before anything is rearranged. |
+| <img src="assets/app-runtime-v1/game/portraits/sol.webp" width="72" alt="Sol" /> | Garden and Park | **Sol — Sustain** | Helps the student reduce scope, choose a smaller action, protect breaks, and use recovery activities without treating rest as failure or measuring health. |
+| <img src="assets/app-runtime-v1/game/portraits/sky.webp" width="72" alt="Sky" /> | Café | **Sky — Accompany** | Provides quiet body-doubling-style presence, gentle check-ins, and low-pressure encouragement for students who benefit from company while working. |
+| <img src="assets/app-runtime-v1/game/portraits/goh.webp" width="72" alt="Goh" /> | Market | **Goh — Complete** | Organizes missing materials, groups errands, tracks final requirements, and helps close small outstanding details without creating additional urgency. |
 
 ### How Guardians Participate
 
@@ -77,6 +99,22 @@ Guardian guidance is local, deterministic, and editable. It distinguishes
 suggestions from the student's own work, never claims that generated text
 satisfies an academic requirement, and never provides a diagnosis or health
 assessment.
+
+### Blocker Routing
+
+When a student says what is actually in the way, the plan follows the
+blocker to the guardian whose specialty matches it (implementation plan §9).
+The student may keep the routed guardian or switch to any other:
+
+| What Is in the Way | First Response | Guardian Action |
+| --- | --- | --- |
+| I do not know where to begin | Identify the smallest observable first action | Mira extracts requirements or creates an outline |
+| The task is too large | Reduce the checkpoint until it fits the time available | Kai splits or reschedules the remaining work |
+| I do not understand something | Identify the exact concept or question | Mira explains, quizzes, or builds a learning path |
+| I am missing materials | Produce a short gathering checklist | Goh gathers requirements and tracks missing items |
+| I have low capacity today | Offer a shorter session, low-effort action, or recovery first | Sol protects a break and reduces pressure |
+| I am worried it will not be good enough | Define a deliberately rough first version | Sky starts a low-pressure body-doubling session |
+| Something else | Let the student describe it, or plan manually | No interpretation is imposed |
 
 ## Routes
 
@@ -146,6 +184,72 @@ short version is:
 7. Choose an outcome, write what changed and the next action, then save and stand up.
 8. Return to the desk later to see the Welcome Back summary and resume with the saved note intact.
 9. Use Gentle Ripples or Pocket of Green, then read the Journal and optionally create a Keepsake.
+
+## How a Pace Session Works
+
+A Pace Session is the central guided-work mechanic. Preparing one follows
+the same steps every time (vision §9, implementation plan §9):
+
+1. Choose one real task.
+2. Say why it is difficult — or skip the question.
+3. Review the editable work plan.
+4. Choose one checkpoint with a clear definition of done.
+5. Choose a guardian (routed by blocker, overridable) and an optional timebox.
+6. Start directly, or regulate first.
+
+During the session the student sees one checkpoint, its definition of done,
+the next action, an optional timer, and a scratchpad. Guardian help modes —
+Plan, Explain, Brainstorm, Review, Debug, What next? — answer from the
+task, checkpoint, blocker, and brief. Escape routes (pause, save and leave,
+end session) are always available, and a timer reaching zero never completes
+anything by itself.
+
+A session ends as completed, partial, blocked, or rescheduled — each is
+valid. Every ending records what changed, what remains, and the easiest
+next starting action. On return, the guardian summarizes only the task and
+last checkpoint, the recorded progress, and the saved next action, then
+offers resume, edit, or something else.
+
+## Places of Campus Grove
+
+![Campus Grove in daylight](assets/app-runtime-v1/game/world/campus-daylight.webp)
+
+| Place | Guardian | What Happens There |
+| --- | --- | --- |
+| Town Hall | — | Type the week in plain language; paste an assignment brief |
+| Clock Tower | Kai | Seven-day Week Board and consent-based rebalancing |
+| Library | Mira | Name the blocker, get one checkpoint, work the session |
+| Garden Pavilion | Sol | Gentle Ripples sensory pause |
+| Park | Sol | Pocket of Green outdoor recovery quest |
+| Sky's Tea Corner | Sky | Warm Cup ritual and quiet body doubling |
+| Market | Goh | Errands, submission checks, Night Lanterns |
+| Guardian Council | All five | One recommendation when pressures compete |
+| Backpack Point | — | Everything carried today, with locks and ribbons |
+| Recovery Garden | Sol | Growth from sustainable choices; nothing ever wilts |
+| Future Mailbox | — | Send a next action to your future self |
+| Post Office | — | The Journal — what actually happened |
+| Calm Corner | — | All five recovery activities, no prerequisites |
+| Home | — | Quiet Mode, contrast, Exit Quest, export, delete |
+
+| Clock Tower planning room | Library study room |
+| --- | --- |
+| ![Clock Tower interior](assets/app-runtime-v1/game/scenes/clock-tower/interior.webp) | ![Library interior](assets/app-runtime-v1/game/scenes/library/interior.png) |
+
+## How Load Is Calculated
+
+Daily Load turns a week into one honest number (vision §8):
+
+```text
+Weighted Demand = Estimated Minutes × Priority Weight × Mental-Effort Weight × Urgency Weight
+Daily Load %    = (Fixed Minutes + Weighted Demand) ÷ Waking Minutes × 100
+```
+
+Priority weights are 0.80 / 1.00 / 1.25 (low / medium / high); mental-effort
+weights 0.85 / 1.00 / 1.20; urgency weights 1.30 / 1.15 / 1.00 (today /
+tomorrow / later). Fixed commitments consume the day directly. Bands: Open
+below 60%, Steady 60–80%, Heavy 81–95%, Overloaded 96–110%, Unsustainable
+above 110%. Optional energy input bends guidance within a bounded range and
+never hides the raw calculation.
 
 ## Architecture
 
