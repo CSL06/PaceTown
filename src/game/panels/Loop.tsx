@@ -8,8 +8,8 @@ import {
   BLOCKERS, DEMO_DESTINATION, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
   extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
-  resolveCheckpoint, sessionReward,
-  wakingMinutes, type HelpMode, type Task,
+  resolveCheckpoint, sessionReward, effectiveGuardian,
+  wakingMinutes, type GuardianId, type HelpMode, type Task,
 } from '../../domain'
 import { grow, record } from '../state'
 import { GUARDIANS } from '../layout'
@@ -409,7 +409,7 @@ export function Work({ state, load, update, go }: PanelProps) {
         {BLOCKERS.map((b, i) => (
           <button key={b.id} className="opt" type="button" aria-pressed={state.blocker === b.id}
             onClick={() => update((s) => ({
-              ...s, blocker: b.id, activeTaskId: task.id,
+              ...s, blocker: b.id, activeTaskId: task.id, guardianOverride: null,
               checkpoints: buildCheckpoints(b.id, { taskTitle: task.title, deliverables: s.deliverables }),
               activeCheckpointId: null,
             }))}>
@@ -516,6 +516,18 @@ export function Work({ state, load, update, go }: PanelProps) {
                   ? { ...c, definitionOfDone: e.target.value } : c),
               }))} />
           </div>
+          <div className="field">
+            <span className="eyebrow">Work with</span>
+            <div className="opts" role="group" aria-label="Choose your guardian">
+              {(Object.keys(GUARDIANS) as GuardianId[]).map((id) => (
+                <button key={id} className="opt" type="button"
+                  aria-pressed={effectiveGuardian(state.blocker, state.guardianOverride) === id}
+                  onClick={() => update((s) => ({ ...s, guardianOverride: id }))}>
+                  <span>{GUARDIANS[id].name}<small>{GUARDIANS[id].role}</small></span>
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="actions">
             <button className="primary" type="button" onClick={() => {
               update((s) => record({
@@ -528,7 +540,7 @@ export function Work({ state, load, update, go }: PanelProps) {
               `Checkpoint: ${active.title} · blocker identified before starting.`,
               REWARDS.beginSession))
               go('session')
-            }}>Start a Pace Session with {GUARDIANS[PLAN_TEMPLATES[state.blocker].guardian].name}</button>
+            }}>Start a Pace Session with {GUARDIANS[effectiveGuardian(state.blocker, state.guardianOverride)].name}</button>
             <span className="note">Shorten it, rewrite it, or reject the whole plan.</span>
           </div>
         </>
