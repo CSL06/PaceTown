@@ -117,75 +117,72 @@ function RippleAsset({ index, className = '', label, style }: {
     }} />
 }
 
-const PRESSURES = [
-  { label: 'Something I must do', detail: 'The task feels louder than everything around it.' },
-  { label: 'Something I’m worried about', detail: 'My mind keeps returning to what might happen.' },
-  { label: 'Something that can wait', detail: 'I know it is not urgent, but my body has not caught up.' },
-  { label: 'I don’t want to name it', detail: 'I only want a quieter minute. No explanation required.' },
-] as const
-
 function RipplesGame(props: PanelProps) {
   const { state, go } = props
-  const [pressure, setPressure] = useState<number | null>(null)
-  const [breathTick, setBreathTick] = useState(0)
   const [started, setStarted] = useState(false)
-  const [settled, setSettled] = useState(false)
-  const [done, setDone] = useState(false)
-  const [response, setResponse] = useState<Response | null>(null)
-  const [breath, setBreath] = useState(true)
+  const [holding, setHolding] = useState(false)
+  const [releasing, setReleasing] = useState(false)
+  const [waves, setWaves] = useState(0)
+  const [complete, setComplete] = useState(false)
+  const holdingRef = useRef(false)
+  const releaseTimer = useRef<number | null>(null)
   const finish = useRecoveryFinish(props, 'ripples')
+
   useEffect(() => {
-    if (!started || settled || !breath) return
-    const timer = window.setInterval(() => setBreathTick((value) => {
-      if (value >= 29) { setSettled(true); return 30 }
-      return value + 1
-    }), 1000)
-    return () => window.clearInterval(timer)
-  }, [started, settled, breath])
-  const breathingIn = breathTick % 10 < 4
-  const cycle = Math.min(3, Math.floor(breathTick / 10) + 1)
-  const chooseDifferent = () => {
-    setPressure(null); setStarted(false); setSettled(false); setBreathTick(0); setBreath(true)
+    return () => { if (releaseTimer.current !== null) window.clearTimeout(releaseTimer.current) }
+  }, [])
+
+  const gather = () => {
+    if (!started || complete || releasing || holdingRef.current) return
+    holdingRef.current = true
+    setHolding(true)
   }
+  const release = () => {
+    if (!holdingRef.current || releasing) return
+    holdingRef.current = false
+    setHolding(false)
+    setReleasing(true)
+    releaseTimer.current = window.setTimeout(() => {
+      setWaves((current) => {
+        const next = Math.min(3, current + 1)
+        if (next === 3) setComplete(true)
+        return next
+      })
+      setReleasing(false)
+    }, 1900)
+  }
+  const repeat = () => {
+    holdingRef.current = false
+    if (releaseTimer.current !== null) window.clearTimeout(releaseTimer.current)
+    setHolding(false); setReleasing(false); setWaves(0); setComplete(false); setStarted(true)
+  }
+
   return <Shell view="ripples" state={state} go={go}>
     <section className="recovery-playfield ripple-water">
       <span className="ripple-pond-focus" role="img" aria-label="A calm sunlit pond" />
+      <span className={`ripple-restless-layer${releasing ? ' settling' : ''}`} aria-hidden="true" style={{ '--calm-progress': waves / 3 } as CSSProperties} />
       <RippleAsset index={3} className="ripple-sol" label="Sol sitting peacefully beside the pond" />
-      {pressure === null && <div className="ripple-purpose-card" onPointerDown={(event) => event.stopPropagation()}>
-        <span className="recovery-kicker">Sol · lower the urgency, then choose</span>
-        <h2>What is taking up the most space right now?</h2>
-        <p>Gentle Ripples will not erase it. Three slower exhales can help your body come down one notch, so the next choice is easier to see.</p>
-        <div>{PRESSURES.map((item, index) => <button key={item.label} type="button" onClick={() => setPressure(index)}>
-          <span><b>{item.label}</b><small>{item.detail}</small></span>
-        </button>)}</div>
+      {!started && <div className="ripple-intent-card">
+        <span className="recovery-kicker">Gentle Ripples · a tactile reset</span>
+        <h2>Settle the pond, one wave at a time.</h2>
+        <p>Hold the water while you breathe in. Release while you breathe out. Each slow wave clears some visual noise—nothing to explain and nothing to solve.</p>
+        <div><button className="primary" type="button" onClick={() => setStarted(true)}>Start at the water</button><button type="button" onClick={() => go(null)}>Not now</button></div>
       </div>}
-      {pressure !== null && !started && <div className="ripple-intent-card">
-        <span className="recovery-kicker">The point of the next 30 seconds</span>
-        <h2>Do not solve “{PRESSURES[pressure].label.toLowerCase()}” yet.</h2>
-        <p>Keep it in view while the pond guides three breaths: four seconds in, six seconds out. The long exhale is the action; choosing what the pressure needs comes afterward.</p>
-        <div><button className="primary" type="button" onClick={() => setStarted(true)}>Begin three slow breaths</button><button type="button" onClick={chooseDifferent}>Choose something else</button></div>
-      </div>}
-      {pressure !== null && started && <div className={`ripple-breath-space ${breath ? (breathingIn ? 'inhale' : 'exhale') : 'paused'}`}>
-        <div className="ripple-wave" aria-hidden="true" /><div className="ripple-wave ripple-wave-inner" aria-hidden="true" />
-        <div className="ripple-breath-core"><small>Still here</small><b>{PRESSURES[pressure].label}</b></div>
-      </div>}
-      {pressure !== null && started && !settled && <div className="recovery-instruction"><b>{breath ? (breathingIn ? `Breath ${cycle} of 3 · breathe in gently` : `Breath ${cycle} of 3 · let the exhale run longer`) : 'Paused. Nothing is being timed against you.'}</b>
-        <span>{breath ? (breathingIn ? 'Notice the pressure without working on it.' : 'The pressure remains; the sense of urgency can move outward.') : 'Resume when ready, or end here.'}</span></div>}
-      {settled && <div className="ripple-result-card"><span className="recovery-kicker">The pressure did not disappear</span><h2>Now choose around it.</h2><p>The exercise only made a little room between the feeling of urgency and your next action. That is enough.</p><button className="primary" type="button" onClick={() => setDone(true)}>Decide what it needs</button></div>}
+      {started && !complete && <>
+        <button className={`ripple-touch-target${holding ? ' gathering' : ''}${releasing ? ' releasing' : ''}`} type="button"
+          aria-label={holding ? 'Release to send the wave' : releasing ? 'Wave moving across the pond' : 'Press and hold to gather a wave'}
+          disabled={releasing} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); gather() }} onPointerUp={release} onPointerCancel={release}
+          onKeyDown={(event) => { if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) { event.preventDefault(); gather() } }}
+          onKeyUp={(event) => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); release() } }}>
+          <span>{holding ? 'Hold · breathe in' : releasing ? 'Release · breathe out' : waves ? 'Hold for the next wave' : 'Press and hold'}</span>
+        </button>
+        <div className={`ripple-action-wave${releasing ? ' releasing' : ''}`} aria-hidden="true" />
+        <div className="recovery-instruction"><b>{holding ? 'Let the water gather inward.' : releasing ? 'Let the wave finish. There is nowhere to hurry.' : waves ? `${waves} of 3 waves · the pond is quieter.` : 'Press and hold. Release when your inhale feels full.'}</b>
+          <span>{holding ? 'Release with your exhale.' : releasing ? 'Watch the surface open and settle.' : 'A short hold is fine. This is not a breathing test.'}</span></div>
+      </>}
+      {complete && <div className="ripple-result-card"><span className="recovery-kicker">Sol</span><h2>{waves ? 'A little more room.' : 'Stopping is allowed.'}</h2><p>{waves ? 'You did not have to explain or fix anything. Stay with the quieter pond for as long as it helps.' : 'You listened to what you needed. There is no minimum amount of recovery to earn.'}</p><div className="ripple-result-actions"><button type="button" onClick={repeat}>{waves ? 'Make three more waves' : 'Try the water again'}</button><button type="button" onClick={() => finish('calm', 'not_sure')}>Stay by the water</button><button className="primary" type="button" onClick={() => finish(null, 'not_sure')}>Return to town</button></div></div>}
     </section>
-    {pressure !== null && started && !settled && <nav className="recovery-controls">
-      <span>Breath {cycle} of 3 · {30 - breathTick} seconds at most</span>
-      <button type="button" onClick={() => setBreath((value) => !value)}>{breath ? 'Pause guide' : 'Resume guide'}</button>
-      <button className="primary" type="button" onClick={() => setSettled(true)}>Enough for now</button>
-    </nav>}
-    {done && <Completion response={response} setResponse={setResponse} finish={finish}
-      onBack={() => setDone(false)} options={[
-        { label: 'One small action', detail: 'Ask Mira to turn it into one manageable next step.', view: state.activeCheckpointId ? 'session' : 'work' },
-        { label: 'A different day', detail: 'Open the Clock Tower and protect space for it later.', view: 'rebalance' },
-        { label: 'Support from someone', detail: 'Return to the work plan and make the blockage visible.', view: 'work' },
-        { label: 'No action right now', detail: 'Leave it unresolved without carrying it through this minute.', view: null },
-        { label: 'More quiet first', detail: 'Continue resting in the Calm Corner.', view: 'calm' },
-      ]} />}
+    {started && !complete && <nav className="recovery-controls"><span>{waves} of 3 settling waves</span><button type="button" onClick={() => setComplete(true)}>Enough for now</button></nav>}
   </Shell>
 }
 
