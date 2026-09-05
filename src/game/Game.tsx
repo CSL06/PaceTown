@@ -330,6 +330,7 @@ export default function Game() {
           <div className="title-art" style={{ backgroundImage: 'url(/game/world/campus-daylight.webp)' }} />
           <div className="title-veil" />
           <div className="title-inner">
+            <div className="title-card">
             <div className="logo">
               <span className="mark" aria-hidden="true">P</span>
               <div style={{ textAlign: 'left' }}>
@@ -376,6 +377,7 @@ export default function Game() {
             <p className="title-note">
               W A S D to walk · E to enter · Esc to back out
             </p>
+            </div>
           </div>
         </div>
       </div>
