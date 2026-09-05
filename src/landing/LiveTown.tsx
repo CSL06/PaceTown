@@ -39,8 +39,8 @@ const ROUTE: GuardianId[] = ['kai', 'mira', 'sky', 'goh', 'sol']
 /** What each guardian says on arrival — their real job, in their own voice. */
 const LINES: Record<GuardianId, string[]> = {
   kai: [
-    'Thursday is at 108%. That is arithmetic, not a judgement.',
-    'Two of your flexible things can move to Saturday. Nothing shifts until you say so.',
+    'Thursday is carrying fixed commitments and flexible work. That is arithmetic, not a judgement.',
+    'Some flexible things can move to Saturday. Nothing shifts until you say so.',
   ],
   mira: [
     'Tell me what is blocking you and we will find the first visible step.',

@@ -76,7 +76,7 @@ export function useRoomMovement(blocked: boolean) {
     }
   }, [blocked])
 
-  return { room, avatar,
+  return { room, avatar, position,
     walkTo: (point: { x: number; y: number }, arrive: () => void) => { target.current = { ...point, arrive } },
     press: (direction: Direction, held: boolean) => { keys.current[direction] = held },
   }

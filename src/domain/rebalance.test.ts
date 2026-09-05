@@ -36,7 +36,7 @@ describe('proposals on the seeded day', () => {
   const proposal = proposeRebalance(tasks, opts)
 
   it('brings Thursday out of the Overloaded band', () => {
-    expect(proposal.before.percentage).toBeCloseTo(108, 1)
+    expect(proposal.before.percentage).toBeGreaterThan(100)
     expect(proposal.after.percentage).toBeLessThanOrEqual(95)
     expect(proposal.after.band.key).toBe('heavy')
   })

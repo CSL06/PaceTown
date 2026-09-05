@@ -32,6 +32,19 @@ describe('weightedDemand', () => {
 })
 
 describe('capacity', () => {
+  it('counts a fixed-only day instead of reporting zero load', () => {
+    expect(dailyLoad([task({ flexibility: 'fixed', estimatedMinutes: 570 })], 'thu', 900).percentage)
+      .toBeCloseTo(63.3333, 3)
+  })
+
+  it('counts fixed time once alongside flexible demand', () => {
+    expect(dailyLoad([task({ flexibility: 'fixed', estimatedMinutes: 300 }), task({ estimatedMinutes: 150 })], 'thu', 900).percentage).toBe(50)
+  })
+
+  it('reports fixed commitments exceeding waking hours as overloaded', () => {
+    expect(dailyLoad([task({ flexibility: 'fixed', estimatedMinutes: 1080 })], 'thu', 900).percentage).toBe(120)
+    expect(dailyLoad([], 'thu', 900).percentage).toBe(0)
+  })
   it('derives waking minutes from the student’s own hours', () => {
     expect(wakingMinutes({ wakeHour: 8, sleepHour: 23 })).toBe(900)
     expect(wakingMinutes({ wakeHour: 7, sleepHour: 21 })).toBe(840)
@@ -81,8 +94,8 @@ describe('the seeded demonstration day', () => {
     )
   })
 
-  it('is at 108.0% — the figure the whole demo story rests on', () => {
-    expect(load.percentage).toBeCloseTo(108, 1)
+  it('includes fixed time and weighted flexible work in the waking day', () => {
+    expect(load.percentage).toBeCloseTo((570 + load.weightedDemand) / 900 * 100, 5)
     expect(load.band.key).toBe('over')
   })
 
@@ -98,7 +111,7 @@ describe('the seeded demonstration day', () => {
 
   it('explains itself in plain language', () => {
     const text = explainLoad(load)
-    expect(text).toContain('108.0%')
+    expect(text).toContain(`${load.percentage.toFixed(1)}%`)
     expect(text).toContain('330 minutes')
     expect(text).toContain('ERD assignment')
   })

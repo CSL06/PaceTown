@@ -192,8 +192,8 @@ export function Understand({ state, load, go }: PanelProps) {
       <h2>Thursday is at {fmt(load.percentage)}% <HelpDot view="understand" state={state} load={load} /></h2>
       <p className="lede">
         Every number is computed, not written in. The formula is{' '}
-        <span className="mono">estimated minutes × priority × mental effort × urgency</span>, divided
-        by the minutes your fixed commitments leave behind.
+        <span className="mono">(fixed minutes + weighted flexible minutes) ÷ waking minutes × 100</span>.
+        Flexible minutes are weighted by priority, mental effort and urgency. Fixed commitments count once at their full duration.
       </p>
       <div className="scroll">
         <table>

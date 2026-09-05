@@ -7,7 +7,7 @@
  * become state.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   BLOCKERS, PLACES, TALK_RADIUS, WORLD_H, WORLD_W, type Place,
 } from './layout'
@@ -91,6 +91,16 @@ export function useWorld(refs: WorldRefs, opts: Options) {
     opts.onMoved(pos.current, facing.current)
   }, [paint, applyCamera, checkProximity, opts])
 
+  // The hook also runs while the title/interior is mounted. Initialize the
+  // newly mounted campus before paint, including when no movement key is held.
+  useLayoutEffect(() => {
+    keys.current = {}
+    if (!opts.enabled) return
+    paint(false)
+    applyCamera()
+    checkProximity()
+  }, [opts.enabled, paint, applyCamera, checkProximity])
+
   useEffect(() => {
     let raf = 0
     let last = performance.now()
@@ -109,7 +119,7 @@ export function useWorld(refs: WorldRefs, opts: Options) {
       if (keys.current.up) vy -= 1
       if (keys.current.down) vy += 1
 
-      if (!vx && !vy) { paint(false); return }
+      if (!vx && !vy) { paint(false); applyCamera(); return }
 
       const m = Math.hypot(vx, vy)
       vx /= m; vy /= m

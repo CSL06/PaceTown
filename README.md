@@ -52,7 +52,7 @@ in the browser with no cloud, AI provider, or Google Calendar required.
 
 ### Requirements
 
-- [Node.js](https://nodejs.org/) 20.19 or newer
+- [Node.js](https://nodejs.org/) 24 or newer (CI uses Node 24)
 - npm 10 or newer, included with Node.js
 
 ### Setup

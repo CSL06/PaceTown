@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           # Matches the engines field in package.json.
-          node-version: '20.19'
+          node-version: '24'
           cache: npm
 
       # `ci` rather than `install`: it honours the lockfile exactly and fails

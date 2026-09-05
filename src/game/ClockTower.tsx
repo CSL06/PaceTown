@@ -7,6 +7,7 @@ import { grow, record, type GameState } from './state'
 import type { ViewId } from './layout'
 import './clock-tower.css'
 import { useRoomMovement } from './useRoomMovement'
+import { dayIndex } from '../domain/calendar'
 
 const SOURCE_DAY = 'thu'
 const DEFAULT_DESTINATION = 'sat'
@@ -29,12 +30,13 @@ function pct(value: number): string {
   return Number.isFinite(value) ? value.toFixed(0) : '∞'
 }
 
-function TaskBlock({ task, selected, suggested, leaving, onToggle }: {
+function TaskBlock({ task, selected, suggested, leaving, onToggle, draggable = false }: {
   task: Task
   selected?: boolean
   suggested?: boolean
   leaving?: boolean
   onToggle?: () => void
+  draggable?: boolean
 }) {
   const time = taskTime(task)
   const className = [
@@ -52,12 +54,15 @@ function TaskBlock({ task, selected, suggested, leaving, onToggle }: {
     </>
   )
 
-  return onToggle ? (
+  return <div draggable={draggable && task.flexibility === 'flexible'}
+    onDragStart={(event) => { event.dataTransfer.setData('text/plain', task.id); event.dataTransfer.effectAllowed = 'move' }}>
+    {onToggle ? (
     <button type="button" className={className} aria-pressed={selected} onClick={onToggle}
       aria-label={`${selected ? 'Remove' : 'Select'} ${task.title} for moving`}>
       {content}
     </button>
-  ) : <div className={className}>{content}</div>
+  ) : <div className={className}>{content}</div>}
+  </div>
 }
 
 function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> & { onClose: () => void }) {
@@ -65,6 +70,24 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
   const [destination, setDestination] = useState(DEFAULT_DESTINATION)
   const [selected, setSelected] = useState<string[] | null>(null)
   const [mobileDay, setMobileDay] = useState(SOURCE_DAY)
+  const [moveMessage, setMoveMessage] = useState('Drag flexible tasks to another day. Fixed commitments stay locked.')
+  const moveTask = (id: string, day: string) => {
+    const task = state.tasks.find((item) => item.id === id)
+    if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || task.day === day) return
+    const shift = dayIndex(day) - dayIndex(task.day)
+    if (shift > task.deadlineDays) {
+      setMoveMessage(`${task.title} cannot move past its deadline.`)
+      return
+    }
+    update((current) => ({ ...current, tasks: current.tasks.map((item) => item.id === id
+      ? { ...item, day, deadlineDays: item.deadlineDays - shift } : item) }))
+    setSelected([])
+    setMoveMessage(`${task.title} moved to ${WEEK_DAYS.find((entry) => entry.key === day)?.label}.`)
+  }
+  const dropOn = (event: React.DragEvent, day: string) => {
+    event.preventDefault()
+    moveTask(event.dataTransfer.getData('text/plain'), day)
+  }
 
   const proposal = useMemo(() => proposeRebalance(state.tasks, {
     day: SOURCE_DAY, destination, waking,
@@ -125,6 +148,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
       <nav className="week-tabs" aria-label="Choose day to view">
         {WEEK_DAYS.map((day) => (
           <button key={day.key} type="button" aria-pressed={mobileDay === day.key}
+            onDragOver={(event) => event.preventDefault()} onDrop={(event) => dropOn(event, day.key)}
             onClick={() => setMobileDay(day.key)}>
             <span>{day.short}</span>
             <b className={`load-${loads[day.key].band.key}`}>{pct(loads[day.key].percentage)}%</b>
@@ -142,6 +166,8 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
               : []
             return (
               <section key={day.key} role="listitem"
+                aria-label={day.label} onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => dropOn(event, day.key)}
                 className={`week-day${mobileDay === day.key ? ' is-mobile-active' : ''}`}>
                 <header>
                   <div><strong>{day.short}</strong><span>{day.label}</span></div>
@@ -153,6 +179,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
                   {tasks.length === 0 && ghosts.length === 0 && <p className="week-empty">Open space</p>}
                   {tasks.map((task) => (
                     <TaskBlock key={task.id} task={task}
+                      draggable
                       selected={selectedSet.has(task.id)}
                       leaving={day.key === SOURCE_DAY && selectedSet.has(task.id)}
                       onToggle={day.key === SOURCE_DAY && movableIds.has(task.id) ? () => toggle(task.id) : undefined} />
@@ -166,6 +193,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
       </div>
 
       <aside className="kai-plan" aria-label="Kai's rebalancing suggestion">
+        <p role="status">{moveMessage}</p>
         <img src="/game/portraits/kai.png" alt="Kai" />
         <div className="kai-copy">
           <span className="clock-kicker">Kai · planning guardian</span>
@@ -219,7 +247,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
 export function ClockTower({ state, update, go, toast, onExit }: Props) {
   const [boardOpen, setBoardOpen] = useState(false)
   const [kaiOpen, setKaiOpen] = useState(false)
-  const { room, avatar, walkTo, press } = useRoomMovement(boardOpen)
+  const { room, avatar, position, walkTo, press } = useRoomMovement(boardOpen)
   const boardButton = useRef<HTMLButtonElement>(null)
   const waking = wakingMinutes(state.capacity)
   const thursday = dailyLoad(state.tasks, SOURCE_DAY, waking)
@@ -233,13 +261,29 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() === 'e' && !event.repeat && !boardOpen) {
+        const bounds = room.current
+        if (!bounds) return
+        const nearest = (['board', 'kai', 'door'] as const).map((id) => ({ id,
+          distance: Math.hypot((STATION_POSITION[id].x - position.current.x) * bounds.clientWidth / 100,
+            (STATION_POSITION[id].y - position.current.y) * bounds.clientHeight / 100),
+        })).sort((a, b) => a.distance - b.distance)[0]
+        if (nearest.distance <= 120) {
+          event.preventDefault()
+          if (nearest.id === 'board') setBoardOpen(true)
+          else if (nearest.id === 'kai') setKaiOpen((open) => !open)
+          else onExit()
+        }
+        return
+      }
       if (event.key !== 'Escape') return
       if (boardOpen) closeBoard()
+      else if (kaiOpen) setKaiOpen(false)
       else onExit()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [boardOpen, closeBoard, onExit])
+  }, [boardOpen, kaiOpen, closeBoard, onExit, position, room])
 
   return (
     <div ref={room} className={`clock-scene${boardOpen ? ' is-board-open' : ''}`}>
@@ -296,7 +340,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
         </div>
       )}
 
-      <p className="clock-room-hint">WASD / arrows to walk · Choose a place to visit · Esc returns to campus</p>
+      <p className="clock-room-hint">WASD / arrows to walk · E near the board, Kai or exit · Esc to step back</p>
       </div>
 
       {boardOpen && (

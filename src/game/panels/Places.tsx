@@ -44,6 +44,7 @@ export function LoadPanel({ state, load, go }: PanelProps) {
           <div><span>Fixed commitments</span><span>−{load.fixedMinutes} min</span></div>
           <div className="rule"><span>Available</span><span>{load.availableMinutes} min</span></div>
           <div><span>Weighted demand</span><span>{fmt(load.weightedDemand)} min</span></div>
+          <div><span>Total schedule load</span><span>({load.fixedMinutes} + {fmt(load.weightedDemand)}) ÷ {load.wakingMinutes} × 100</span></div>
         </div>
         {top.length > 0 && (
           <p className="lede">

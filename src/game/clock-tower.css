@@ -92,6 +92,7 @@
   text-align: left; color: #2a3a45; background: #f6ebce; border: 1px solid #cdbb98;
   border-left: 4px solid var(--task-color, #9a835e); border-radius: 2px; }
 button.week-task { cursor: pointer; }
+.week-day [draggable="true"] { cursor: grab; }
 button.week-task:hover { border-color: #b67a24; }
 .week-task-top { display: flex; justify-content: space-between; gap: 4px; color: #68716f;
   font: 8.5px var(--mono); text-transform: uppercase; }
