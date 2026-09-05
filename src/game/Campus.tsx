@@ -9,7 +9,8 @@
 import { memo } from 'react'
 import { weightedDemand, type DailyLoad, type DemandCategory, type Task } from '../domain'
 import {
-  CAST_ORDER, GUARDIAN_AT, GUARDIANS, PLACES, doorstep, type Place, type PlaceId,
+  BLOCKERS, CAST_ORDER, GUARDIAN_AT, GUARDIAN_POSITIONS, GUARDIANS, PLAYER_COLLISION_MARGIN,
+  PLACES, doorstep, type Place, type PlaceId,
 } from './layout'
 import type { CosmeticSlot } from '../domain'
 import type { WorldRefs } from './useWorld'
@@ -83,11 +84,37 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equip
   const cosmetic = quiet
     ? `cos-${equipped.sky}`
     : Object.values(equipped).map((id) => `cos-${id}`).join(' ')
+  const debugMap = import.meta.env.DEV && typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('debugMap') === '1'
 
   return (
     <div className={`stage${quiet ? ' is-quiet' : ''} ${cosmetic}`} ref={refs.stage}>
       <div className="world" ref={refs.world}>
         <img className="map" src={MAP} alt="Campus Grove in bright late-morning sunshine" draggable={false} />
+
+        {debugMap && (
+          <div className="world-debug" aria-hidden="true">
+            {BLOCKERS.map((blocker) => {
+              const radiusX = (blocker.rx ?? blocker.r) + PLAYER_COLLISION_MARGIN
+              const radiusY = (blocker.ry ?? blocker.r) + PLAYER_COLLISION_MARGIN
+              return <span key={blocker.id} className="world-debug-blocker" title={blocker.id}
+                style={{
+                  left: `calc(${blocker.px}% - ${radiusX}px)`,
+                  top: `calc(${blocker.py}% - ${radiusY}px)`,
+                  width: `${radiusX * 2}px`, height: `${radiusY * 2}px`,
+                }} />
+            })}
+            {Object.entries(GUARDIAN_POSITIONS).map(([id, at]) => (
+              <span key={`guardian-${id}`} className="world-debug-point guardian"
+                style={{ left: `${at.px}%`, top: `${at.py}%` }} />
+            ))}
+            {PLACES.map((place) => {
+              const at = doorstep(place)
+              return <span key={`arrival-${place.id}`} className="world-debug-point arrival"
+                style={{ left: `${at.px}%`, top: `${at.py}%` }} />
+            })}
+          </div>
+        )}
 
         {/* Mental load — fog over the Library */}
         {Array.from({ length: byPlace.get('Library') ?? 0 }, (_, i) => (
@@ -113,12 +140,12 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equip
         {CAST_ORDER.map((id, i) => {
           const place = PLACES.find((p) => p.id === GUARDIAN_AT[id])
           if (!place) return null
-          const at = doorstep(place)
+          const at = GUARDIAN_POSITIONS[id]
           return (
-            <div key={id} className={`spr cast${quiet ? '' : ' idle'}`} role="img"
+            <div key={id} className={`spr cast f-${at.facing}${quiet ? '' : ' idle'}`} role="img"
               aria-label={GUARDIANS[id].name}
               style={{
-                left: `${at.px - 2.4}%`, top: `${at.py + 3}%`,
+                left: `${at.px}%`, top: `${at.py}%`,
                 backgroundImage: `url(${CAST_SHEET})`,
                 backgroundPositionX: `${(i / (CAST_ORDER.length - 1)) * 100}%`,
               }} />

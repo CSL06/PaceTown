@@ -146,6 +146,13 @@
    every edge sharp. See layout.ts for why 3 and not 2. */
 .world { position: absolute; top: 0; left: 0; width: 3600px; height: 2400px; will-change: transform; }
 .map { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+.world-debug { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.world-debug-blocker { position: absolute; border: 3px solid rgba(214,68,68,.88);
+  border-radius: 50%; background: rgba(214,68,68,.12); }
+.world-debug-point { position: absolute; width: 18px; height: 18px; border: 3px solid #0e1720;
+  transform: translate(-50%,-50%); box-shadow: 0 0 0 2px rgba(255,248,228,.9); }
+.world-debug-point.guardian { border-radius: 50%; background: #4f9c98; }
+.world-debug-point.arrival { background: #e7a23b; }
 .vignette { position: absolute; inset: 0; pointer-events: none; z-index: 9;
   box-shadow: inset 0 -100px 140px -70px rgba(73,50,30,.26), inset 0 70px 110px -70px rgba(255,245,196,.2); }
 .daytint { position: absolute; inset: 0; pointer-events: none; z-index: 8; transition: background 2s ease; }

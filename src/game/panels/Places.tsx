@@ -548,8 +548,12 @@ const OFF_MAP = [
  * fourteen identical rectangles; now each entry carries who lives there, which
  * is the fastest way to find anything on a map organised by guardian.
  */
-export function TownList({ state, load, update, go }: PanelProps) {
+export function TownList({ state, load, update, go, travel }: PanelProps) {
   const visit = (place: (typeof PLACES)[number]) => {
+    // The campus shell supplies a live callback so the movement ref, camera,
+    // proximity state and persisted avatar all move together. Keep the state
+    // fallback for panels rendered outside the shell and tests.
+    if (travel) { travel(place); return }
     update((s) => ({ ...s, avatar: doorstep(place), facing: 'down' }))
     go(place.view)
   }

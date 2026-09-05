@@ -37,8 +37,18 @@ export interface Place {
   py: number
   /** The panel this place opens. */
   view: ViewId
+  /** Optional player standing point for entering this place. */
+  arrival?: { px: number; py: number }
   who?: GuardianId
   blurb: string
+}
+
+export interface GuardianPlacement {
+  /** Sprite feet position on the world, in percent. */
+  px: number
+  py: number
+  /** The cast sheet is front-facing only, so do not imply unsupported turns. */
+  facing: 'down'
 }
 
 export type ViewId =
@@ -50,23 +60,27 @@ export type ViewId =
   | 'settings' | 'shop'
 
 export const PLACES: readonly Place[] = [
-  { id: 'library', name: 'Library', px: 22.9, py: 20.6, view: 'work', who: 'mira',
+  { id: 'library', name: 'Library', px: 22.9, py: 20.6, arrival: { px: 22.9, py: 34.0 }, view: 'work', who: 'mira',
     blurb: 'Understand, work plans, checkpoints' },
-  { id: 'clock', name: 'Clock Tower', px: 49.8, py: 11.0, view: 'rebalance', who: 'kai',
+  { id: 'clock', name: 'Clock Tower', px: 49.8, py: 11.0, arrival: { px: 58.0, py: 28.0 }, view: 'rebalance', who: 'kai',
     blurb: 'Forecast and Rebalance Workshop' },
-  { id: 'garden', name: 'Recovery Pavilion', px: 79.2, py: 16.3, view: 'recover', who: 'sol',
+  { id: 'garden', name: 'Recovery Pavilion', px: 79.2, py: 16.3,
+    arrival: { px: 88.0, py: 28.0 }, view: 'recover', who: 'sol',
     blurb: 'Choose a digital or away-from-screen recovery' },
-  { id: 'recover', name: 'Recovery Garden', px: 69.5, py: 30.5, view: 'garden',
+  { id: 'recover', name: 'Recovery Garden', px: 69.5, py: 30.5,
+    arrival: { px: 62.0, py: 43.0 }, view: 'garden',
     blurb: 'Growth from sustainable choices' },
   { id: 'hall', name: 'Town Hall', px: 49.8, py: 36.0, view: 'intake',
     blurb: 'Task intake and brief review' },
-  { id: 'cafe', name: 'Sky’s Tea Corner', px: 14.5, py: 42.5, view: 'warmcup', who: 'sky',
+  { id: 'cafe', name: 'Sky’s Tea Corner', px: 14.5, py: 42.5, arrival: { px: 28.0, py: 62.0 }, view: 'warmcup', who: 'sky',
     blurb: 'Body doubling and Warm Cup' },
-  { id: 'market', name: 'Market', px: 78.0, py: 47.0, view: 'lanterns', who: 'goh',
+  { id: 'market', name: 'Market', px: 78.0, py: 47.0, arrival: { px: 66.0, py: 61.0 }, view: 'lanterns', who: 'goh',
     blurb: 'Errands and Night Lanterns' },
-  { id: 'home', name: 'Home', px: 91.5, py: 44.0, view: 'home',
+  { id: 'home', name: 'Home', px: 91.5, py: 44.0,
+    arrival: { px: 96.0, py: 61.0 }, view: 'home',
     blurb: 'Quiet Mode, Exit Quest, your data' },
-  { id: 'council', name: 'Guardian Council', px: 49.8, py: 52.0, view: 'council',
+  { id: 'council', name: 'Guardian Council', px: 49.8, py: 52.0,
+    arrival: { px: 49.8, py: 75 }, view: 'council',
     blurb: 'One recommendation when pressures compete' },
   { id: 'mailbox', name: 'Future Mailbox', px: 16.0, py: 74.0, view: 'mailbox',
     blurb: 'Send a next action to your future self' },
@@ -80,21 +94,104 @@ export const PLACES: readonly Place[] = [
     blurb: 'Pocket of Green, outdoor recovery' },
 ]
 
-/** Solid footprints, generous enough to walk between. Radii are world pixels. */
-export const BLOCKERS: readonly { px: number; py: number; r: number }[] = [
-  { px: 22.9, py: 19, r: 225 }, { px: 49.8, py: 9, r: 120 }, { px: 79.2, py: 14, r: 143 },
-  { px: 14.5, py: 41, r: 225 }, { px: 78.0, py: 45, r: 210 }, { px: 91.5, py: 42, r: 143 },
-  { px: 77.0, py: 72, r: 105 }, { px: 2.0, py: 40, r: 135 },
+/** Solid footprints, generous enough to walk between. Radii are world pixels.
+ * rx/ry are used where a painted pond or planter is visibly elliptical. */
+export interface WorldBlocker {
+  id: string
+  px: number
+  py: number
+  r: number
+  rx?: number
+  ry?: number
+}
+
+export const BLOCKERS: readonly WorldBlocker[] = [
+  { id: 'library', px: 22.9, py: 19, r: 320 },
+  { id: 'clock-tower', px: 49.8, py: 12, r: 230 },
+  { id: 'recovery-pavilion', px: 79.2, py: 17, r: 250, rx: 230, ry: 210 },
+  { id: 'recovery-pond', px: 69.0, py: 33.0, r: 210, rx: 360, ry: 145 },
+  { id: 'cafe', px: 14.5, py: 41, r: 225 },
+  { id: 'cafe-building', px: 14.5, py: 51, r: 280 },
+  // The market's visible stall is already covered by the larger building
+  // footprint below. A second circle here seals the only road to the garden.
+  { id: 'market-building', px: 78.0, py: 53, r: 170 },
+  { id: 'market-east-building', px: 90.0, py: 52.0, r: 250, rx: 250, ry: 210 },
+  { id: 'home', px: 91.5, py: 42, r: 143 },
+  { id: 'calm-corner', px: 77.0, py: 72, r: 105 },
+  { id: 'west-pond', px: 2.0, py: 40, r: 135 },
+  // The central tree and circular planter are the most common place for a
+  // player to appear embedded in the artwork. Keep its centre solid while
+  // leaving the surrounding path open for a full circuit.
+  { id: 'guardian-council-planter', px: 49.8, py: 61, r: 280, rx: 260, ry: 205 },
+  { id: 'east-pond', px: 96.0, py: 30, r: 170, rx: 260, ry: 160 },
 ]
+
+/** Space reserved around a sprite's feet while resolving outdoor collision. */
+export const PLAYER_COLLISION_MARGIN = 26
+
+/** Walkable bounds, in world percent, matching the movement clamp. */
+export const WALK_BOUNDS = { minX: 2.5, maxX: 97.5, minY: 13.125, maxY: 97.5 }
+
+/** Returns true when a saved or requested player point overlaps solid scenery. */
+export function isBlockedPosition(
+  point: { px: number; py: number },
+  margin = PLAYER_COLLISION_MARGIN,
+): boolean {
+  if (!Number.isFinite(point.px) || !Number.isFinite(point.py)) return true
+  const x = (point.px / 100) * WORLD_W
+  const y = (point.py / 100) * WORLD_H
+  return BLOCKERS.some((b) => {
+    const rx = (b.rx ?? b.r) + margin
+    const ry = (b.ry ?? b.r) + margin
+    return Math.hypot((x - (b.px / 100) * WORLD_W) / rx,
+      (y - (b.py / 100) * WORLD_H) / ry) < 1
+  })
+}
+
+/** Project a point outside a blocker along its radial ellipse direction. */
+export function resolveBlockerPosition(
+  x: number,
+  y: number,
+  blocker: WorldBlocker,
+  margin = 0,
+): { x: number; y: number } {
+  const bx = (blocker.px / 100) * WORLD_W
+  const by = (blocker.py / 100) * WORLD_H
+  const rx = (blocker.rx ?? blocker.r) + margin
+  const ry = (blocker.ry ?? blocker.r) + margin
+  const dx = x - bx
+  const dy = y - by
+  const distance = Math.hypot(dx / rx, dy / ry)
+  if (distance >= 1) return { x, y }
+  if (distance <= 0.001) return { x: bx, y: by + ry }
+  return { x: bx + dx / distance, y: by + dy / distance }
+}
+
+/** A complete validity check for saved positions and travel destinations. */
+export function isWalkablePosition(point: { px: number; py: number }): boolean {
+  return Number.isFinite(point.px) && Number.isFinite(point.py) &&
+    point.px >= WALK_BOUNDS.minX && point.px <= WALK_BOUNDS.maxX &&
+    point.py >= WALK_BOUNDS.minY && point.py <= WALK_BOUNDS.maxY &&
+    !isBlockedPosition(point)
+}
+
+/** Keep a requested position usable without discarding any other save data. */
+export function safePosition(
+  point: { px: number; py: number },
+  fallback: { px: number; py: number } = SPAWN,
+): { px: number; py: number } {
+  return isWalkablePosition(point) ? { px: point.px, py: point.py } : { ...fallback }
+}
 
 /** Interaction radius, in world pixels. Generous on purpose. */
 export const TALK_RADIUS = 203
 
-export const SPAWN = { px: 49.8, py: 66 }
+/** Clear path below the central planter. */
+export const SPAWN = { px: 49.8, py: 75 }
 
 /** Where the avatar stands when it arrives at a place. */
 export function doorstep(place: Place): { px: number; py: number } {
-  return { px: place.px, py: Math.min(97, place.py + 7) }
+  return place.arrival ?? { px: place.px, py: Math.min(97, place.py + 7) }
 }
 
 export const GUARDIAN_AT: Record<GuardianId, PlaceId> = {
@@ -103,6 +200,16 @@ export const GUARDIAN_AT: Record<GuardianId, PlaceId> = {
   sol: 'garden',
   goh: 'market',
   sky: 'cafe',
+}
+
+/** Explicit feet positions keep each guardian on a path beside their district.
+ * These are deliberately independent from player arrival points. */
+export const GUARDIAN_POSITIONS: Record<GuardianId, GuardianPlacement> = {
+  mira: { px: 20.5, py: 34.0, facing: 'down' },
+  kai: { px: 54.0, py: 31.0, facing: 'down' },
+  sol: { px: 85.0, py: 30.5, facing: 'down' },
+  goh: { px: 70.0, py: 61.0, facing: 'down' },
+  sky: { px: 25.0, py: 61.0, facing: 'down' },
 }
 
 /** Order of frames in assets/app-runtime-v1/game/world/cast-sheet.webp. */

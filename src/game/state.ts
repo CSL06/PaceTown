@@ -12,11 +12,11 @@ import {
   type BlockerKind, type Capacity, type Checkpoint, type CosmeticSlot,
   type GuardianId, type RegulationId, type Task,
 } from '../domain'
-import type { PlaceId, ViewId } from './layout'
+import { safePosition, SPAWN, type PlaceId, type ViewId } from './layout'
 import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 7
+export const SAVE_VERSION = 8
 
 const store = localStorageAdapter(SAVE_KEY)
 
@@ -205,7 +205,7 @@ export function initialState(): GameState {
     mailbox: [],
     journal: [],
 
-    avatar: { px: 49.8, py: 66 },
+    avatar: { ...SPAWN },
     facing: 'down',
     quiet: false,
     contrast: false,
@@ -299,6 +299,20 @@ const MIGRATIONS: Migration[] = [
     version: 7,
     recoveryNotes: Array.isArray(s.recoveryNotes) ? s.recoveryNotes : [],
   }),
+  /* v8 moves saves that were left inside scenery to a verified clear path.
+     Other progress and positions remain untouched. */
+  (s) => {
+    const value = s.avatar
+    const avatar = value && typeof value === 'object' ? value as Record<string, unknown> : null
+    const point = avatar && typeof avatar.px === 'number' && typeof avatar.py === 'number'
+      ? { px: avatar.px, py: avatar.py }
+      : null
+    return {
+      ...s,
+      version: 8,
+      avatar: point ? safePosition(point) : { ...SPAWN },
+    }
+  },
 ]
 
 /**
@@ -328,6 +342,11 @@ export function loadState(): GameState {
     version += 1
   }
 
+  const avatar = parsed.avatar && typeof parsed.avatar === 'object'
+    ? parsed.avatar as { px?: unknown; py?: unknown } : null
+  const restoredAvatar = avatar && typeof avatar.px === 'number' && typeof avatar.py === 'number'
+    ? safePosition({ px: avatar.px, py: avatar.py }) : { ...SPAWN }
+
   return {
     ...fresh,
     ...parsed,
@@ -337,6 +356,7 @@ export function loadState(): GameState {
     started: false,
     scene: 'campus',
     view: null,
+    avatar: restoredAvatar,
   } as GameState
 }
 

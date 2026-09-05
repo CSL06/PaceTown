@@ -187,6 +187,11 @@ export default function Game() {
     },
   )
 
+  const travel = useCallback((place: Place) => {
+    moveTo(doorstep(place))
+    go(place.view)
+  }, [moveTo, go])
+
   const enter = useCallback((place: Place) => {
     moveTo(doorstep(place))
     if (state.greeted[place.id]) { go(place.view); return }
@@ -311,7 +316,7 @@ export default function Game() {
   const leadPlace = PLACES.find((p) => p.view === leadView)?.id ?? null
   const focusGuardian = focusGuardianFor(leadView)
 
-  const panelProps: PanelProps = { state, load, update, go, toast }
+  const panelProps: PanelProps = { state, load, update, go, toast, travel }
   const recoveryViews: RecoveryView[] = ['ripples', 'chime', 'warmcup', 'firefly', 'lanterns']
   const recoveryView = state.view && recoveryViews.includes(state.view as RecoveryView)
     ? state.view as RecoveryView : null

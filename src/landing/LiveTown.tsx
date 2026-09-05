@@ -14,8 +14,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  BLOCKERS, CAST_ORDER, GUARDIANS, GUARDIAN_AT, PLACES, SPRITE_H, SPRITE_W,
-  WORLD_H, WORLD_W, doorstep,
+  BLOCKERS, CAST_ORDER, GUARDIANS, GUARDIAN_AT, GUARDIAN_POSITIONS, isWalkablePosition,
+  PLAYER_COLLISION_MARGIN, PLACES, resolveBlockerPosition, SPAWN, SPRITE_H, SPRITE_W, WALK_BOUNDS,
+  WORLD_H, WORLD_W,
 } from '../game/layout'
 import type { GuardianId } from '../domain'
 
@@ -35,6 +36,30 @@ const KEYS: Record<string, Facing> = {
 
 /** The tour, in the order the loop actually runs. */
 const ROUTE: GuardianId[] = ['kai', 'mira', 'sky', 'goh', 'sol']
+
+/** Road bends for each leg of the preview tour. Direct lines cut through the
+ * central planter and painted buildings even when both endpoints are clear. */
+const TOUR_TRANSIT: Record<string, { px: number; py: number }[]> = {
+  // Start by sweeping around the west side of the central planter.
+  'start->kai': [{ px: 40, py: 75 }, { px: 40, py: 40 }],
+  'sky->goh': [{ px: 49, py: 71 }, { px: 58, py: 72 }, { px: 72, py: 66 }],
+  // Come around the south edge of the recovery pond, then use the east path
+  // to Sol instead of cutting through the pond/pavilion overlap.
+  'goh->sol': [{ px: 55, py: 45 }, { px: 56, py: 40 }, { px: 76, py: 40 }, { px: 84, py: 38 }],
+  // The return leg uses the same road in reverse before dropping below the
+  // central planter for the next lap.
+  'sol->kai': [
+    { px: 84, py: 38 }, { px: 76, py: 45 }, { px: 70, py: 50 },
+    { px: 56, py: 50 }, { px: 40, py: 45 }, { px: 38, py: 40 },
+    { px: 38, py: 75 }, { px: 38, py: 40 },
+  ],
+}
+
+const TOUR_APPROACH: Partial<Record<GuardianId, { px: number; py: number }>> = {
+  // The default right-side offset lands inside the pond edge for these two.
+  kai: { px: 56.7, py: 31.4 },
+  sol: { px: 87, py: 28 },
+}
 
 /** What each guardian says on arrival — their real job, in their own voice. */
 const LINES: Record<GuardianId, string[]> = {
@@ -60,6 +85,18 @@ const LINES: Record<GuardianId, string[]> = {
   ],
 }
 
+const GUARDIAN_SPOTS = CAST_ORDER.map((id, i) => {
+  const place = PLACES.find((candidate) => candidate.id === GUARDIAN_AT[id])!
+  const at = GUARDIAN_POSITIONS[id]
+  return {
+    id,
+    i,
+    x: at.px / 100 * WORLD_W,
+    y: at.py / 100 * WORLD_H,
+    placeName: place.name,
+  }
+})
+
 interface Bubble {
   who: GuardianId
   text: string
@@ -80,12 +117,13 @@ export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
   const [bubble, setBubble] = useState<Bubble | null>(null)
   const [manual, setManual] = useState(false)
 
-  const pos = useRef({ x: WORLD_W * 0.498, y: WORLD_H * 0.66 })
+  const pos = useRef({ x: WORLD_W * SPAWN.px / 100, y: WORLD_H * SPAWN.py / 100 })
   const camera = useRef({ x: 0, y: 0, set: false })
   const facing = useRef<Facing>('down')
   const keys = useRef<Record<string, boolean>>({})
   /** Where the avatar is heading: a click target, or the next tour stop. */
   const target = useRef<{ x: number; y: number } | null>(null)
+  const waypointQueue = useRef<{ x: number; y: number }[]>([])
   /* -1 so the first nextLeg lands on ROUTE[0] rather than skipping it. */
   const leg = useRef(-1)
   const takenOver = useRef(false)
@@ -94,26 +132,14 @@ export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
   const waitUntil = useRef(0)
   const lineIndex = useRef(0)
 
-  const guardianSpots = useRef(
-    CAST_ORDER.map((id, i) => {
-      const place = PLACES.find((p) => p.id === GUARDIAN_AT[id])!
-      const at = doorstep(place)
-      return {
-        id,
-        i,
-        // The sprite stands slightly left of the marker so the two do not overlap.
-        x: ((at.px - 2.4) / 100) * WORLD_W,
-        y: ((at.py + 3) / 100) * WORLD_H,
-        placeName: place.name,
-      }
-    }),
-  ).current
+  const guardianSpots = GUARDIAN_SPOTS
 
   /** Hands control to the visitor and cancels the tour. */
   const takeOver = useCallback(() => {
     if (takenOver.current) return
     takenOver.current = true
     target.current = null
+    waypointQueue.current = []
     setManual(true)
     onTakeOver?.()
   }, [onTakeOver])
@@ -168,8 +194,20 @@ export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
       waitUntil.current = now
       const id = ROUTE[leg.current % ROUTE.length]
       const spot = guardianSpots.find((g) => g.id === id)!
-      // Stand beside the guardian, not on top of them.
-      target.current = { x: spot.x + 96, y: spot.y + 10 }
+      const approach = TOUR_APPROACH[id]
+      const finalStop = approach
+        ? { x: approach.px / 100 * WORLD_W, y: approach.py / 100 * WORLD_H }
+        : { x: spot.x + 96, y: spot.y + 10 }
+      const previous = leg.current > 0 ? ROUTE[(leg.current - 1) % ROUTE.length] : null
+      const transit = TOUR_TRANSIT[previous ? `${previous}->${id}` : `start->${id}`] ?? []
+      waypointQueue.current = [
+        ...transit.map((point) => ({
+          x: point.px / 100 * WORLD_W,
+          y: point.py / 100 * WORLD_H,
+        })),
+        finalStop,
+      ]
+      target.current = waypointQueue.current.shift() ?? finalStop
     }
 
     const step = (now: number) => {
@@ -191,8 +229,12 @@ export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
         const dy = target.current.y - pos.current.y
         const distance = Math.hypot(dx, dy)
         if (distance < ARRIVE) {
-          target.current = null
-          if (!takenOver.current) {
+          if (waypointQueue.current.length > 0) {
+            target.current = waypointQueue.current.shift() ?? null
+          } else {
+            target.current = null
+          }
+          if (!takenOver.current && !target.current) {
             // Autopilot: say the line, hold, then walk to the next guardian.
             stopAt(ROUTE[leg.current % ROUTE.length])
             waitUntil.current = now + 4200
@@ -211,16 +253,20 @@ export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
       const m = Math.hypot(vx, vy) || 1
       let x = pos.current.x + (vx / m) * SPEED * dt
       let y = pos.current.y + (vy / m) * SPEED * dt
-      x = Math.max(90, Math.min(WORLD_W - 90, x))
-      y = Math.max(315, Math.min(WORLD_H - 60, y))
+      x = Math.max(WORLD_W * WALK_BOUNDS.minX / 100, Math.min(WORLD_W * WALK_BOUNDS.maxX / 100, x))
+      y = Math.max(WORLD_H * WALK_BOUNDS.minY / 100, Math.min(WORLD_H * WALK_BOUNDS.maxY / 100, y))
 
-      for (const b of BLOCKERS) {
-        const bx = (b.px / 100) * WORLD_W
-        const by = (b.py / 100) * WORLD_H
-        const dx = x - bx
-        const dy = y - by
-        const d = Math.hypot(dx, dy)
-        if (d < b.r && d > 0.001) { x = bx + (dx / d) * b.r; y = by + (dy / d) * b.r }
+      for (let pass = 0; pass < 2; pass += 1) {
+        for (const b of BLOCKERS) {
+          const resolved = resolveBlockerPosition(x, y, b, PLAYER_COLLISION_MARGIN)
+          x = resolved.x
+          y = resolved.y
+        }
+      }
+
+      if (!isWalkablePosition({ px: x / WORLD_W * 100, py: y / WORLD_H * 100 })) {
+        x = pos.current.x
+        y = pos.current.y
       }
 
       pos.current = { x, y }

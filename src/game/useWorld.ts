@@ -9,7 +9,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
-  BLOCKERS, PLACES, TALK_RADIUS, WORLD_H, WORLD_W, type Place,
+  BLOCKERS, doorstep, isWalkablePosition, PLACES, PLAYER_COLLISION_MARGIN, resolveBlockerPosition,
+  safePosition, TALK_RADIUS, WALK_BOUNDS, WORLD_H, WORLD_W, type Place,
 } from './layout'
 import { sfx } from './sfx'
 
@@ -41,6 +42,20 @@ export interface WorldRefs {
   avatar: React.RefObject<HTMLDivElement | null>
 }
 
+/** Pure proximity query shared by movement and tests. */
+export function nearestPlace(point: { px: number; py: number }): Place | null {
+  const ax = (point.px / 100) * WORLD_W
+  const ay = (point.py / 100) * WORLD_H
+  let best: Place | null = null
+  let bestDistance = TALK_RADIUS
+  for (const place of PLACES) {
+    const at = doorstep(place)
+    const d = Math.hypot((at.px / 100) * WORLD_W - ax, (at.py / 100) * WORLD_H - ay)
+    if (d < bestDistance) { bestDistance = d; best = place }
+  }
+  return best
+}
+
 interface Options {
   enabled: boolean
   reducedMotion: boolean
@@ -50,7 +65,7 @@ interface Options {
 }
 
 export function useWorld(refs: WorldRefs, opts: Options) {
-  const pos = useRef({ ...opts.initial })
+  const pos = useRef(safePosition(opts.initial))
   const facing = useRef<Facing>(opts.initialFacing)
   const keys = useRef<Record<string, boolean>>({})
   const [near, setNear] = useState<Place | null>(null)
@@ -96,16 +111,7 @@ export function useWorld(refs: WorldRefs, opts: Options) {
   }, [refs.avatar, opts.reducedMotion])
 
   const checkProximity = useCallback(() => {
-    const ax = (pos.current.px / 100) * WORLD_W
-    const ay = (pos.current.py / 100) * WORLD_H
-    let best: Place | null = null
-    let bestDistance = TALK_RADIUS
-    for (const place of PLACES) {
-      const dx = (place.px / 100) * WORLD_W - ax
-      const dy = ((place.py + 7) / 100) * WORLD_H - ay
-      const d = Math.hypot(dx, dy)
-      if (d < bestDistance) { bestDistance = d; best = place }
-    }
+    const best = nearestPlace(pos.current)
     if (best !== nearRef.current) {
       nearRef.current = best
       setNear(best)
@@ -114,7 +120,7 @@ export function useWorld(refs: WorldRefs, opts: Options) {
 
   /** Teleport to a place — used by the Town List, which must reach everything. */
   const moveTo = useCallback((p: { px: number; py: number }, f: Facing = 'down') => {
-    pos.current = { ...p }
+    pos.current = safePosition(p)
     facing.current = f
     lead.current = { x: 0, y: 0 }
     paint(false)
@@ -167,16 +173,26 @@ export function useWorld(refs: WorldRefs, opts: Options) {
 
       let x = (pos.current.px / 100) * WORLD_W + vx * SPEED * dt
       let y = (pos.current.py / 100) * WORLD_H + vy * SPEED * dt
-      x = Math.max(90, Math.min(WORLD_W - 90, x))
-      y = Math.max(315, Math.min(WORLD_H - 60, y))
+      x = Math.max((WALK_BOUNDS.minX / 100) * WORLD_W, Math.min((WALK_BOUNDS.maxX / 100) * WORLD_W, x))
+      y = Math.max((WALK_BOUNDS.minY / 100) * WORLD_H, Math.min((WALK_BOUNDS.maxY / 100) * WORLD_H, y))
 
-      for (const b of BLOCKERS) {
-        const bx = (b.px / 100) * WORLD_W
-        const by = (b.py / 100) * WORLD_H
-        const dx = x - bx
-        const dy = y - by
-        const d = Math.hypot(dx, dy)
-        if (d < b.r && d > 0.001) { x = bx + (dx / d) * b.r; y = by + (dy / d) * b.r }
+      // Resolve twice so a diagonal move that leaves one circle inside
+      // another still ends the frame outside both. The margin is the player's
+      // foot-space, rather than an arbitrary enlargement of map geometry.
+      for (let pass = 0; pass < 2; pass += 1) {
+        for (const b of BLOCKERS) {
+          const resolved = resolveBlockerPosition(x, y, b, PLAYER_COLLISION_MARGIN)
+          x = resolved.x
+          y = resolved.y
+        }
+      }
+
+      // Overlapping scenery can make iterative projection settle on an
+      // invalid point. Keep the frame safe and deterministic in that case.
+      const resolved = { px: (x / WORLD_W) * 100, py: (y / WORLD_H) * 100 }
+      if (!isWalkablePosition(resolved)) {
+        x = (pos.current.px / 100) * WORLD_W
+        y = (pos.current.py / 100) * WORLD_H
       }
 
       pos.current = { px: (x / WORLD_W) * 100, py: (y / WORLD_H) * 100 }
