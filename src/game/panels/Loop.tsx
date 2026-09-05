@@ -356,6 +356,7 @@ export function Rebalance({ state, load, update, go, toast }: PanelProps) {
 export function Work({ state, load, update, go }: PanelProps) {
   const candidates = load.contributors.map((c) => c.task)
   const [taskId, setTaskId] = useState<string | null>(null)
+  const [step, setStep] = useState<'blockers' | 'plan'>(state.blocker ? 'plan' : 'blockers')
   const task = candidates.find((t) => t.id === taskId) ?? candidates[0]
   if (!task) {
     return (
@@ -405,22 +406,31 @@ export function Work({ state, load, update, go }: PanelProps) {
         Before it becomes a plan, PaceTown asks what is actually in the way.
       </p>
 
-      <div className="opts" role="group" aria-label="What is blocking this">
-        {BLOCKERS.map((b, i) => (
-          <button key={b.id} className="opt" type="button" aria-pressed={state.blocker === b.id}
-            onClick={() => update((s) => ({
-              ...s, blocker: b.id, activeTaskId: task.id, guardianOverride: null,
-              checkpoints: buildCheckpoints(b.id, { taskTitle: task.title, deliverables: s.deliverables }),
-              activeCheckpointId: null,
-            }))}>
-            <span className="k">{String.fromCharCode(65 + i)}</span>
-            <span>{b.label}<small>{b.hint}</small></span>
-          </button>
-        ))}
-      </div>
+      {(step === 'blockers' || !template) && (
+        <div className="opts" role="group" aria-label="What is blocking this">
+          {BLOCKERS.map((b, i) => (
+            <button key={b.id} className="opt" type="button" aria-pressed={state.blocker === b.id}
+              onClick={() => {
+                update((s) => ({
+                  ...s, blocker: b.id, activeTaskId: task.id, guardianOverride: null,
+                  checkpoints: buildCheckpoints(b.id, { taskTitle: task.title, deliverables: s.deliverables }),
+                  activeCheckpointId: null,
+                }))
+                setStep('plan')
+              }}>
+              <span className="k">{String.fromCharCode(65 + i)}</span>
+              <span>{b.label}<small>{b.hint}</small></span>
+            </button>
+          ))}
+        </div>
+      )}
 
-      {template && (
-        <>
+      {step === 'plan' && template && (
+        <div className="msgbox">
+          <div className="msgbox-head">
+            <span>Library · {GUARDIANS[template.guardian].name}</span>
+            <button type="button" className="msgbox-back" onClick={() => setStep('blockers')}>← Back</button>
+          </div>
           <Guardian who={template.guardian} says={template.opener} />
           <div className="eyebrow" style={{ marginTop: 16 }}>Editable work plan · local template, no AI</div>
           {state.deliverables.length > 0 && (
@@ -486,64 +496,64 @@ export function Work({ state, load, update, go }: PanelProps) {
               }))
             }}>Add my own checkpoint</button>
           </div>
-        </>
-      )}
 
-      {active && state.blocker && (
-        <>
-          <div className="field">
-            <label htmlFor="cpTitle">Rewrite this checkpoint</label>
-            <input id="cpTitle" value={active.title} onChange={(e) => update((s) => ({
-              ...s,
-              checkpoints: s.checkpoints.map((c) => c.id === active.id ? { ...c, title: e.target.value } : c),
-            }))} />
-          </div>
-          <div className="field">
-            <label htmlFor="cpMins">Minutes</label>
-            <input id="cpMins" type="number" min={5} max={180} value={active.estimatedMinutes}
-              onChange={(e) => update((s) => ({
-                ...s,
-                checkpoints: s.checkpoints.map((c) => c.id === active.id
-                  ? { ...c, estimatedMinutes: Math.max(5, Math.min(180, Number(e.target.value) || 5)) } : c),
-              }))} />
-          </div>
-          <div className="field">
-            <label htmlFor="cpDod">What finished looks like</label>
-            <textarea id="cpDod" value={active.definitionOfDone} rows={2}
-              onChange={(e) => update((s) => ({
-                ...s,
-                checkpoints: s.checkpoints.map((c) => c.id === active.id
-                  ? { ...c, definitionOfDone: e.target.value } : c),
-              }))} />
-          </div>
-          <div className="field">
-            <span className="eyebrow">Work with</span>
-            <div className="opts" role="group" aria-label="Choose your guardian">
-              {(Object.keys(GUARDIANS) as GuardianId[]).map((id) => (
-                <button key={id} className="opt" type="button"
-                  aria-pressed={effectiveGuardian(state.blocker, state.guardianOverride) === id}
-                  onClick={() => update((s) => ({ ...s, guardianOverride: id }))}>
-                  <span>{GUARDIANS[id].name}<small>{GUARDIANS[id].role}</small></span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="actions">
-            <button className="primary" type="button" onClick={() => {
-              update((s) => record({
-                ...s,
-                activeTaskId: task.id,
-                outcome: null,
-                savedSessionKey: null,
-                session: { ...s.session, elapsedSec: 0, pausedFrom: null },
-              }, 'Began a planned Pace Session',
-              `Checkpoint: ${active.title} · blocker identified before starting.`,
-              REWARDS.beginSession))
-              go('session')
-            }}>Start a Pace Session with {GUARDIANS[effectiveGuardian(state.blocker, state.guardianOverride)].name}</button>
-            <span className="note">Shorten it, rewrite it, or reject the whole plan.</span>
-          </div>
-        </>
+          {active && state.blocker && (
+            <>
+              <div className="field">
+                <label htmlFor="cpTitle">Rewrite this checkpoint</label>
+                <input id="cpTitle" value={active.title} onChange={(e) => update((s) => ({
+                  ...s,
+                  checkpoints: s.checkpoints.map((c) => c.id === active.id ? { ...c, title: e.target.value } : c),
+                }))} />
+              </div>
+              <div className="field">
+                <label htmlFor="cpMins">Minutes</label>
+                <input id="cpMins" type="number" min={5} max={180} value={active.estimatedMinutes}
+                  onChange={(e) => update((s) => ({
+                    ...s,
+                    checkpoints: s.checkpoints.map((c) => c.id === active.id
+                      ? { ...c, estimatedMinutes: Math.max(5, Math.min(180, Number(e.target.value) || 5)) } : c),
+                  }))} />
+              </div>
+              <div className="field">
+                <label htmlFor="cpDod">What finished looks like</label>
+                <textarea id="cpDod" value={active.definitionOfDone} rows={2}
+                  onChange={(e) => update((s) => ({
+                    ...s,
+                    checkpoints: s.checkpoints.map((c) => c.id === active.id
+                      ? { ...c, definitionOfDone: e.target.value } : c),
+                  }))} />
+              </div>
+              <div className="field">
+                <span className="eyebrow">Work with</span>
+                <div className="opts" role="group" aria-label="Choose your guardian">
+                  {(Object.keys(GUARDIANS) as GuardianId[]).map((id) => (
+                    <button key={id} className="opt" type="button"
+                      aria-pressed={effectiveGuardian(state.blocker, state.guardianOverride) === id}
+                      onClick={() => update((s) => ({ ...s, guardianOverride: id }))}>
+                      <span>{GUARDIANS[id].name}<small>{GUARDIANS[id].role}</small></span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="actions">
+                <button className="primary" type="button" onClick={() => {
+                  update((s) => record({
+                    ...s,
+                    activeTaskId: task.id,
+                    outcome: null,
+                    savedSessionKey: null,
+                    session: { ...s.session, elapsedSec: 0, pausedFrom: null },
+                  }, 'Began a planned Pace Session',
+                  `Checkpoint: ${active.title} · blocker identified before starting.`,
+                  REWARDS.beginSession))
+                  go('session')
+                }}>Start a Pace Session with {GUARDIANS[effectiveGuardian(state.blocker, state.guardianOverride)].name}</button>
+                <span className="note">Shorten it, rewrite it, or reject the whole plan.</span>
+              </div>
+            </>
+          )}
+        </div>
       )}
     </div>
   )

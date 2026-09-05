@@ -16,7 +16,7 @@ function propsFor(over: Partial<GameState> = {}) {
     checkpoints: buildCheckpoints('unclear_start', { taskTitle: 'ERD' }),
     ...over,
   }
-  state.activeCheckpointId = state.checkpoints[0].id
+  state.activeCheckpointId = state.checkpoints[0]?.id ?? null
   const load = {
     percentage: 108,
     contributors: [{ task: { id: 't1', title: 'ERD', estimatedMinutes: 120 } as unknown as Task, weighted: 1 }],
@@ -45,11 +45,37 @@ describe('guardian picker', () => {
     const p = propsFor()
     const { rerender } = render(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
     const picker = () => within(screen.getByRole('group', { name: /choose your guardian/i }))
-    const blockers = () => within(screen.getByRole('group', { name: /what is blocking/i }))
     fireEvent.click(picker().getByRole('button', { name: /sol/i }))
     expect(p.state().guardianOverride).toBe('sol')
     rerender(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    // The plan box hides the blocker list; step back to it first.
+    fireEvent.click(screen.getByRole('button', { name: /←\s*back/i }))
+    rerender(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    const blockers = () => within(screen.getByRole('group', { name: /what is blocking/i }))
     fireEvent.click(blockers().getByRole('button', { name: /too large/i }))
     expect(p.state().guardianOverride).toBeNull()
+  })
+})
+
+describe('message-box flow', () => {
+  it('shows the plan box with a Back button after picking a blocker', () => {
+    const p = propsFor()
+    const { rerender } = render(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    // Blocker preset renders the plan box; the guardian opener is inside it.
+    // The button reads "← Back", so the anchored /^back/i regex from the brief
+    // cannot match; /←\s*back/i targets the same button precisely.
+    expect(screen.getByRole('button', { name: /←\s*back/i })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /←\s*back/i }))
+    rerender(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    expect(screen.queryByRole('button', { name: /←\s*back/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('group', { name: /what is blocking this/i })).toBeInTheDocument()
+  })
+
+  it('re-opens the box when a blocker is tapped from the list', () => {
+    const p = propsFor({ blocker: null, checkpoints: [] })
+    const { rerender } = render(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    fireEvent.click(screen.getByRole('button', { name: /do not know where to begin/i }))
+    rerender(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    expect(screen.getByRole('button', { name: /←\s*back/i })).toBeInTheDocument()
   })
 })
