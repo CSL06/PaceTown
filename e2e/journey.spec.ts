@@ -12,11 +12,17 @@ import { expect, test, type Page } from '@playwright/test'
  */
 async function dismissGreeting(page: Page) {
   const greeting = page.getByRole('group', { name: 'Conversation' })
-  // It arrives on a timer. If it never shows, there is nothing to dismiss.
-  if (!await greeting.isVisible({ timeout: 3_000 }).catch(() => false)) return
 
-  for (let i = 0; i < 8; i += 1) {
-    if (!await greeting.isVisible().catch(() => false)) return
+  /* Wait generously for it to arrive. It fires on a 400ms timer after entering,
+     and a slow CI runner can push that well past a short poll — in which case
+     the helper returns, the greeting appears a moment later, and it either
+     swallows the next click or, worse, absorbs the next Escape (the app closes
+     the conversation before the panel, by design). Both failure modes showed up
+     in CI and neither was an app bug. */
+  if (!await greeting.isVisible({ timeout: 15_000 }).catch(() => false)) return
+
+  for (let i = 0; i < 14; i += 1) {
+    if (!await greeting.isVisible().catch(() => false)) break
     // Prefer the choice that does not navigate away.
     const stay = greeting.getByRole('button', { name: /look around|not now|no thanks/i })
     if (await stay.isVisible().catch(() => false)) {
@@ -24,8 +30,15 @@ async function dismissGreeting(page: Page) {
       break
     }
     await greeting.click()
+    // Each click completes or advances one typed line; give it a beat rather
+    // than racing the typewriter.
+    await page.waitForTimeout(200)
   }
-  await expect(greeting).toBeHidden({ timeout: 5_000 })
+
+  await expect(greeting).toBeHidden({ timeout: 15_000 })
+  // Nothing should be able to reopen it, but confirm the field is clear before
+  // the caller starts pressing keys.
+  await expect(greeting).toHaveCount(0, { timeout: 5_000 }).catch(() => {})
 }
 
 /**
@@ -36,6 +49,34 @@ async function dismissGreeting(page: Page) {
  * whether saved state survives a reload. A flaky E2E suite gets ignored, so
  * this stays small and asserts on things a user would name.
  */
+
+/**
+ * Enters the town with the first-run intro already seen.
+ *
+ * The panel tests are about the HUD and the sheet, not about onboarding, and
+ * Kai's greeting is fired on a timer that a slow runner can push past any poll
+ * the test makes. Rather than racing it, this marks the intro as seen before
+ * the game mounts, so it never fires. That removes the flake at its source
+ * instead of widening a timeout until it usually passes.
+ */
+async function enterTownQuietly(page: Page) {
+  await page.goto('/game')
+  await page.waitForURL(/\/town/, { timeout: 20_000 })
+
+  await page.evaluate(() => {
+    const raw = localStorage.getItem('pacetown.game')
+    if (!raw) return
+    const save = JSON.parse(raw)
+    save.introSeen = true
+    localStorage.setItem('pacetown.game', JSON.stringify(save))
+  })
+  await page.reload()
+
+  await page.getByRole('button', { name: /campus grove|continue your week/i })
+    .click({ timeout: 20_000 })
+  // Belt and braces: a place greeting could still appear on a first entry.
+  await dismissGreeting(page)
+}
 
 test.describe('arriving', () => {
   test('the landing page renders its live hero and the real numbers', async ({ page }) => {
@@ -157,10 +198,7 @@ test.describe('state survives', () => {
   test('the theme choice persists across a reload', async ({ page }) => {
     // The landing is pinned light by design and no longer carries a toggle,
     // so the theme control lives where it belongs: the game's own settings.
-    await page.goto('/game')
-    await page.getByRole('button', { name: /campus grove|continue your week/i })
-      .click({ timeout: 20_000 })
-    await dismissGreeting(page)
+    await enterTownQuietly(page)
 
     await page.getByRole('button', { name: /account:/i }).click()
     await page.getByRole('menuitem', { name: /^settings$/i }).click()
@@ -184,10 +222,7 @@ test.describe('on a phone', () => {
   test.skip(({ isMobile }) => !isMobile, 'mobile-only checks')
 
   test('the town is reachable and gives you touch controls', async ({ page }) => {
-    await page.goto('/game')
-    await page.getByRole('button', { name: /campus grove|continue your week/i })
-      .click({ timeout: 20_000 })
-    await dismissGreeting(page)
+    await enterTownQuietly(page)
 
     // Walking without a keyboard has to be possible.
     await expect(page.locator('.dpad')).toBeVisible()
@@ -195,10 +230,7 @@ test.describe('on a phone', () => {
   })
 
   test('the HUD sheds pieces instead of wrapping onto a second row', async ({ page }) => {
-    await page.goto('/game')
-    await page.getByRole('button', { name: /campus grove|continue your week/i })
-      .click({ timeout: 20_000 })
-    await dismissGreeting(page)
+    await enterTownQuietly(page)
 
     // The load figure is the one thing that must survive every breakpoint.
     await expect(page.getByText(/daily load/i)).toBeVisible()
@@ -209,10 +241,7 @@ test.describe('on a phone', () => {
   })
 
   test('a panel still fits and closes', async ({ page }) => {
-    await page.goto('/game')
-    await page.getByRole('button', { name: /campus grove|continue your week/i })
-      .click({ timeout: 20_000 })
-    await dismissGreeting(page)
+    await enterTownQuietly(page)
 
     await page.getByRole('button', { name: /town list/i }).click()
     const sheet = page.getByRole('dialog', { name: 'Town List' })
