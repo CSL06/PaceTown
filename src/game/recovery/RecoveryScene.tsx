@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { REWARDS, type RegulationId } from '../../domain'
 import type { ViewId } from '../layout'
 import { grow, record, type GameState } from '../state'
@@ -106,8 +106,6 @@ function Shell({ view, state, go, children }: {
   </main>
 }
 
-interface Drop { id: number; x: number; y: number }
-
 function RippleAsset({ index, className = '', label, style }: {
   index: number; className?: string; label?: string; style?: CSSProperties
 }) {
@@ -120,73 +118,73 @@ function RippleAsset({ index, className = '', label, style }: {
 }
 
 const PRESSURES = [
-  { label: 'Something I must do', detail: 'Give one obligation its own space.', asset: 0 },
-  { label: 'Something I’m worried about', detail: 'It can be present without filling the whole pond.', asset: 1 },
-  { label: 'Something that can wait', detail: 'Let the paper boat carry it beyond this moment.', asset: 2 },
-  { label: 'I don’t want to name it', detail: 'No explanation is required.', asset: 0 },
+  { label: 'Something I must do', detail: 'The task feels louder than everything around it.' },
+  { label: 'Something I’m worried about', detail: 'My mind keeps returning to what might happen.' },
+  { label: 'Something that can wait', detail: 'I know it is not urgent, but my body has not caught up.' },
+  { label: 'I don’t want to name it', detail: 'I only want a quieter minute. No explanation required.' },
 ] as const
 
 function RipplesGame(props: PanelProps) {
   const { state, go } = props
   const [pressure, setPressure] = useState<number | null>(null)
-  const [placed, setPlaced] = useState<Drop | null>(null)
   const [breathTick, setBreathTick] = useState(0)
+  const [started, setStarted] = useState(false)
+  const [settled, setSettled] = useState(false)
   const [done, setDone] = useState(false)
   const [response, setResponse] = useState<Response | null>(null)
   const [breath, setBreath] = useState(true)
-  const pond = useRef<HTMLDivElement>(null)
   const finish = useRecoveryFinish(props, 'ripples')
   useEffect(() => {
-    if (!placed || !breath) return
-    const timer = window.setInterval(() => setBreathTick((value) => value + 1), 1000)
+    if (!started || settled || !breath) return
+    const timer = window.setInterval(() => setBreathTick((value) => {
+      if (value >= 29) { setSettled(true); return 30 }
+      return value + 1
+    }), 1000)
     return () => window.clearInterval(timer)
-  }, [placed, breath])
-  const place = (event: PointerEvent<HTMLElement>) => {
-    if (pressure === null || placed) return
-    const box = pond.current?.getBoundingClientRect(); if (!box) return
-    setPlaced({ id: Date.now(), x: Math.min(75, Math.max(25, ((event.clientX - box.left) / box.width) * 100)),
-      y: Math.min(62, Math.max(28, ((event.clientY - box.top) / box.height) * 100)) })
-  }
+  }, [started, settled, breath])
   const breathingIn = breathTick % 10 < 4
-  const rippleFrame = 4 + Math.min(3, breathingIn ? breathTick % 4 : Math.floor(((breathTick % 10) - 4) / 2))
+  const cycle = Math.min(3, Math.floor(breathTick / 10) + 1)
+  const chooseDifferent = () => {
+    setPressure(null); setStarted(false); setSettled(false); setBreathTick(0); setBreath(true)
+  }
   return <Shell view="ripples" state={state} go={go}>
-    <section ref={pond} className="recovery-playfield ripple-water" role="button" tabIndex={0}
-      aria-label="Pond. Choose a pressure, then place its token in the water."
-      onPointerDown={place}
-      onKeyDown={(event) => { if ((event.key === ' ' || event.key === 'Enter') && pressure !== null && !placed) {
-        event.preventDefault(); setPlaced({ id: Date.now(), x: 50, y: 48 })
-      } }}>
+    <section className="recovery-playfield ripple-water">
+      <span className="ripple-pond-focus" role="img" aria-label="A calm sunlit pond" />
       <RippleAsset index={3} className="ripple-sol" label="Sol sitting peacefully beside the pond" />
-      {pressure !== null && !placed && <RippleAsset index={PRESSURES[pressure].asset} className="ripple-token-floating" label={PRESSURES[pressure].label} />}
-      {placed && <>
-        <RippleAsset index={PRESSURES[pressure!].asset} className="ripple-token-placed" label={PRESSURES[pressure!].label}
-          style={{ left: `${placed.x}%`, top: `${placed.y}%` }} />
-        {breath && <RippleAsset index={rippleFrame} className={`ripple-breath-art ${breathingIn ? 'inhale' : 'exhale'}`} label={breathingIn ? 'Breathing in' : 'Breathing out'} />}
-      </>}
       {pressure === null && <div className="ripple-purpose-card" onPointerDown={(event) => event.stopPropagation()}>
-        <span className="recovery-kicker">Sol · make room around one thing</span>
-        <h2>What is making the water feel crowded?</h2>
-        <p>You can name the kind of pressure without explaining it.</p>
+        <span className="recovery-kicker">Sol · lower the urgency, then choose</span>
+        <h2>What is taking up the most space right now?</h2>
+        <p>Gentle Ripples will not erase it. Three slower exhales can help your body come down one notch, so the next choice is easier to see.</p>
         <div>{PRESSURES.map((item, index) => <button key={item.label} type="button" onClick={() => setPressure(index)}>
-          <RippleAsset index={item.asset} /><span><b>{item.label}</b><small>{item.detail}</small></span>
+          <span><b>{item.label}</b><small>{item.detail}</small></span>
         </button>)}</div>
       </div>}
-      {pressure !== null && !placed && <div className="recovery-instruction"><b>Give it a place in the water.</b>
-        <span>Tap the pond or press Space. You are not dismissing it—only making room around it.</span></div>}
-      {placed && <div className="recovery-instruction"><b>{breath ? (breathingIn ? 'Breathe in · the light gathers' : 'Breathe out · the ring makes space') : 'The pressure has its own place.'}</b>
-        <span>{breathTick < 10 ? 'Follow one slow cycle, or stop whenever you need.' : 'It is still here, but it no longer fills the whole pond.'}</span></div>}
+      {pressure !== null && !started && <div className="ripple-intent-card">
+        <span className="recovery-kicker">The point of the next 30 seconds</span>
+        <h2>Do not solve “{PRESSURES[pressure].label.toLowerCase()}” yet.</h2>
+        <p>Keep it in view while the pond guides three breaths: four seconds in, six seconds out. The long exhale is the action; choosing what the pressure needs comes afterward.</p>
+        <div><button className="primary" type="button" onClick={() => setStarted(true)}>Begin three slow breaths</button><button type="button" onClick={chooseDifferent}>Choose something else</button></div>
+      </div>}
+      {pressure !== null && started && <div className={`ripple-breath-space ${breath ? (breathingIn ? 'inhale' : 'exhale') : 'paused'}`}>
+        <div className="ripple-wave" aria-hidden="true" /><div className="ripple-wave ripple-wave-inner" aria-hidden="true" />
+        <div className="ripple-breath-core"><small>Still here</small><b>{PRESSURES[pressure].label}</b></div>
+      </div>}
+      {pressure !== null && started && !settled && <div className="recovery-instruction"><b>{breath ? (breathingIn ? `Breath ${cycle} of 3 · breathe in gently` : `Breath ${cycle} of 3 · let the exhale run longer`) : 'Paused. Nothing is being timed against you.'}</b>
+        <span>{breath ? (breathingIn ? 'Notice the pressure without working on it.' : 'The pressure remains; the sense of urgency can move outward.') : 'Resume when ready, or end here.'}</span></div>}
+      {settled && <div className="ripple-result-card"><span className="recovery-kicker">The pressure did not disappear</span><h2>Now choose around it.</h2><p>The exercise only made a little room between the feeling of urgency and your next action. That is enough.</p><button className="primary" type="button" onClick={() => setDone(true)}>Decide what it needs</button></div>}
     </section>
-    {pressure !== null && <nav className="recovery-controls">
-      {placed && <button type="button" onClick={() => setBreath((value) => !value)}>{breath ? 'Pause breathing guide' : 'Resume breathing guide'}</button>}
-      {placed && <button className="primary" type="button" onClick={() => setDone(true)}>Choose what happens next</button>}
-      {pressure !== null && !placed && <button type="button" onClick={() => setPressure(null)}>Choose a different pressure</button>}
+    {pressure !== null && started && !settled && <nav className="recovery-controls">
+      <span>Breath {cycle} of 3 · {30 - breathTick} seconds at most</span>
+      <button type="button" onClick={() => setBreath((value) => !value)}>{breath ? 'Pause guide' : 'Resume guide'}</button>
+      <button className="primary" type="button" onClick={() => setSettled(true)}>Enough for now</button>
     </nav>}
     {done && <Completion response={response} setResponse={setResponse} finish={finish}
       onBack={() => setDone(false)} options={[
-        { label: 'Let this wait', detail: 'Leave it in the pond and return to town.', view: null },
-        { label: 'Make it smaller', detail: 'Take only one manageable piece back to Mira.', view: state.activeCheckpointId ? 'work' : 'townlist' },
-        { label: 'Carry it back gently', detail: 'Resume the same checkpoint without losing your place.', view: state.activeCheckpointId ? 'session' : null },
-        { label: 'Stay by the water', detail: 'Continue resting in the Calm Corner.', view: 'calm' },
+        { label: 'One small action', detail: 'Ask Mira to turn it into one manageable next step.', view: state.activeCheckpointId ? 'session' : 'work' },
+        { label: 'A different day', detail: 'Open the Clock Tower and protect space for it later.', view: 'rebalance' },
+        { label: 'Support from someone', detail: 'Return to the work plan and make the blockage visible.', view: 'work' },
+        { label: 'No action right now', detail: 'Leave it unresolved without carrying it through this minute.', view: null },
+        { label: 'More quiet first', detail: 'Continue resting in the Calm Corner.', view: 'calm' },
       ]} />}
   </Shell>
 }

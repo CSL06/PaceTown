@@ -29,9 +29,12 @@ describe('recovery activity scenes', () => {
     render(<Harness view="ripples" go={go} onState={(state) => { latest = state }} />)
 
     await user.click(screen.getByRole('button', { name: /something that can wait/i }))
-    await user.click(screen.getByRole('button', { name: /pond/i }))
-    await user.click(screen.getByRole('button', { name: /choose what happens next/i }))
-    await user.click(screen.getByRole('button', { name: /stay by the water/i }))
+    expect(screen.getByText(/pond guides three breaths/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /begin three slow breaths/i }))
+    await user.click(screen.getByRole('button', { name: /enough for now/i }))
+    expect(screen.getByText(/pressure did not disappear/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /decide what it needs/i }))
+    await user.click(screen.getByRole('button', { name: /more quiet first/i }))
 
     expect(latest.regulationSessions.at(-1)?.activity).toBe('gentle_ripples')
     expect(latest.regulationSessions.at(-1)?.response).toBe('not_sure')
