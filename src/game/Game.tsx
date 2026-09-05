@@ -245,7 +245,7 @@ export default function Game() {
               { label: 'Let me look around first', onPick: () => {} },
             ],
     }), 400)
-  }, [state.introSeen, state.rebalanceSeen, state.journal.length, load.percentage, go])
+  }, [state, load.percentage, go])
 
   /* E enters what you are standing next to; Escape backs out of anything. */
   useEffect(() => {

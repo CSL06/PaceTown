@@ -8,7 +8,7 @@
  */
 
 import {
-  BLOCKERS, DEMO_DESTINATION, effectiveGuardian, guardianFor, proposeRebalance, wakingMinutes,
+  BLOCKERS, DEMO_DESTINATION, effectiveGuardian, proposeRebalance, wakingMinutes,
   type DailyLoad, type GuardianId,
 } from '../domain'
 import { GUARDIANS, type ViewId } from './layout'
