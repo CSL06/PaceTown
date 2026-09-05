@@ -461,10 +461,23 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       {flow === 'welcome' && active && (
         <MiraPanel kicker="Mira · you were here before" title="Welcome back" onClose={closeFlow}>
           <p className="library-copy">Nothing was lost. Here is where you left it.</p>
-          <div className="library-choices compact">
-            <div><strong>{state.progressNote.trim() || 'No note last time'}</strong><span>What changed</span></div>
-            <div><strong>{state.nextAction.trim() || 'Not set yet'}</strong><span>Saved next action</span></div>
-            <div><strong>{Math.ceil(state.session.elapsedSec / 60)} min so far</strong><span>Time in this session</span></div>
+          <div className="library-return-summary">
+            <div className="library-return-work">
+              <span>Work you are returning to</span>
+              <strong>{sessionTask?.title ?? 'Your task'}</strong>
+            </div>
+            <div className="library-return-item">
+              <span>What changed</span>
+              <strong>{state.progressNote.trim() || 'No note last time'}</strong>
+            </div>
+            <div className="library-return-item">
+              <span>Saved next action</span>
+              <strong>{state.nextAction.trim() || 'Not set yet'}</strong>
+            </div>
+            <div className="library-return-item">
+              <span>Time in this session</span>
+              <strong>{Math.ceil(state.session.elapsedSec / 60)} min so far</strong>
+            </div>
           </div>
           <div className="library-actions">
             <button className="library-primary" type="button" onClick={() => setFlow('session')}>Keep going</button>
