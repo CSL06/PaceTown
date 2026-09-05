@@ -7,7 +7,7 @@
  * page stays true.
  */
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   BANDS, DEMO_DESTINATION, dailyLoad, demoTasks, proposeRebalance, wakingMinutes,
@@ -85,15 +85,12 @@ const ROSTER: RosterEntry[] = [
   },
 ]
 
-const LOOP = [
-  ['Intake', 'Paste your week in plain language. The parser reads it into real commitments.'],
-  ['Understand', 'See where the pressure comes from, itemised. No score, no diagnosis.'],
-  ['Make space', 'Kai proposes what can move. You approve each one, or none.'],
-  ['Work plan', 'One checkpoint with an end you can recognise.'],
-  ['Session', 'Work with company, a timer you control, and a way out when stuck.'],
-  ['Recover', 'Rest chosen for the pressure you were actually under.'],
-  ['Journal', 'What you did, kept. Including the parts that only partly worked.'],
-] as const
+const JOURNEY: Array<{ name: string; detail: string; guardian: GuardianId; action: string }> = [
+  { name: 'Understand the load', detail: 'Turn your calendar and task list into one honest picture.', guardian: 'mira', action: 'Start with awareness' },
+  { name: 'Make space', detail: 'Review what can wait and approve each change yourself.', guardian: 'kai', action: 'Create room to breathe' },
+  { name: 'Get support', detail: 'Break down the next step or work beside someone supportive.', guardian: 'sky', action: 'You do not do this alone' },
+  { name: 'Recover', detail: 'Choose rest that matches the pressure you were actually under.', guardian: 'sol', action: 'Rest · reflect · rebuild' },
+]
 
 const FEATURES = [
   ['Nothing moves without you', 'Every rebalance is a proposal with an approve button per item. The app never rearranges your week behind your back.'],
@@ -102,6 +99,15 @@ const FEATURES = [
   ['Works offline', 'An installable PWA with a local-first save that migrates forward. Your week survives a bad connection and a browser update.'],
   ['Quiet Mode', 'Turns off weather, motion and idle animation in one press. High contrast sits next to it.'],
   ['Your data stays yours', 'Saves live in your browser. Export the whole thing to a file whenever you want it.'],
+] as const
+
+const FEATURE_META = [
+  ['approval', 'amber'],
+  ['checkpoint', 'plum'],
+  ['capacity', 'plum'],
+  ['map', 'moss'],
+  ['quiet', 'teal'],
+  ['lockbox', 'amber'],
 ] as const
 
 function Wordmark() {
@@ -119,7 +125,7 @@ function Stat({ value, prefix = '', suffix = '', decimals = 0, label }: {
 }) {
   const { ref, shown } = useCountUp(value)
   return (
-    <div>
+    <div className="lp-stat">
       <b ref={ref as RefObject<HTMLElement>}>{prefix}{shown.toFixed(decimals)}{suffix}</b>
       <span>{label}</span>
     </div>
@@ -134,6 +140,7 @@ export default function Landing() {
   const page = useReveal<HTMLDivElement>()
   const sceneRef = useRef<HTMLDivElement>(null)
   const [sceneActive, setSceneActive] = useState(true)
+  const [sceneEngaged, setSceneEngaged] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState<GuardianId>('kai')
   const tabRefs = useRef<Partial<Record<GuardianId, HTMLButtonElement | null>>>({})
@@ -152,16 +159,23 @@ export default function Landing() {
     navigate('/town')
   }
 
+  const engageScene = useCallback(() => setSceneEngaged(true), [])
+
   /* The real seeded week, run through the real model. */
-  const { load, movers, freed } = useMemo(() => {
+  const { load, movers, freed, breathingMinutes } = useMemo(() => {
     const tasks = demoTasks()
     const waking = wakingMinutes(DEMO_CAPACITY)
     const computed = dailyLoad(tasks, 'thu', waking)
     const proposal = proposeRebalance(tasks, { day: 'thu', destination: DEMO_DESTINATION, waking })
+    const movedIds = new Set(proposal.moves.map((move) => move.taskId))
+    const movedMinutes = tasks
+      .filter((task) => movedIds.has(task.id))
+      .reduce((total, task) => total + task.estimatedMinutes, 0)
     return {
       load: computed,
       movers: proposal.moves.length,
       freed: Math.max(0, computed.percentage - proposal.after.percentage),
+      breathingMinutes: Math.max(10, Math.round(movedMinutes / 10) * 10),
     }
   }, [])
 
@@ -271,20 +285,23 @@ export default function Landing() {
         <section className="lp-hero">
           <div className="lp-hero-copy">
             <p className="lp-kicker" data-reveal data-reveal-index="0">
-              A cozy town for the week you actually have
+              Thursday mission · {load.percentage.toFixed(0)}% capacity
             </p>
             <h1 data-reveal data-reveal-index="1">
-              Your workload,<br />
-              <em>at a pace you can hold.</em>
+              Your week is too heavy.<br />
+              <em>Let&apos;s make some room.</em>
             </h1>
             <p className="lp-sub" data-reveal data-reveal-index="2">
-              PaceTown reads your real commitments, shows you where the pressure comes from,
-              and helps you make space — without ever moving a thing you did not approve.
-              Five guardians, one small loop, no productivity guilt.
+              PaceTown helps make Thursday lighter without changing anything until you approve it.
             </p>
+            <div className="lp-mission" data-reveal data-reveal-index="3">
+              <span className="lp-mission-label">First mission</span>
+              <strong>Create about {breathingMinutes} minutes of breathing room</strong>
+              <span>Kai found {movers} flexible commitments. Nothing moves until you approve it.</span>
+            </div>
             <div className="lp-hero-actions" data-reveal data-reveal-index="3">
               <Link className="lp-cta lp-cta-big" to={account ? '/town' : '/signup'}>
-                {account ? 'Continue your week' : 'Enter Campus Grove'}
+                {account ? 'Continue today’s mission' : 'Start today’s mission'}
               </Link>
               <button type="button" className="lp-ghost lp-ghost-big" onClick={explore}>
                 Explore the town — no account
@@ -297,8 +314,34 @@ export default function Landing() {
             </ul>
           </div>
 
-          <div className="lp-hero-scene" ref={sceneRef} id="town">
-            <LiveTown active={sceneActive} reducedMotion={reducedMotion} />
+          <div className={`lp-hero-scene${sceneEngaged ? ' is-engaged' : ''}`} ref={sceneRef} id="town">
+            <LiveTown active={sceneActive} reducedMotion={reducedMotion} onTakeOver={engageScene} />
+            <div className={`lp-hero-overlay${sceneEngaged ? ' is-hidden' : ''}`}>
+              <div className="lp-encounter" aria-label="Sky welcomes the player to PaceTown">
+                <span className="lp-encounter-player" role="img" aria-label="Your player character" />
+                <span className="lp-encounter-sky" role="img" aria-label="Sky" />
+                <span className="lp-encounter-name">Sky</span>
+                <span className="lp-encounter-bubble">We&apos;ll take it<br />one step at a time.<i /></span>
+              </div>
+              <nav className="lp-campus-signs" aria-label="Campus destinations">
+                <a href="#guardians">Library <span aria-hidden="true">→</span></a>
+                <a href="#loop">Lecture Hall <span aria-hidden="true">→</span></a>
+                <a href="#guardians">Commons <span aria-hidden="true">→</span></a>
+                <a href="#loop">Quiet Quad <span aria-hidden="true">→</span></a>
+              </nav>
+              <div className="lp-today-board">
+                <strong>Today</strong>
+                <span>□ Database lecture</span>
+                <span>□ ERD assignment</span>
+                <span className="is-done">■ Groceries</span>
+              </div>
+            </div>
+            <div className="lp-scene-hud" aria-hidden="true">
+              <span>Capacity</span>
+              <b>{load.percentage.toFixed(0)}%</b>
+              <div className="lp-hud-bar"><i style={{ width: `${(load.percentage / scaleMax) * 100}%` }} /></div>
+              <div className="lp-hud-labels"><small>Open</small><small>Steady</small><small>Heavy</small><small>{load.band.label}</small></div>
+            </div>
             <div className="lp-scene-caption">
               <span className="lp-live"><i aria-hidden="true" /> Live</span>
               This is the real game running. Walk around.
@@ -306,17 +349,22 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="lp-proof" aria-label="The seeded week, computed live">
-          <div className="lp-proof-head" data-reveal>
-            <p className="lp-eyebrow">Worked example · computed on this page</p>
+        <section className="lp-proof lp-clocktower" aria-label="The seeded week, computed live">
+          <div className="lp-clocktower-copy" data-reveal>
+            <span className="lp-location-sign">Clock Tower · Kai&apos;s planning desk</span>
             <h2>A Thursday that does not fit.</h2>
             <p>
               Nine commitments parsed from one sentence of plain English, weighed against
               {' '}{Math.round(wakingMinutes(DEMO_CAPACITY) / 60)} waking hours.
             </p>
+            <div className="lp-kai-note">
+              <img src="/game/portraits/kai.png" alt="Kai" width="92" height="138" loading="lazy" />
+              <div><strong>Kai</strong><span>I found {movers} flexible {movers === 1 ? 'thing' : 'things'} that can safely move.</span></div>
+            </div>
           </div>
 
-          <div className="lp-meter" data-reveal data-reveal-index="1">
+          <div className="lp-meter lp-clocktower-meter" data-reveal data-reveal-index="1">
+            <span className="lp-board-label">Daily load · planning board</span>
             <div className="lp-meter-head">
               <span className="lp-meter-num">{load.percentage.toFixed(0)}<small>%</small></span>
               <span className="lp-band" data-band={load.band.key}>{load.band.label}</span>
@@ -334,13 +382,13 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="lp-stats" data-reveal data-reveal-index="2">
+          <div className="lp-stats lp-clocktower-stats" data-reveal data-reveal-index="2">
             <Stat value={load.contributors.length} label="flexible things carrying the load" />
             <Stat value={movers} label="Kai can propose moving to Saturday" />
             <Stat value={freed} prefix="−" suffix="%" label="if you approve every one of them" />
           </div>
 
-          <p className="lp-foot" data-reveal data-reveal-index="3">
+          <p className="lp-foot lp-clocktower-foot" data-reveal data-reveal-index="3">
             No judgement in any of that — it is arithmetic, and the app shows its working.
           </p>
         </section>
@@ -404,53 +452,99 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="lp-section lp-section-alt" id="loop">
-          <div className="lp-section-head" data-reveal>
-            <p className="lp-eyebrow">The loop</p>
-            <h2>Seven steps, and you can stop at any of them.</h2>
-            <p>Nothing here is a streak. Leaving halfway through is a recorded outcome, not a broken chain.</p>
+        <section className="lp-section lp-section-alt lp-journey" id="loop">
+          <div className="lp-route-title" data-reveal>
+            <p className="lp-eyebrow">Your route through a heavy week</p>
+            <h2>Four small steps.<br />One lighter Thursday.</h2>
+          </div>
+          <div className="lp-quest-log" data-reveal data-reveal-index="1">
+            <span>Today&apos;s quest log</span>
+            <strong>Thursday&nbsp; <i>{load.percentage.toFixed(0)}%</i> → {Math.max(0, load.percentage - freed).toFixed(0)}%</strong>
+            <div className="lp-quest-bar"><i style={{ width: `${Math.min(100, load.percentage - freed)}%` }} /></div>
+            <small>Nothing moves without your approval.</small>
           </div>
 
           <ol className="lp-loop">
-            {LOOP.map(([name, detail], i) => (
-              <li key={name} data-reveal data-reveal-index={i}>
-                <span className="lp-loop-n">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{name}</h3>
-                <p>{detail}</p>
+            {JOURNEY.map((step, i) => (
+              <li key={step.name} data-reveal data-reveal-index={i}>
+                <span className="lp-loop-n">{i + 1} · {step.name}</span>
+                <span className="lp-loop-pin" aria-hidden="true" />
+                <h3>{step.action}</h3>
+                <p>{step.detail}</p>
+                <div className="lp-step-guide">
+                  <img src={`/game/portraits/${step.guardian}.png`} alt="" loading="lazy" />
+                  <span><b>{GUARDIANS[step.guardian].name}</b><small>{ROSTER.find((entry) => entry.id === step.guardian)?.title}</small></span>
+                </div>
               </li>
             ))}
           </ol>
+          <div className="lp-route-support" data-reveal data-reveal-index="4">
+            <div className="lp-campus-status">
+              <span>Campus status</span>
+              <strong><i /> Open</strong>
+              <strong><i /> Active</strong>
+              <strong><i /> Safe</strong>
+            </div>
+            <div className="lp-route-message">
+              <strong>This isn&apos;t a game about grinding.</strong>
+              <span>It&apos;s a game about getting through.</span>
+              <button type="button" className="lp-cta" onClick={explore}>Start today&apos;s first step</button>
+            </div>
+            <div className="lp-daily-tip">
+              <span>Daily tip</span>
+              <p>Small steps don&apos;t look like much. Until you look back.</p>
+            </div>
+          </div>
         </section>
 
-        <section className="lp-section">
-          <div className="lp-section-head" data-reveal>
-            <p className="lp-eyebrow">Why it is built this way</p>
-            <h2>Consent, not compliance.</h2>
+        <section className="lp-section lp-values lp-charter">
+          <div className="lp-charter-heading" data-reveal>
+            <div>
+              <span className="lp-location-sign">Library wall · campus rules</span>
+              <h2>The PaceTown Campus Charter</h2>
+              <p>Consent, not compliance. The town works with you, never around you.</p>
+            </div>
+            <div className="lp-charter-host">
+              <img src="/game/portraits/sol.png" alt="Sol" width="108" height="162" loading="lazy" />
+              <span className="lp-charter-bubble">No streaks.<br />No guilt.</span>
+            </div>
           </div>
           <div className="lp-features">
-            {FEATURES.map(([title, body], i) => (
-              <div className="lp-feature" key={title} data-reveal data-reveal-index={i}>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </div>
-            ))}
+            {FEATURES.map(([title, body], i) => {
+              const [icon, tone] = FEATURE_META[i]
+              return (
+                <div className={`lp-feature lp-feature-${i + 1}`} data-tone={tone} key={title} data-reveal data-reveal-index={i}>
+                  <span className={`lp-feature-icon lp-icon-${icon}`} aria-hidden="true" />
+                  <div><h3>{title}</h3><p>{body}</p></div>
+                </div>
+              )
+            })}
           </div>
         </section>
 
         <section className="lp-final">
-          <h2 data-reveal>The week is already yours.<br />Let us make it a size you can carry.</h2>
-          <div className="lp-hero-actions" data-reveal data-reveal-index="1">
-            <Link className="lp-cta lp-cta-big" to={account ? '/town' : '/signup'}>
-              {account ? 'Continue your week' : 'Create your account'}
-            </Link>
-            {!account && (
-              <>
-                <Link className="lp-ghost lp-ghost-big" to="/login">I already have one</Link>
-                <button type="button" className="lp-text-btn" onClick={explore}>
-                  or explore without an account
+          <div className="lp-final-party" aria-hidden="true">
+            {ROSTER.map((guardian) => (
+              <img key={guardian.id} src={`/game/portraits/${guardian.id}.png`} alt="" />
+            ))}
+          </div>
+          <div className="lp-final-board" data-reveal>
+            <p className="lp-eyebrow">The campus is open</p>
+            <h2>Make room before burnout does.</h2>
+            <p>Your week is already yours. PaceTown helps you see it clearly, handle what remains, and recover without guilt.</p>
+            <div className="lp-hero-actions" data-reveal data-reveal-index="1">
+              <Link className="lp-cta lp-cta-big" to={account ? '/town' : '/signup'}>
+                {account ? 'Continue your week' : 'Enter PaceTown'}
+              </Link>
+              {!account && (
+                <button type="button" className="lp-ghost lp-ghost-big" onClick={explore}>
+                  Explore without an account
                 </button>
-              </>
-            )}
+              )}
+            </div>
+            <ul className="lp-final-trust">
+              <li>Free to explore</li><li>Works offline</li><li>Your approval, every time</li>
+            </ul>
           </div>
         </section>
       </main>
