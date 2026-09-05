@@ -38,14 +38,19 @@ in the browser with no cloud, AI provider, or Google Calendar required.
   accessibility and data controls; plus cosmetic-only town appearance bought
   with earned coins
 - Mentor demo (`/demo`): campus movement, Sky dialogue, guided breathing activity
-- Campus Grove (`/town`): seeded Thursday at 108%, explainable Daily Load, selective
-  consent-based rebalancing, blocker-driven work plans, full Pace Sessions (timer,
-  scratchpad, help modes, pause-and-regulate), all five regulation mini-games,
-  Pocket of Green IRL quest with local photo verification, private keepsake pipeline
-  with local pixel filter and symbolic fallback, quests, XP/coins, Recovery Garden,
-  Journal, Future Mailbox, Backpack, Guardian Council, Quiet Mode, Exit Quest,
-  versioned saves, export, and an offline PWA shell
-- 212 automated tests across the domain, account, theme and UI layers (`npm test`)
+- Campus Grove (`/town`): seeded Thursday at 103%, explainable Daily Load, the
+  Clock Tower's seven-day Week Board (Kai's consent-first move proposal plus
+  drag-and-drop — nothing moves until you approve), selective consent-based
+  rebalancing, pixel-dialogue Library work plans with a guardian picker (the
+  blocker's own guardian routed first), full Pace Sessions (timer, scratchpad,
+  help modes, pause-and-regulate, one guardian action button), a guardian-voiced
+  resume ritual, all five regulation mini-games, Pocket of Green IRL quest with
+  local photo verification, private keepsake pipeline with local pixel filter and
+  symbolic fallback, quests, XP/coins, Recovery Garden, Journal, Future Mailbox,
+  Backpack, Guardian Council, Quiet Mode, Exit Quest, versioned saves, export,
+  and an offline PWA shell
+- 296 automated tests across 32 files in the domain, account, theme and UI
+  layers (`npm test`)
 - Lint, typecheck, test and build enforced in CI on every push and PR
 
 ## Run PaceTown
@@ -65,6 +70,11 @@ npm run dev
 ```
 
 Open `http://localhost:5173/` in a browser. Vite will print a different address in the terminal if port `5173` is already occupied.
+
+### Developer shortcuts
+
+`http://localhost:5173/reset` wipes the save and session in one go — the quick
+clean-run reset between demo passes (see `prototypeflow.md`).
 
 ### Demo walkthrough
 
@@ -90,19 +100,29 @@ npm test
 npm run test:watch
 ```
 
-226 cases across 20 files. They cover the arithmetic, and they pin the product
+296 cases across 32 files. They cover the arithmetic, and they pin the product
 promises so those cannot quietly rot: self/photo confirmation parity, no
 timer/mini-game/AI academic completion, rebalance previews never mutating tasks,
-bounded energy guidance, and the seeded 108% Thursday.
+bounded energy guidance, and the seeded 103% Thursday.
 
 ### Campus Grove walkthrough (`/town`)
 
-1. Press **Enter Campus Grove**. Kai explains Thursday at **108%** — calculated, not written in.
-2. Enter the sunlit **Clock Tower**, open its seven-day Week Board, compare the real
-   Friday/Saturday/Sunday loads, and approve Kai's preview. Thursday drops toward
-   **91.5%**; Saturday stays Open. Nothing moves until you approve it.
-3. At the **Library**, pick *I do not know where to begin*, review the editable work plan,
-   and start a 20-minute checkpoint Pace Session with Mira.
+1. Press **Enter Campus Grove**. The title hook reads Thursday at **103%** — calculated
+   live from the seeded week, never typed in — and Kai's first-run intro offers
+   **Show me my week**, leading to Town Hall's plain-language list before any numbers.
+2. Enter the sunlit **Clock Tower**. Its seven-day **Week Board** opens on Kai's
+   proposal: three flexible Thursday tasks are softly outlined, with their preview
+   blocks already on Saturday; fixed commitments sit locked and the ERD assignment
+   due tomorrow is never offered. Compare the before/after loads and approve —
+   Thursday falls from **103% to 95%** (Heavy), Saturday goes from **10% to 18%**
+   and stays Open — or uncheck moves and reject. Nothing moves until you approve
+   it. The same board is a drag-and-drop calendar: flexible tasks drag, fixed ones
+   never do, deadline guards refuse late moves, and **Undo last move** is one click.
+3. At the **Library**, pick *I do not know where to begin*. A message box opens like
+   a dialogue with Mira — her opener and the editable work plan; **← Back** returns
+   to the blocker list so the choice is never a trap, and **Work with** switches
+   guardians with the blocker's own guardian routed as the default. Start a
+   20-minute checkpoint Pace Session with Mira.
 4. Ask Mira to *Explain*, record **Partial progress**, and save
    *Add the enrolment junction entity* as the next action.
 5. Pause into **Gentle Ripples**, then take Sol's **Pocket of Green** (self-confirm or
@@ -113,7 +133,8 @@ bounded energy guidance, and the seeded 108% Thursday.
 
 Reload at any point: you return to the title screen with progress intact (versioned
 `localStorage` saves under `pacetown.game`). **Export save (JSON)** and
-**Delete local data** live at Home.
+**Delete local data** live at Home; `http://localhost:5173/reset` wipes the save
+and session in one go.
 
 ## Accounts
 
