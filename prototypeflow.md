@@ -122,8 +122,9 @@ stay in charge of every change.*
      always one click.
    - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
      stays Open. *"Nothing moved until I approved it. Reject would have left
-     my week exactly as it was."* (The board's own numbers read 102.9 → 94.6
-     precisely — Heavy either way you read it.)
+my week exactly as it was."* (103% and 95% are the board's rounded
+      on-screen readings; precisely they are 102.9 → 94.6 — Heavy either way
+      you read it.)
    - Numbers assume the seeded week, unedited. If you edited anything at Town
      Hall, expect different figures — that is the parser working live, not the
      demo breaking.
@@ -174,10 +175,11 @@ company.*
    the next action, click **Save and leave**.
    - **What just happened (the logic):** partial progress earns 20 XP because in
      this town, naming the next action *is* the success condition — completed,
-     partial, blocked, and rescheduled are all valid endings. Watch the HUD
-     quest card flip to *Recover*: work is banked, so the system foregrounds
-     exactly one next thing instead of five equal buttons — the map, the dock,
-     and the Council all follow the same shared rule.
+partial, blocked, and rescheduled are all valid endings. Watch the HUD
+      quest card flip to *Take a short reset* — its single destination is the
+      Recover view: work is banked, so the system foregrounds exactly one next
+      thing instead of five equal buttons — the map, the dock, and the Council
+      all follow the same shared rule.
    - **Leave and come back:** the quest card becomes a guardian-voiced
      **resume ritual** — your guardian greets you with your task, checkpoint,
      time so far, and the saved next action, with Resume / Edit plan /
@@ -247,7 +249,7 @@ costs you your place.*
 | Question | Answer to give (and where to click) |
 |---|---|
 | What if I disagree with the plan? | Reject the proposal, rewrite any checkpoint, pick another blocker, drag a task yourself — approval is always explicit (Clock Tower Week Board, Library). |
-| What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover first**; Exit Quest at Home closes the day with the next action kept. |
+| What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover**; Exit Quest at Home closes the day with the next action kept. |
 | Where is my data? | Settings or Home → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
 | Does it work on a phone? | Same flow at 390px: Town List drawer, thumb D-pad, bottom sheet. Reduced-motion and high-contrast in Home and the top bar. |
 | What proves the math? | `npm test` — 296 cases pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
@@ -374,10 +376,10 @@ progress, then leave the Session and come back to the map.
 **Guardian Council** (`Places.tsx` → Council). What it is: when pressures
 compete, the three most relevant guardians each give one short read of the
 numbers (Mira names your largest contributor), and one recommendation is
-foregrounded: do one checkpoint, make space, recover first, gather what's
+foregrounded: do one checkpoint, make space, recover, gather what's
 missing, or choose for yourself. Why it exists: one clear suggestion beats five
 equal buttons when you're overloaded — but the student always decides. How to
-show it: open it after the session; it should say Recover first.
+show it: open it after the session; it should say Recover.
 
 ### Recover — rest without losing progress
 
@@ -467,7 +469,7 @@ the bottom-left card that always shows one foregrounded quest (up to three
 exist; only one is pushed under high pressure) plus a resume card when a
 checkpoint is in progress. Quests can be replaced without penalty; frequently
 skipped kinds appear less often. The map, the dock, and the Council follow the
-same shared rule, so they never disagree. Name it when it flips to "Recover."
+same shared rule, so they never disagree. Name it when it flips to "Take a short reset."
 
 **Guardian dock** (`src/game/GuardianDock.tsx`). What it is: all five guardians
 on the left rail, each showing what their own module currently says about your
@@ -475,7 +477,7 @@ week and one button for the screen worth opening right now. A guardian is
 "waiting" only when something of theirs is genuinely open — the dock never
 nags or counts down. Why it exists: guidance with a face, derived from the
 domain layer rather than written copy. How to show it: hover Kai before the
-rebalance ("2 things can move to Saturday"), then Mira after the session
+rebalance ("3 things can move to Saturday"), then Mira after the session
 ("1 checkpoint still open").
 
 **Home + Exit Quest** (`Places.tsx` → Home). What it is: Quiet Mode (less
