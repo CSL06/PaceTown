@@ -293,7 +293,7 @@ costs you your place.*
 | What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover**; Exit Quest at Home closes the day with the next action kept. |
 | Where is my data? | Settings or Home → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
 | Does it work on a phone? | Same flow at 390px: Town List drawer, thumb D-pad, bottom sheet. Reduced-motion and high-contrast in Home and the top bar. |
-| What proves the math? | `npm test` — 315 cases pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
+| What proves the math? | `npm test` — 319 cases across 35 files pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
 
 ## Troubleshooting (live-demo insurance)
 
