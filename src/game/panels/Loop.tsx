@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import {
   BLOCKERS, DEMO_DESTINATION, EFFORT_WEIGHT, PLAN_TEMPLATES,
   PRIORITY_WEIGHT, URGENCY_WEIGHT, applySelected, bandFor, buildCheckpoints, dailyLoad,
-  extractDeliverables, guideLines, guardianFor, parseSchedule, proposeRebalance, REWARDS,
+  extractDeliverables, guideLines, parseSchedule, proposeRebalance, REWARDS,
   resolveCheckpoint, sessionReward, effectiveGuardian, splitCheckpoint,
   wakingMinutes, type GuardianId, type HelpMode, type Task,
 } from '../../domain'
@@ -713,7 +713,7 @@ export function Session({ state, load, update, go, toast }: PanelProps) {
         )}
         {guardian === 'sol' && (
           <button className="secondary" type="button" onClick={() => {
-            update((s) => ({ ...s, checkpoints: s.checkpoints.map((c) => c.id === active.id ? { ...c, estimatedMinutes: 5 } : c) }))
+            update((s) => ({ ...s, checkpoints: s.checkpoints.map((c) => c.id === active.id ? { ...c, estimatedMinutes: Math.min(5, c.estimatedMinutes) } : c) }))
             toast('Shrunk to a 5-minute step.')
           }}>Shrink to a 5-minute step</button>
         )}

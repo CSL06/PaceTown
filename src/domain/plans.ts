@@ -188,6 +188,7 @@ export function splitCheckpoint(checkpoints: readonly Checkpoint[], id: string):
   const index = checkpoints.findIndex((c) => c.id === id)
   if (index === -1) return [...checkpoints]
   const target = checkpoints[index]
+  if (target.estimatedMinutes < 2) return [...checkpoints]
   const first = Math.floor(target.estimatedMinutes / 2)
   const firstHalf: Checkpoint = { ...target, estimatedMinutes: first }
   const secondHalf: Checkpoint = {

@@ -178,4 +178,11 @@ describe('splitCheckpoint', () => {
     splitCheckpoint(list, 'c1')
     expect(list).toEqual(one())
   })
+
+  it('leaves tiny checkpoints unchanged instead of splitting to zero', () => {
+    const list: Checkpoint[] = ([
+      { id: 'c1', title: 'Do the part', definitionOfDone: 'Done.', estimatedMinutes: 1, status: 'pending' },
+    ])
+    expect(splitCheckpoint(list, 'c1')).toEqual(list)
+  })
 })

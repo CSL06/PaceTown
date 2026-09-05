@@ -3,7 +3,7 @@
  * action, with resume / edit / something-else. No shame or history content.
  */
 import { effectiveGuardian } from '../domain'
-import { GUARDIANS, type ViewId } from './layout'
+import { type ViewId } from './layout'
 import { Guardian } from './panels/Guardian'
 import type { GameState } from './state'
 
@@ -16,7 +16,7 @@ export function ResumeCard({ state, go }: { state: GameState; go: (view: ViewId 
   const guardian = effectiveGuardian(state.blocker, state.guardianOverride)
   const checkpoint = state.checkpoints.find((c) => c.id === state.activeCheckpointId)
   const task = state.tasks.find((t) => t.id === state.activeTaskId)
-  const next = state.nextAction.trim()
+  const next = (state.nextAction ?? '').trim()
   return (
     <div>
       <div className="eyebrow">Where you left off</div>

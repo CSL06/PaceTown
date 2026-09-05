@@ -40,4 +40,16 @@ describe('guardian picker', () => {
     rerender(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
     expect(picker().getByRole('button', { name: /sol/i })).toHaveAttribute('aria-pressed', 'true')
   })
+
+  it('clears the override when a different blocker is picked', () => {
+    const p = propsFor()
+    const { rerender } = render(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    const picker = () => within(screen.getByRole('group', { name: /choose your guardian/i }))
+    const blockers = () => within(screen.getByRole('group', { name: /what is blocking/i }))
+    fireEvent.click(picker().getByRole('button', { name: /sol/i }))
+    expect(p.state().guardianOverride).toBe('sol')
+    rerender(<Work state={p.state()} load={p.load} update={p.update} go={p.go} toast={p.toast} />)
+    fireEvent.click(blockers().getByRole('button', { name: /too large/i }))
+    expect(p.state().guardianOverride).toBeNull()
+  })
 })
