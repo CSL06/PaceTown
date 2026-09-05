@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { useEffect, useState } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { dailyLoad, wakingMinutes } from '../../domain'
@@ -78,11 +78,13 @@ describe('recovery activity scenes', () => {
     const user = userEvent.setup()
     let latest = initialState()
     render(<Harness view="lanterns" onState={(state) => { latest = state }} />)
+    await user.click(screen.getByRole('button', { name: /something i need to remember/i }))
     await user.type(screen.getByPlaceholderText(/only if words help/i), 'Call home when I have space')
     await user.click(screen.getByRole('button', { name: /light the lantern/i }))
-    await user.click(screen.getByRole('button', { name: /set it down here/i }))
+    await user.click(screen.getByRole('button', { name: /by my backpack/i }))
+    await user.click(screen.getByRole('button', { name: /set it down with meaning/i }))
     expect(latest.recoveryNotes).toHaveLength(0)
-    await user.click(screen.getByRole('button', { name: /keep it in the backpack/i }))
+    await user.click(within(screen.getByRole('dialog', { name: /recovery check-in/i })).getByRole('button', { name: /keep it intentionally/i }))
     expect(latest.recoveryNotes.at(-1)?.text).toBe('Call home when I have space')
   })
 })

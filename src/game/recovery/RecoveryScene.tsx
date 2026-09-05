@@ -16,25 +16,6 @@ const META: Record<RecoveryView, { title: string; place: string; guardian: strin
   lanterns: { title: 'Night Lanterns', place: 'Market', guardian: 'Goh', activity: 'night_lanterns' },
 }
 
-const ATLAS_SIZE: Record<RecoveryView, [number, number]> = {
-  ripples: [256, 96], chime: [256, 64], warmcup: [256, 96],
-  firefly: [256, 96], lanterns: [256, 160],
-}
-
-function Sprite({ game, index, className = '', label }: {
-  game: RecoveryView; index: number; className?: string; label?: string
-}) {
-  const [w, h] = ATLAS_SIZE[game]
-  const x = (index % 8) * 32
-  const y = Math.floor(index / 8) * 32
-  return <span className={`recovery-sprite ${className}`} role={label ? 'img' : undefined}
-    aria-label={label} aria-hidden={label ? undefined : true} style={{
-      '--atlas': `url(/game/recovery/atlases/${game === 'warmcup' ? 'warm-cup' : game === 'firefly' ? 'firefly-stories' : game === 'lanterns' ? 'night-lanterns' : game === 'ripples' ? 'gentle-ripples' : 'chime-drift'}.png)`,
-      '--atlas-w': `${w * 2}px`, '--atlas-h': `${h * 2}px`,
-      '--sprite-x': `${-x * 2}px`, '--sprite-y': `${-y * 2}px`,
-    } as CSSProperties} />
-}
-
 interface CompletionProps {
   response: Response | null
   setResponse: (value: Response | null) => void
@@ -432,41 +413,91 @@ function FireflyGame(props: PanelProps) {
 
 const SYMBOLS = [['○', 'Ongoing'], ['△', 'A climb'], ['～', 'Passing wave'], ['☆', 'A wish']] as const
 
+const LANTERN_CONCERNS = [
+  ['unfinished', 'Something unfinished', 'Acknowledge it without pretending it is solved.'],
+  ['control', 'Something outside my control', 'Give it a boundary for tonight.'],
+  ['remember', 'Something I need to remember', 'Keep it safely without rehearsing it.'],
+  ['release', 'Something I’m ready to release', 'Let the lantern carry it away.'],
+  ['wordless', 'Something without words', 'A symbol is enough.'],
+] as const
+
+type LanternPlace = 'path' | 'gate' | 'community' | 'water' | 'backpack'
+
+const LANTERN_PLACES: { id: LanternPlace; label: string; detail: string }[] = [
+  { id: 'path', label: 'Near the path', detail: 'Return to it soon' },
+  { id: 'gate', label: 'At tomorrow’s gate', detail: 'Leave it for tomorrow' },
+  { id: 'community', label: 'Beside other lanterns', detail: 'Ask for support' },
+  { id: 'water', label: 'On the water', detail: 'Release it' },
+  { id: 'backpack', label: 'By my Backpack', detail: 'Keep it intentionally' },
+]
+
+function LanternAsset({ index, className = '', label }: { index: number; className?: string; label?: string }) {
+  const column = index % 4
+  const row = Math.floor(index / 4)
+  return <span className={`lantern-production ${className}`} role={label ? 'img' : undefined}
+    aria-label={label} aria-hidden={label ? undefined : true} style={{
+      backgroundPosition: `${column * (100 / 3)}% ${row * 100}%`,
+    }} />
+}
+
 function LanternGame(props: PanelProps) {
   const { state, go } = props
+  const [concern, setConcern] = useState<number | null>(null)
   const [design, setDesign] = useState(0)
   const [symbol, setSymbol] = useState(0)
   const [phrase, setPhrase] = useState('')
   const [lit, setLit] = useState(false)
-  const [placed, setPlaced] = useState<{ x: number; y: number } | null>(null)
+  const [placed, setPlaced] = useState<LanternPlace | null>(null)
   const [done, setDone] = useState(false)
   const [response, setResponse] = useState<Response | null>(null)
   const finish = useRecoveryFinish(props, 'lanterns')
-  const frame = design * 3 + (lit ? 2 : 0)
+  const savedText = phrase || (concern === null ? `${SYMBOLS[symbol][1]} lantern` : LANTERN_CONCERNS[concern][1])
+  const chosenPlace = LANTERN_PLACES.find((place) => place.id === placed)
+  const placementOption = placed === 'path'
+    ? { label: 'Return to it soon', detail: 'Carry the acknowledgment into one small next step.', view: state.activeCheckpointId ? 'session' as const : 'work' as const }
+    : placed === 'gate'
+      ? { label: 'Leave it for tomorrow', detail: 'Save the words for later and keep resting now.', view: 'calm' as const, destination: 'mailbox' as const, text: savedText }
+      : placed === 'community'
+        ? { label: 'Ask for support', detail: 'Bring the concern to Mira and make the blockage visible.', view: 'work' as const }
+        : placed === 'backpack'
+          ? { label: 'Keep it intentionally', detail: 'Keep the phrase as a private recovery note.', view: 'backpack' as const, destination: 'backpack' as const, text: savedText }
+          : { label: 'Release it here', detail: 'Leave the concern on the water. No phrase is stored.', view: null }
+
   return <Shell view="lanterns" state={state} go={go}>
-    <section className="recovery-playfield lantern-courtyard" onPointerDown={(event) => {
-      if (!lit || (event.target as HTMLElement).closest('button,input')) return
-      const box = event.currentTarget.getBoundingClientRect()
-      setPlaced({ x: ((event.clientX - box.left) / box.width) * 100, y: ((event.clientY - box.top) / box.height) * 100 }); setDone(true)
-    }}>
-      <div className="lantern-workbench">
-        <b>Shape a lantern for what you are carrying</b>
-        <div className="lantern-designs">{[0, 1, 2, 3].map((item) => <button key={item} type="button" aria-pressed={design === item} onClick={() => setDesign(item)}><Sprite game="lanterns" index={item * 3} label={`Lantern design ${item + 1}`} /></button>)}</div>
-        <div className="lantern-symbols">{SYMBOLS.map((item, index) => <button key={item[1]} type="button" aria-pressed={symbol === index} onClick={() => setSymbol(index)}><b>{item[0]}</b><span>{item[1]}</span></button>)}</div>
-        <label>A private phrase <small>(optional; not stored unless you choose)</small><input maxLength={120} value={phrase} onChange={(event) => setPhrase(event.target.value)} placeholder="Only if words help" /></label>
-        <button type="button" onClick={() => setLit(true)}>{lit ? 'Lantern glowing' : 'Light the lantern'}</button>
-      </div>
-      <div className={`lantern-preview${placed ? ' placed' : ''}`} style={placed ? { left: `${placed.x}%`, top: `${placed.y}%` } : undefined}>
-        <Sprite game="lanterns" index={frame} label={`${SYMBOLS[symbol][1]} lantern`} /><b>{SYMBOLS[symbol][0]}</b>
-      </div>
-      {lit && !placed && <div className="recovery-instruction"><b>Place it in the courtyard.</b><span>Tap anywhere beyond the workbench.</span></div>}
+    <section className="recovery-playfield lantern-courtyard">
+      <LanternAsset index={7} className="lantern-goh" label="Goh kneeling beside a lantern" />
+      {concern === null ? <div className="lantern-concern-card">
+        <span className="recovery-kicker">Goh asks one thing</span>
+        <h2>What should this light hold?</h2>
+        <p>You do not need to explain it. This decides what setting the lantern down will mean.</p>
+        <div>{LANTERN_CONCERNS.map((item, index) => <button key={item[0]} type="button" onClick={() => setConcern(index)}>
+          <b>{item[1]}</b><small>{item[2]}</small>
+        </button>)}</div>
+      </div> : <>
+        <div className="lantern-workbench">
+          <span className="recovery-kicker">{LANTERN_CONCERNS[concern][1]}</span>
+          <b>Give the concern a gentle container</b>
+          <div className="lantern-designs">{[0, 1, 2, 3].map((item) => <button key={item} type="button" aria-label={`Lantern design ${item + 1}`} aria-pressed={design === item} onClick={() => { setDesign(item); setLit(false); setPlaced(null) }}><LanternAsset index={item} /></button>)}</div>
+          <div className="lantern-symbols">{SYMBOLS.map((item, index) => <button key={item[1]} type="button" aria-pressed={symbol === index} onClick={() => setSymbol(index)}><b>{item[0]}</b><span>{item[1]}</span></button>)}</div>
+          <label>A private phrase <small>(optional; only stored by an explicit keep choice)</small><input maxLength={120} value={phrase} onChange={(event) => setPhrase(event.target.value)} placeholder="Only if words help" /></label>
+          <button type="button" onClick={() => { setLit(true); setPlaced(null) }}>{lit ? 'Lantern glowing' : 'Light the lantern'}</button>
+        </div>
+        <div className={`lantern-preview${lit ? ' lit' : ''}${placed ? ` placed placement-${placed}` : ''}`}>
+          <LanternAsset index={!lit ? design : placed === 'water' ? 6 : placed ? 5 : 4} label={`${SYMBOLS[symbol][1]} lantern`} /><b>{SYMBOLS[symbol][0]}</b>
+        </div>
+        {lit && <div className="lantern-places" aria-label="Choose where the lantern belongs">
+          {LANTERN_PLACES.map((place) => <button key={place.id} type="button" className={`lantern-place-${place.id}`} aria-pressed={placed === place.id} onClick={() => setPlaced(place.id)}>
+            <b>{place.label}</b><small>{place.detail}</small>
+          </button>)}
+        </div>}
+        {lit && !placed && <div className="recovery-instruction"><b>Where should this concern live after tonight?</b><span>The place is the decision—not a score.</span></div>}
+      </>}
     </section>
-    <nav className="recovery-controls"><span>Your words stay private unless you deliberately keep them.</span><button className="primary" type="button" disabled={!lit} onClick={() => setDone(true)}>Set it down here</button></nav>
+    <nav className="recovery-controls"><span>{chosenPlace ? `${chosenPlace.label}: ${chosenPlace.detail}.` : 'Lighting acknowledges the concern; it does not claim to solve it.'}</span><button className="primary" type="button" disabled={!placed} onClick={() => setDone(true)}>Set it down with meaning</button></nav>
     {done && <Completion response={response} setResponse={setResponse} finish={finish}
       onBack={() => setDone(false)} options={[
-        { label: 'Keep it in the Backpack', detail: phrase ? 'Keep the phrase as a private recovery note.' : 'Keep a symbol of this pause.', view: 'backpack', destination: 'backpack', text: phrase || `${SYMBOLS[symbol][1]} lantern` },
-        { label: 'Send it to the Future Mailbox', detail: 'Choose to carry the words forward.', view: 'mailbox', destination: 'mailbox', text: phrase || `${SYMBOLS[symbol][1]} lantern` },
-        { label: 'Leave it here', detail: 'Release it. No phrase is stored.', view: null },
+        placementOption,
+        { label: 'Stay in the quiet courtyard', detail: 'Keep resting without storing any words.', view: 'calm' },
       ]} />}
   </Shell>
 }
