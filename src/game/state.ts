@@ -9,7 +9,7 @@
 import {
   DEFAULT_COSMETICS, DEMO_BRIEF, DEMO_CAPACITY, DEMO_SCHEDULE_TEXT, demoTasks,
   type BlockerKind, type Capacity, type Checkpoint, type CosmeticSlot,
-  type RegulationId, type Task,
+  type GuardianId, type RegulationId, type Task,
 } from '../domain'
 import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
@@ -48,6 +48,8 @@ export interface GameState {
   activeCheckpointId: string | null
   /** The task the active plan and session belong to. */
   activeTaskId: string | null
+  /** Explicit guardian pick; null follows the blocker routing. */
+  guardianOverride: GuardianId | null
   notes: string
   outcome: 'completed' | 'partial' | 'blocked' | 'rescheduled' | null
   /** Last checkpoint+outcome saved — an exact re-save is skipped, never re-paid. */
@@ -146,6 +148,7 @@ export function initialState(): GameState {
     checkpoints: [],
     activeCheckpointId: null,
     activeTaskId: null,
+    guardianOverride: null,
     notes: '',
     outcome: null,
     savedSessionKey: null,
