@@ -18,6 +18,7 @@ function stub(): { state: GameState; go: Mock<(view: ViewId | null) => void> } {
     tasks: [{ id: 't1', title: 'ERD' } as unknown as Task],
     activeTaskId: 't1',
     nextAction: 'Read the brief once',
+    progressNote: '',
   }
   state.activeCheckpointId = state.checkpoints[0].id
   state.session.elapsedSec = 150
@@ -53,5 +54,19 @@ describe('ResumeCard', () => {
     render(<ResumeCard state={state} go={go} />)
     expect(screen.getByText('Sol')).toBeInTheDocument()
     expect(screen.getByText(/no next action saved yet/i)).toBeInTheDocument()
+  })
+
+  it('shows what changed last time with the outcome label', () => {
+    const { state, go } = stub()
+    state.progressNote = 'Mapped two entities'
+    state.outcome = 'partial'
+    render(<ResumeCard state={state} go={go} />)
+    expect(screen.getByText(/Last time \(Partial progress\): Mapped two entities/)).toBeInTheDocument()
+  })
+
+  it('omits the last-time line when no note was saved', () => {
+    const { state, go } = stub()
+    render(<ResumeCard state={state} go={go} />)
+    expect(screen.queryByText(/Last time/)).not.toBeInTheDocument()
   })
 })
