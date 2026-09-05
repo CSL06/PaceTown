@@ -28,6 +28,14 @@ describe('weekly calendar', () => {
     expect(thursday.slice(firstUntimed).every((task) => task.startMinute === undefined)).toBe(true)
   })
 
+  it('can include completed commitments for a visible calendar history', () => {
+    const tasks = demoTasks()
+    const completed = { ...tasks[0], status: 'completed' as const }
+    const changed = tasks.map((task) => task.id === completed.id ? completed : task)
+    expect(tasksForDay(changed, completed.day)).not.toContainEqual(completed)
+    expect(tasksForDay(changed, completed.day, true)).toContainEqual(completed)
+  })
+
   it('derives every day load from the actual week', () => {
     const loads = weekLoads(demoTasks(), 900)
     expect(Object.keys(loads)).toHaveLength(7)

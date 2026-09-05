@@ -37,27 +37,31 @@ function TaskBlock({ task, selected, suggested, leaving, onToggle, onInspect, dr
   const time = taskTime(task)
   const className = [
     'week-task', `is-${task.category}`, task.flexibility === 'fixed' ? 'is-fixed' : '',
+    task.status === 'completed' ? 'is-completed' : '',
     selected ? 'is-selected' : '', suggested ? 'is-ghost' : '', leaving ? 'is-leaving' : '',
   ].filter(Boolean).join(' ')
   const content = (
     <>
       <span className="week-task-top">
         <span>{time ?? `${task.estimatedMinutes} min · ${task.flexibility}`}</span>
-        {task.flexibility === 'fixed' && <span aria-label="Fixed commitment">⌑</span>}
+        {task.status === 'completed'
+          ? <span aria-label="Completed commitment">Done ✓</span>
+          : task.flexibility === 'fixed' && <span aria-label="Fixed commitment">⌑</span>}
       </span>
       <strong>{task.title}</strong>
       {suggested && <span className="week-task-note">Preview here</span>}
     </>
   )
 
-  return <div data-task-id={suggested ? undefined : task.id} draggable={draggable && task.flexibility === 'flexible'}
+  return <div data-task-id={suggested || task.status === 'completed' ? undefined : task.id}
+    draggable={draggable && task.flexibility === 'flexible' && task.status !== 'completed'}
     onDragStart={(event) => { event.dataTransfer.setData('text/plain', task.id); event.dataTransfer.effectAllowed = 'move' }}>
     {onInspect ? (
     <button type="button" className={className} onClick={onInspect} aria-label={`Details for ${task.title}`}>
       {content}
     </button>
   ) : <div className={className}>{content}</div>}
-    {draggable && task.flexibility === 'flexible' && <span className="task-drag-handle" data-drag-id={task.id} aria-label={`Drag ${task.title}`}>⠿</span>}
+    {draggable && task.flexibility === 'flexible' && task.status !== 'completed' && <span className="task-drag-handle" data-drag-id={task.id} aria-label={`Drag ${task.title}`}>⠿</span>}
     {onToggle && <button type="button" className="preview-select" aria-pressed={selected} onClick={onToggle}>
       {selected ? 'Include in preview ✓' : 'Include in preview'}</button>}
   </div>
@@ -205,7 +209,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
       <div className="week-frame">
         <div className="week-grid" role="list" aria-label="Commitments from Monday through Sunday">
           {WEEK_DAYS.map((day) => {
-            const tasks = tasksForDay(state.tasks, day.key)
+            const tasks = tasksForDay(state.tasks, day.key, true)
             const load = loads[day.key]
             const ghosts = day.key === destination
               ? selectedMoves.map((move) => state.tasks.find((task) => task.id === move.taskId)!).filter(Boolean)

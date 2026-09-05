@@ -68,7 +68,7 @@ export function availableMinutes(
   waking: number,
 ): { fixed: number; available: number } {
   const fixed = tasks
-    .filter((t) => t.day === day && t.flexibility === 'fixed')
+    .filter((t) => t.day === day && t.flexibility === 'fixed' && t.status !== 'completed')
     .reduce((sum, t) => sum + t.estimatedMinutes, 0)
   return { fixed, available: Math.max(0, waking - fixed) }
 }
@@ -77,7 +77,7 @@ export function dailyLoad(tasks: readonly Task[], day: string, waking: number): 
   const { fixed, available } = availableMinutes(tasks, day, waking)
 
   const contributors: LoadContribution[] = tasks
-    .filter((t) => t.day === day && t.flexibility === 'flexible')
+    .filter((t) => t.day === day && t.flexibility === 'flexible' && t.status !== 'completed')
     .map((task) => ({ task, weighted: weightedDemand(task) }))
     .sort((a, b) => b.weighted - a.weighted)
 

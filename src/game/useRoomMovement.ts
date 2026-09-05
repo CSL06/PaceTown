@@ -7,13 +7,33 @@ const KEYS: Record<string, Direction> = {
   arrowup: 'up', arrowleft: 'left', arrowdown: 'down', arrowright: 'right',
 }
 
-export function useRoomMovement(blocked: boolean) {
+interface RoomMovementOptions<Station extends string> {
+  stations?: Record<Station, { x: number; y: number }>
+  avatarClass?: string
+  minX?: number
+  maxX?: number
+  minY?: number
+  maxY?: number
+  talkRadius?: number
+}
+
+export function useRoomMovement<Station extends string = RoomStation>(
+  blocked: boolean,
+  options: RoomMovementOptions<Station> = {},
+) {
+  const stations = options.stations ?? STATION_POSITION as Record<Station, { x: number; y: number }>
+  const avatarClass = options.avatarClass ?? 'clock-player'
+  const minX = options.minX ?? 8
+  const maxX = options.maxX ?? 92
+  const minY = options.minY ?? 54
+  const maxY = options.maxY ?? 94
+  const talkRadius = options.talkRadius ?? 120
   const room = useRef<HTMLDivElement>(null)
   const avatar = useRef<HTMLDivElement>(null)
   const position = useRef({ x: 50, y: 92 })
   const keys = useRef<Partial<Record<Direction, boolean>>>({})
   const target = useRef<{ x: number; y: number; arrive: () => void } | null>(null)
-  const [near, setNear] = useState<RoomStation | null>(null)
+  const [near, setNear] = useState<Station | null>(null)
 
   useEffect(() => {
     keys.current = {}
@@ -41,18 +61,18 @@ export function useRoomMovement(blocked: boolean) {
         const magnitude = Math.hypot(dx, dy)
         if (!blocked && magnitude > 0) {
           const travel = Math.min(distance, 280 * dt)
-          position.current.x = Math.max(8, Math.min(92, position.current.x + dx / magnitude * travel / width * 100))
-          position.current.y = Math.max(54, Math.min(94, position.current.y + dy / magnitude * travel / height * 100))
+          position.current.x = Math.max(minX, Math.min(maxX, position.current.x + dx / magnitude * travel / width * 100))
+          position.current.y = Math.max(minY, Math.min(maxY, position.current.y + dy / magnitude * travel / height * 100))
           facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up')
         }
-        el.className = `clock-player avatar f-${facing}${!blocked && magnitude > 0 ? ' walking' : ''}`
+        el.className = `${avatarClass} avatar f-${facing}${!blocked && magnitude > 0 ? ' walking' : ''}`
         el.style.left = `${position.current.x}%`
         el.style.top = `${position.current.y}%`
-        const nearest = (['board', 'kai', 'door'] as const).map((id) => ({ id,
-          distance: Math.hypot((STATION_POSITION[id].x - position.current.x) * width / 100,
-            (STATION_POSITION[id].y - position.current.y) * height / 100),
+        const nearest = (Object.keys(stations) as Station[]).map((id) => ({ id,
+          distance: Math.hypot((stations[id].x - position.current.x) * width / 100,
+            (stations[id].y - position.current.y) * height / 100),
         })).sort((a, b) => a.distance - b.distance)[0]
-        setNear(nearest.distance <= 120 ? nearest.id : null)
+        setNear(nearest && nearest.distance <= talkRadius ? nearest.id : null)
         if (!blocked && target.current && distance <= 280 * dt) {
           const action = target.current.arrive
           target.current = null
@@ -81,7 +101,7 @@ export function useRoomMovement(blocked: boolean) {
       window.removeEventListener('keyup', up)
       window.removeEventListener('blur', release)
     }
-  }, [blocked])
+  }, [avatarClass, blocked, maxX, maxY, minX, minY, stations, talkRadius])
 
   return { room, avatar, position, near,
     walkTo: (point: { x: number; y: number }, arrive: () => void) => { target.current = { ...point, arrive } },

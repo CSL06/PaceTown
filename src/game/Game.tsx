@@ -16,6 +16,7 @@ import {
 } from '../domain'
 import { Campus, daylight } from './Campus'
 import { ClockTower } from './ClockTower'
+import { Library } from './Library'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { GUARDIANS, PLACES, doorstep, type Place, type ViewId } from './layout'
@@ -114,7 +115,9 @@ export default function Game() {
     if (view) sfx.enter(); else sfx.close()
     setState((s) => view === 'rebalance'
       ? { ...s, scene: 'clock-tower', view: null }
-      : { ...s, scene: view ? 'campus' : s.scene, view })
+      : view === 'work' || view === 'session'
+        ? { ...s, scene: 'library', view }
+        : { ...s, scene: view ? 'campus' : s.scene, view })
     setLive(view === 'rebalance' ? 'Clock Tower entered.'
       : view ? `${VIEW_TITLE[view]} opened.` : 'View closed.')
   }, [])
@@ -331,6 +334,22 @@ export default function Game() {
     return (
       <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
         <ClockTower state={state} update={update} go={go} toast={toast}
+          onExit={() => {
+            setState((s) => ({ ...s, scene: 'campus', view: null }))
+            setLive('Back on the campus.')
+          }} />
+        <div className="toasts">
+          {toasts.map((t) => <div className="toast" key={t.id}>{t.text}</div>)}
+        </div>
+        <div className="sr" aria-live="polite">{live}</div>
+      </div>
+    )
+  }
+
+  if (state.scene === 'library') {
+    return (
+      <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        <Library state={state} update={update} go={go} toast={toast}
           onExit={() => {
             setState((s) => ({ ...s, scene: 'campus', view: null }))
             setLive('Back on the campus.')

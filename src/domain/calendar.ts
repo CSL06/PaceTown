@@ -39,9 +39,9 @@ export function taskTime(task: Pick<Task, 'startMinute' | 'endMinute'>): string 
     : `${formatMinute(task.startMinute)}–${formatMinute(task.endMinute)}`
 }
 
-export function tasksForDay(tasks: readonly Task[], day: string): Task[] {
+export function tasksForDay(tasks: readonly Task[], day: string, includeCompleted = false): Task[] {
   return tasks
-    .filter((task) => task.day === day && task.status !== 'completed')
+    .filter((task) => task.day === day && (includeCompleted || task.status !== 'completed'))
     .slice()
     .sort((a, b) => {
       if (a.calendarOrder !== undefined || b.calendarOrder !== undefined) return (a.calendarOrder ?? Infinity) - (b.calendarOrder ?? Infinity)

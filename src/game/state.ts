@@ -121,7 +121,7 @@ export interface GameState {
   facing: 'up' | 'down' | 'left' | 'right'
   quiet: boolean
   contrast: boolean
-  scene: 'campus' | 'clock-tower'
+  scene: 'campus' | 'clock-tower' | 'library'
   view: ViewId | null
 }
 
