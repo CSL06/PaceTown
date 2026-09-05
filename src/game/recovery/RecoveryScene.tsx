@@ -373,36 +373,59 @@ function WarmCupGame(props: PanelProps) {
 }
 
 const STORIES = [
-  ['On rest', 'Rest is how progress survives the week.'],
-  ['On uncertainty', 'One visible step is enough to begin.'],
-  ['On company', 'Working quietly near someone still counts as company.'],
-  ['On persistence', 'Partial progress can still keep its next action.'],
-  ['On kindness', 'Keep the same gentle rule you would give a friend.'],
+  { thought: 'I’m too far behind', title: 'The reachable book',
+    story: 'The stack is real, but it is not a verdict about you. One reachable book can still change what happens next.',
+    line: 'Choose the one piece that changes what comes next.' },
+  { thought: 'I don’t know where to begin', title: 'The first lit stone',
+    story: 'A path does not have to reveal itself all at once. The first visible footing is enough for a beginning.',
+    line: 'Light only the first step; the route can wait.' },
+  { thought: 'Everyone else is doing better', title: 'The unseen backpacks',
+    story: 'You can see another person’s pace, but not everything they carry. Different loads create different journeys.',
+    line: 'My pace belongs to the load I am actually carrying.' },
+  { thought: 'I have to solve everything tonight', title: 'A lamp for tomorrow',
+    story: 'Tomorrow can hold a named piece. Closing the rest of the desk is planning, not failure.',
+    line: 'Tomorrow can hold one clearly named piece.' },
+  { thought: 'I should be able to handle this', title: 'The same warm rule',
+    story: 'If a friend were this tired, you would offer warmth before a verdict. You belong inside that rule too.',
+    line: 'Offer myself warmth before a verdict.' },
+  { thought: 'I would rather not say', title: 'A story without words',
+    story: 'A thought does not have to be explained before it deserves a gentler room around it.',
+    line: 'I can make space without explaining everything.' },
 ] as const
+
+function FireflyAsset({ index, className = '', label }: { index: number; className?: string; label?: string }) {
+  const col = index % 4
+  const row = Math.floor(index / 4)
+  return <span className={`firefly-production ${className}`} role={label ? 'img' : undefined}
+    aria-label={label} aria-hidden={label ? undefined : true}
+    style={{ backgroundPosition: `${col * (100 / 3)}% ${row * 100}%` }} />
+}
 
 function FireflyGame(props: PanelProps) {
   const { state, go } = props
   const [story, setStory] = useState<number | null>(null)
-  const [glow, setGlow] = useState<number | null>(null)
   const [done, setDone] = useState(false)
   const [response, setResponse] = useState<Response | null>(null)
   const finish = useRecoveryFinish(props, 'firefly')
   return <Shell view="firefly" state={state} go={go}>
     <section className="recovery-playfield firefly-library">
-      {STORIES.map((item, index) => <button className={`firefly-light firefly-${index}`} key={item[0]} type="button"
-        aria-label={`Follow a light: ${item[0]}`} onClick={() => setStory(index)}><Sprite game="firefly" index={index % 4} /></button>)}
-      {glow !== null && <Sprite game="firefly" index={glow % 4} className="placed-glow" label="Placed glow" />}
-      {story === null ? <div className="recovery-instruction"><b>Follow one light.</b><span>Five fragments wait here. You never need to read them all.</span></div>
-        : <article className="story-page"><span>Short reading</span><h2>{STORIES[story][0]}</h2><p>{STORIES[story][1]}</p>
-          <div><button type="button" onClick={() => { setGlow(story); setDone(true) }}>Leave this glow</button>
-            <button type="button" onClick={() => setStory(null)}>Follow another</button></div></article>}
+      <FireflyAsset index={7} className="firefly-mira" label="Mira reading nearby" />
+      {story === null ? <div className="firefly-thoughts"><span className="recovery-kicker">Mira · follow the thought that is following you</span>
+        <h2>Which thought is taking up the most room?</h2><p>You can choose without explaining.</p>
+        <div>{STORIES.map((item, index) => <button key={item.thought} type="button" onClick={() => setStory(index)}>
+          <FireflyAsset index={6} /><span>{item.thought}</span></button>)}</div></div>
+        : <article className="story-page"><FireflyAsset index={story} className="story-vignette" label={STORIES[story].title} />
+          <div className="story-copy"><span>One small story</span><h2>{STORIES[story].title}</h2><p>{STORIES[story].story}</p>
+            <blockquote>{STORIES[story].line}</blockquote><div><button type="button" onClick={() => setDone(true)}>Carry this line</button>
+              <button type="button" onClick={() => setStory(null)}>Follow another light</button></div></div></article>}
     </section>
-    <nav className="recovery-controls"><span>Reading one, several, or none are all valid.</span><button className="primary" type="button" onClick={() => setDone(true)}>Leave quietly</button></nav>
+    <nav className="recovery-controls"><span>Choosing none is valid too.</span><button className="primary" type="button" onClick={() => setDone(true)}>Leave quietly</button></nav>
     {done && <Completion response={response} setResponse={setResponse} finish={finish}
       onBack={() => setDone(false)} options={[
-        { label: 'Resume checkpoint', detail: 'Return to the same notes and next action.', view: state.activeCheckpointId ? 'session' : 'work' },
-        { label: 'Save the thought', detail: 'Put the chosen line in the Future Mailbox.', view: 'mailbox', destination: 'mailbox', text: story === null ? 'Make room for one gentle next step.' : STORIES[story][1] },
-        { label: 'Continue resting', detail: 'Return to the Calm Corner.', view: 'calm' },
+        { label: 'Take the line into my checkpoint', detail: 'Keep it in the Backpack and return to one small step.', view: state.activeCheckpointId ? 'session' : 'work', destination: 'backpack', text: story === null ? 'Make room for one gentle next step.' : STORIES[story].line },
+        { label: 'Ask Mira for help', detail: 'Return to the work plan and make the blockage visible.', view: 'work' },
+        { label: 'Move something to another day', detail: 'Open the Clock Tower calendar.', view: 'rebalance' },
+        { label: 'Save the line and rest', detail: 'Send it forward, then continue resting.', view: 'calm', destination: 'mailbox', text: story === null ? 'Make room for one gentle next step.' : STORIES[story].line },
       ]} />}
   </Shell>
 }

@@ -66,10 +66,11 @@ describe('recovery activity scenes', () => {
   it('reveals only the Firefly Story the player follows', async () => {
     const user = userEvent.setup()
     render(<Harness view="firefly" />)
-    expect(screen.queryByText('Rest is how progress survives the week.')).not.toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /follow a light: on rest/i }))
-    expect(screen.getByText('Rest is how progress survives the week.')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /leave this glow/i }))
+    expect(screen.queryByText('The reachable book')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /i’m too far behind/i }))
+    expect(screen.getByText('The reachable book')).toBeInTheDocument()
+    expect(screen.getByText(/choose the one piece/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /carry this line/i }))
     expect(screen.getByRole('dialog', { name: /recovery check-in/i })).toBeInTheDocument()
   })
 
