@@ -423,42 +423,46 @@ export default function Game() {
           <span className="hud-div" aria-hidden="true" />
           <div className="acct">
             <button className="acct-btn" type="button" aria-expanded={menuOpen}
-            aria-label={`Account: ${account?.name ?? 'signed in'}`}
-            onClick={() => setMenuOpen((v) => !v)}>
-            <span className="acct-av" style={{ background: `hsl(${account?.hue ?? 40} 44% 46%)` }}>
-              {(account?.name ?? '?').trim().charAt(0).toUpperCase()}
-            </span>
-            <span className="acct-name">{firstName}</span>
-          </button>
-          {menuOpen && (
-            <>
-              <div className="acct-catch" onClick={() => setMenuOpen(false)} />
-              <div className="acct-menu" role="menu">
-                <div className="acct-who">
-                  <b>{account?.name}</b>
-                  <span>{isGuest ? 'Browsing without an account' : account?.email}</span>
-                </div>
-                {isGuest && (
-                  <Link className="acct-keep" to="/signup" onClick={() => setMenuOpen(false)}>
-                    Keep this progress →
-                    <small>Your week is saved in this browser. An account keeps it yours.</small>
-                  </Link>
-                )}
-                <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('settings') }}>
-                  Settings
-                </button>
-                <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('shop') }}>
-                  Shop · {state.coins} coins
-                </button>
-                <Link to="/" role="menuitem" onClick={() => setMenuOpen(false)}>Landing page</Link>
-                <button type="button" role="menuitem" className="acct-out" onClick={signOut}>
-                  Sign out
-                </button>
-              </div>
-            </>
-          )}
+              aria-haspopup="menu"
+              aria-label={`Account: ${account?.name ?? 'signed in'}`}
+              onClick={() => setMenuOpen((v) => !v)}>
+              <span className="acct-av" style={{ background: `hsl(${account?.hue ?? 40} 44% 46%)` }}>
+                {(account?.name ?? '?').trim().charAt(0).toUpperCase()}
+              </span>
+              <span className="acct-name">{firstName}</span>
+            </button>
           </div>
         </div>
+
+        {/* This must be a sibling of .hud-sys. That group uses clip-path for
+            its pixel-art silhouette, which also clips positioned descendants. */}
+        {menuOpen && (
+          <>
+            <div className="acct-catch" onClick={() => setMenuOpen(false)} />
+            <div className="acct-menu hud-acct-menu" role="menu">
+              <div className="acct-who">
+                <b>{account?.name}</b>
+                <span>{isGuest ? 'Browsing without an account' : account?.email}</span>
+              </div>
+              {isGuest && (
+                <Link className="acct-keep" to="/signup" onClick={() => setMenuOpen(false)}>
+                  Keep this progress →
+                  <small>Your week is saved in this browser. An account keeps it yours.</small>
+                </Link>
+              )}
+              <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('settings') }}>
+                Settings
+              </button>
+              <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('shop') }}>
+                Shop · {state.coins} coins
+              </button>
+              <Link to="/" role="menuitem" onClick={() => setMenuOpen(false)}>Landing page</Link>
+              <button type="button" role="menuitem" className="acct-out" onClick={signOut}>
+                Sign out
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="hud hud-quest">

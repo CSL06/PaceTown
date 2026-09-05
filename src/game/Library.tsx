@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  BLOCKERS, PLAN_TEMPLATES, REWARDS, WEEK_DAYS, buildCheckpoints, extractDeliverables,
+  REWARDS, WEEK_DAYS, createGuidanceProvider, extractDeliverables, guidanceOptionsFor,
   guideLines, guardianFor, resolveCheckpoint, sessionReward,
   taskTime, tasksForDay,
-  type BlockerKind, type Checkpoint, type HelpMode, type SessionOutcome, type Task,
+  type BlockerKind, type Checkpoint, type GuidanceIntent, type GuardianId,
+  type HelpMode, type SessionOutcome, type Task,
 } from '../domain'
 import { grow, record, type GameState } from './state'
 import { GUARDIANS, type ViewId } from './layout'
@@ -27,6 +28,7 @@ const fmtClock = (seconds: number) => {
 }
 
 const CURRENT_DAY = 'thu'
+const GUIDANCE_PROVIDER = createGuidanceProvider()
 
 function likelyTasks(tasks: readonly Task[], day: string): Task[] {
   return tasksForDay(tasks, day)
@@ -36,7 +38,7 @@ function likelyTasks(tasks: readonly Task[], day: string): Task[] {
  * Keep it away from scheduled commitments such as shifts and lectures instead
  * of pretending the ERD instructions belong to whichever card was clicked. */
 function briefDeliverables(state: GameState, task: Task | null): string[] {
-  if (!task || task.flexibility !== 'flexible' || task.category !== 'mental') return []
+  if (!task || state.briefTaskId !== task.id) return []
   return state.deliverables.length ? state.deliverables : extractDeliverables(state.brief)
 }
 
@@ -78,6 +80,9 @@ export function Library({ state, update, go, toast, onExit }: Props) {
   const [showMoreBlockers, setShowMoreBlockers] = useState(false)
   const [proposal, setProposal] = useState<Checkpoint[]>([])
   const [proposalIndex, setProposalIndex] = useState(0)
+  const [proposalMessage, setProposalMessage] = useState('')
+  const [proposalGuardian, setProposalGuardian] = useState<GuardianId>('mira')
+  const [guidancePending, setGuidancePending] = useState(false)
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState<string[]>([])
   const [ticking, setTicking] = useState(false)
@@ -138,7 +143,6 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       outcome: null,
       session: {
         ...current.session,
-        timerMode: current.session.timerMode === 'none' ? 'down' : current.session.timerMode,
         timerLenSec: active.estimatedMinutes * 60,
       },
     }))
@@ -168,44 +172,72 @@ export function Library({ state, update, go, toast, onExit }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  const chooseBlocker = (blocker: BlockerKind) => {
-    if (!selectedTask) return
-    const next = buildCheckpoints(blocker, {
-      taskTitle: selectedTask.title,
-      deliverables: briefDeliverables(state, selectedTask),
-    })
-    setSelectedBlocker(blocker)
-    setProposal(next)
-    setProposalIndex(0)
-    setFlow('checkpoint')
-  }
-
-  const acceptCheckpoint = () => {
-    if (!selectedTask || !selectedBlocker || !proposal[proposalIndex]) return
-    const chosen = proposal[proposalIndex]
+  const beginCheckpoint = (
+    task: Task,
+    blocker: BlockerKind,
+    checkpoints: Checkpoint[],
+    chosen: Checkpoint,
+    enterSession: boolean,
+  ) => {
     update((current) => record({
       ...current,
-      blocker: selectedBlocker,
-      checkpoints: proposal,
-      activeTaskId: selectedTask.id,
+      blocker,
+      checkpoints,
+      activeTaskId: task.id,
       activeCheckpointId: chosen.id,
       outcome: null,
       savedSessionKey: null,
       session: {
         ...current.session,
         elapsedSec: 0,
-        timerMode: 'down',
+        timerMode: chosen.timerPreference ?? 'down',
         timerLenSec: chosen.estimatedMinutes * 60,
         helpMode: null,
         pausedFrom: null,
       },
     }, 'Prepared one manageable checkpoint', `${chosen.title} · ${chosen.estimatedMinutes} minutes.`, REWARDS.beginSession))
-    toast('Your place is ready at the study desk.')
+    toast(enterSession ? `Started · ${chosen.title}` : 'Your place is ready at the study desk.')
     setProgress('')
     setNextAction('')
     setTaskFinished(false)
-    closeFlow()
-    window.requestAnimationFrame(() => deskButton.current?.focus())
+    if (enterSession) setFlow('session')
+    else {
+      closeFlow()
+      window.requestAnimationFrame(() => deskButton.current?.focus())
+    }
+  }
+
+  const requestGuidance = async (intent: GuidanceIntent, enterSession = false) => {
+    if (!selectedTask || guidancePending) return
+    setGuidancePending(true)
+    try {
+      const response = await GUIDANCE_PROVIDER.propose({
+        task: selectedTask,
+        intent,
+        context: state.briefTaskId === selectedTask.id
+          ? { brief: state.brief, deliverables: briefDeliverables(state, selectedTask) }
+          : undefined,
+      })
+      const checkpoint: Checkpoint = {
+        ...response.checkpoint,
+        id: `guided-${selectedTask.id}-${Date.now()}`,
+        status: 'pending',
+      }
+      setSelectedBlocker(response.canonicalBlocker)
+      setProposal([checkpoint])
+      setProposalIndex(0)
+      setProposalMessage(response.message)
+      setProposalGuardian(response.guardian)
+      if (enterSession) beginCheckpoint(selectedTask, response.canonicalBlocker, [checkpoint], checkpoint, true)
+      else setFlow('checkpoint')
+    } finally {
+      setGuidancePending(false)
+    }
+  }
+
+  const acceptCheckpoint = () => {
+    if (!selectedTask || !selectedBlocker || !proposal[proposalIndex]) return
+    beginCheckpoint(selectedTask, selectedBlocker, proposal, proposal[proposalIndex], false)
   }
 
   const askMira = () => {
@@ -267,7 +299,8 @@ export function Library({ state, update, go, toast, onExit }: Props) {
   }
 
   const currentProposal = proposal[proposalIndex]
-  const blockerOptions = showMoreBlockers ? BLOCKERS : BLOCKERS.slice(0, 3)
+  const allBlockerOptions = selectedTask ? guidanceOptionsFor(selectedTask) : []
+  const blockerOptions = showMoreBlockers ? allBlockerOptions : allBlockerOptions.slice(0, 3)
   const remaining = state.session.timerLenSec - state.session.elapsedSec
   const queueIndex = Math.max(0, WEEK_DAYS.findIndex((day) => day.key === queueDay))
   const queueLabel = WEEK_DAYS[queueIndex]?.label ?? queueDay
@@ -373,7 +406,16 @@ export function Library({ state, update, go, toast, onExit }: Props) {
                 ? 'Its time is fixed in the calendar, but you can still prepare for it or mark it done.'
                 : 'We only need to find its first visible step.'}
           </p>
-          <div className="library-actions"><button className="library-primary" type="button" onClick={() => setFlow('blocker')}>Tell Mira what is in the way</button></div>
+          <div className="library-actions">
+            <button className="library-primary" type="button" disabled={guidancePending}
+              onClick={() => requestGuidance('ready', true)}>
+              {guidancePending ? 'Preparing your place…' : 'Nothing is blocking me — start'}
+            </button>
+            <button type="button" disabled={guidancePending} onClick={() => {
+              setShowMoreBlockers(false)
+              setFlow('blocker')
+            }}>Something is getting in the way</button>
+          </div>
         </MiraPanel>
       )}
 
@@ -381,17 +423,18 @@ export function Library({ state, update, go, toast, onExit }: Props) {
         <MiraPanel kicker="Mira · one short question" title="What is making it difficult right now?" onClose={() => setFlow('summary')}>
           <div className="library-choices compact">
             {blockerOptions.map((blocker) => (
-              <button key={blocker.id} type="button" onClick={() => chooseBlocker(blocker.id)}>
+              <button key={blocker.id} type="button" disabled={guidancePending}
+                onClick={() => requestGuidance(blocker.id)}>
                 <strong>{blocker.label}</strong>
               </button>
             ))}
           </div>
-          {!showMoreBlockers && <button className="library-text-button" type="button" onClick={() => setShowMoreBlockers(true)}>More choices</button>}
+          {!showMoreBlockers && allBlockerOptions.length > 3 && <button className="library-text-button" type="button" onClick={() => setShowMoreBlockers(true)}>More choices</button>}
         </MiraPanel>
       )}
 
       {flow === 'checkpoint' && selectedBlocker && currentProposal && (
-        <MiraPanel kicker={`${GUARDIANS[guardianFor(selectedBlocker)].name} suggests one step`} title={PLAN_TEMPLATES[selectedBlocker].opener} onClose={() => setFlow('blocker')}>
+        <MiraPanel kicker={`${GUARDIANS[proposalGuardian].name} suggests one step`} title={proposalMessage} onClose={() => setFlow('blocker')}>
           <article className="checkpoint-card">
             <span>{currentProposal.estimatedMinutes} minute checkpoint</span>
             <h2>{currentProposal.title}</h2>
@@ -411,8 +454,10 @@ export function Library({ state, update, go, toast, onExit }: Props) {
           {flow === 'session' && <>
             <div className="session-focus"><span>Done when</span><p>{active.definitionOfDone}</p></div>
             <div className="session-timer">
-              <strong>{fmtClock(state.session.timerMode === 'down' ? remaining : state.session.elapsedSec)}</strong>
-              <button type="button" onClick={() => setTicking((value) => !value)}>{ticking ? 'Pause' : state.session.elapsedSec ? 'Resume' : 'Start'}</button>
+              <strong>{state.session.timerMode === 'none'
+                ? 'Untimed'
+                : fmtClock(state.session.timerMode === 'down' ? remaining : state.session.elapsedSec)}</strong>
+              {state.session.timerMode !== 'none' && <button type="button" onClick={() => setTicking((value) => !value)}>{ticking ? 'Pause' : state.session.elapsedSec ? 'Resume' : 'Start'}</button>}
             </div>
             <label className="library-field">Your working space
               <textarea rows={7} value={state.session.scratchpad} placeholder="Rough notes belong here. They do not need to be tidy."

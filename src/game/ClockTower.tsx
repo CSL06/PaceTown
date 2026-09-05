@@ -83,15 +83,15 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
     const task = state.tasks.find((item) => item.id === id)
     if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || beforeId === id) return
     const shift = dayIndex(day) - dayIndex(task.day)
-    if (shift > task.deadlineDays) {
-      setMoveMessage(`${task.title} cannot move past its deadline.`)
-      return
-    }
+    const daysLate = Math.max(0, shift - task.deadlineDays)
     setUndoTasks(state.tasks)
     update((current) => ({ ...current, tasks: moveCalendarTask(current.tasks, id, day, beforeId) }))
     setPreviewOpen(false)
     setSelected([])
-    setMoveMessage(`${task.title} moved to ${WEEK_DAYS.find((entry) => entry.key === day)?.label}.`)
+    const destinationLabel = WEEK_DAYS.find((entry) => entry.key === day)?.label
+    setMoveMessage(daysLate
+      ? `${task.title} moved to ${destinationLabel}, ${daysLate} day${daysLate === 1 ? '' : 's'} past its deadline.`
+      : `${task.title} moved to ${destinationLabel}.`)
   }
   const locateDrop = (element: Element | null, y: number, day: string) => {
     const card = element?.closest<HTMLElement>('[data-task-id]')
@@ -251,7 +251,11 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
         <button type="button" onClick={() => { setPreviewOpen((open) => !open); setSelected(null) }}>{previewOpen ? 'Dismiss preview' : 'Ask Kai to rebalance'}</button>
         {inspected && (() => { const task = state.tasks.find((item) => item.id === inspected); return task && <section className="task-details" aria-label="Task details">
           <h2>{task.title}</h2><p>{taskTime(task) ?? 'No set time'} · {task.estimatedMinutes} minutes</p>
-          <p>{task.flexibility === 'fixed' ? 'Locked: this is a fixed commitment.' : `Flexible · deadline in ${task.deadlineDays} day(s) from its scheduled day.`}</p>
+          <p>{task.flexibility === 'fixed'
+            ? 'Locked: this is a fixed commitment.'
+            : task.deadlineDays < 0
+              ? `Flexible · currently scheduled ${Math.abs(task.deadlineDays)} day(s) after its deadline.`
+              : `Flexible · deadline in ${task.deadlineDays} day(s) from its scheduled day.`}</p>
           <p>{task.notes}</p><button type="button" onClick={() => setInspected(null)}>Close details</button>
         </section> })()}
         <img src="/game/portraits/kai.webp" alt="Kai" />

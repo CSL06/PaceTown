@@ -183,6 +183,11 @@
   width: 24px; height: 24px; font-size: 12px;
   border: 2px solid var(--px-ink); clip-path: var(--px-clip);
 }
+.hud-top > .hud-acct-menu {
+  /* The menu lives outside the clipped system group and anchors to the rail. */
+  right: 14px;
+  top: calc(100% - 5px);
+}
 
 /* ----------------------------------------------------------- responsive */
 /* Shed optional pieces rather than wrapping the rail onto a second row. */

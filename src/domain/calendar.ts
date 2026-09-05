@@ -52,12 +52,12 @@ export function tasksForDay(tasks: readonly Task[], day: string, includeComplete
     })
 }
 
-/** Shared rescheduling rule; ordering does not change the event's clock time. */
+/** Manual calendar placement. A student may intentionally place flexible work
+ * after its deadline; the negative offset preserves that fact for the UI. */
 export function moveCalendarTask(tasks: readonly Task[], id: string, day: string, beforeId?: string): Task[] {
   const task = tasks.find((item) => item.id === id)
   if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || beforeId === id) return [...tasks]
   const shift = dayIndex(day) - dayIndex(task.day)
-  if (shift > task.deadlineDays) return [...tasks]
   const destination = tasksForDay(tasks, day).filter((item) => item.id !== id)
   const index = beforeId ? destination.findIndex((item) => item.id === beforeId) : destination.length
   destination.splice(index < 0 ? destination.length : index, 0, { ...task, day, deadlineDays: task.deadlineDays - shift })

@@ -11,6 +11,7 @@ export const sentences = (s: string) =>
   s.split(/[.!?…]+/).map((p) => p.trim()).filter(Boolean)
 
 const OPENER_WORD: Record<BlockerKind, string> = {
+  ready: 'know',
   unclear_start: 'look',
   too_large: 'fits',
   missing_knowledge: 'name',

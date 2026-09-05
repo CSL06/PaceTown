@@ -8,7 +8,7 @@
  */
 
 import { parseSchedule } from './parse'
-import type { Capacity, Task } from './types'
+import type { ActivityKind, Capacity, Task } from './types'
 
 export const DEMO_DAY = 'thu'
 export const DEMO_DESTINATION = 'sat'
@@ -36,6 +36,33 @@ export const DEMO_BRIEF =
   '- Write a short data dictionary\n' +
   'Diagrams should be legible and submitted as PDF.'
 
+/** Explicit demo semantics. This is deliberately deterministic: the offline
+ * demo should not need an AI call to know that meal prep is not coursework. */
+export function seededActivityKind(title: string): ActivityKind {
+  const value = title.toLowerCase()
+  if (value.includes('meal prep')) return 'meal'
+  if (value.includes('lecture')) return 'lecture'
+  if (value.includes('tutorial')) return 'tutorial'
+  if (value.includes('lab')) return 'lab'
+  if (value.includes('assignment')) return 'assignment'
+  if (value.includes('revise')) return 'study'
+  if (value.includes('meeting')) return 'meeting'
+  if (value.includes('shift')) return 'shift'
+  if (value.includes('commute')) return 'commute'
+  if (value.includes('gym') || value.includes('run')) return 'exercise'
+  if (value.includes('pharmacy') || value.includes('groceries')) return 'errand'
+  if (value.includes('bursary')) return 'admin'
+  if (value.includes('laundry')) return 'household'
+  if (value.includes('society') || value.includes('dinner') || value.includes('call family')) return 'social'
+  return 'general'
+}
+
+const tagSeeded = (task: Task): Task => ({
+  ...task,
+  source: 'seeded',
+  activityKind: seededActivityKind(task.title),
+})
+
 export function demoTasks(): Task[] {
   const thursday = parseSchedule(DEMO_SCHEDULE_TEXT, DEMO_DAY).tasks
   const surrounding: Record<string, string> = {
@@ -47,7 +74,7 @@ export function demoTasks(): Task[] {
     sun: 'Meal prep 60 minutes, call family 30 minutes',
   }
   const week = Object.entries(surrounding).flatMap(([day, text]) =>
-    parseSchedule(text, day).tasks.map((task, index) => ({ ...task, id: `${day}-${index}` })),
+    parseSchedule(text, day).tasks.map((task, index) => tagSeeded({ ...task, id: `${day}-${index}` })),
   )
-  return [...week, ...thursday.map((task, index) => ({ ...task, id: `thu-${index}` }))]
+  return [...week, ...thursday.map((task, index) => tagSeeded({ ...task, id: `thu-${index}` }))]
 }
