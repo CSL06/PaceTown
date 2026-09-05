@@ -41,6 +41,13 @@ const cp = (title: string, estimatedMinutes: number, definitionOfDone: string) =
  * always the smallest observable thing.
  */
 export const PLAN_TEMPLATES: Record<BlockerKind, PlanTemplate> = {
+  ready: {
+    guardian: 'mira',
+    opener: 'You already know what to do. I will keep the next action visible while you do it.',
+    checkpoints: [
+      cp('Do the planned commitment', 20, 'You decide when the commitment is complete.'),
+    ],
+  },
   unclear_start: {
     guardian: 'mira',
     opener: 'We start with one thing you can look at. Understanding first, finishing second.',
@@ -123,6 +130,8 @@ export function buildCheckpoints(blocker: BlockerKind, ctx?: PlanContext): Check
   const firstDeliverable = ctx?.deliverables?.find((d) => d.trim().length > 0)?.trim()
   const list: Omit<Checkpoint, 'id' | 'status'>[] = (() => {
     switch (blocker) {
+      case 'ready':
+        return PLAN_TEMPLATES.ready.checkpoints
       case 'unclear_start':
         return [
           ...(firstDeliverable

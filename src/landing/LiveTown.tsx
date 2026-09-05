@@ -69,9 +69,10 @@ interface Props {
   /** Pauses the whole simulation when the scene is off screen. */
   active?: boolean
   reducedMotion: boolean
+  onTakeOver?: () => void
 }
 
-export function LiveTown({ active = true, reducedMotion }: Props) {
+export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
   const stage = useRef<HTMLDivElement>(null)
   const world = useRef<HTMLDivElement>(null)
   const avatar = useRef<HTMLDivElement>(null)
@@ -114,7 +115,8 @@ export function LiveTown({ active = true, reducedMotion }: Props) {
     takenOver.current = true
     target.current = null
     setManual(true)
-  }, [])
+    onTakeOver?.()
+  }, [onTakeOver])
 
   const stopAt = useCallback((id: GuardianId) => {
     const lines = LINES[id]

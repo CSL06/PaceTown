@@ -115,6 +115,9 @@ button.week-task:hover { border-color: #b67a24; }
 .week-task.is-social { --task-color: #b9788d; }
 .week-task.is-errands { --task-color: #9b8060; }
 .week-task.is-fixed { background-image: repeating-linear-gradient(135deg, transparent 0 7px, rgba(75,60,42,.055) 7px 10px); }
+.week-task.is-completed { --task-color: #608270; background: #e5eadc; color: #61706a; opacity: .72; }
+.week-task.is-completed strong { text-decoration: line-through; text-decoration-thickness: 1px; }
+.week-task.is-completed .week-task-top span:last-child { color: #3f7254; font-weight: 800; }
 .week-task.is-selected, .week-task.is-leaving { border-style: dashed; opacity: .52; }
 .week-task.is-ghost { border: 2px dashed #c08229; background: rgba(251,218,137,.35); opacity: .9; }
 

@@ -44,27 +44,31 @@ function TaskBlock({ task, selected, suggested, leaving, onToggle, onInspect, dr
   const time = taskTime(task)
   const className = [
     'week-task', `is-${task.category}`, task.flexibility === 'fixed' ? 'is-fixed' : '',
+    task.status === 'completed' ? 'is-completed' : '',
     selected ? 'is-selected' : '', suggested ? 'is-ghost' : '', leaving ? 'is-leaving' : '',
   ].filter(Boolean).join(' ')
   const content = (
     <>
       <span className="week-task-top">
         <span>{time ?? `${task.estimatedMinutes} min · ${task.flexibility}`}</span>
-        {task.flexibility === 'fixed' && <span aria-label="Fixed commitment">⌑</span>}
+        {task.status === 'completed'
+          ? <span aria-label="Completed commitment">Done ✓</span>
+          : task.flexibility === 'fixed' && <span aria-label="Fixed commitment">⌑</span>}
       </span>
       <strong>{task.title}</strong>
       {suggested && <span className="week-task-note">Preview here</span>}
     </>
   )
 
-  return <div data-task-id={suggested ? undefined : task.id} draggable={draggable && task.flexibility === 'flexible'}
+  return <div data-task-id={suggested || task.status === 'completed' ? undefined : task.id}
+    draggable={draggable && task.flexibility === 'flexible' && task.status !== 'completed'}
     onDragStart={(event) => { event.dataTransfer.setData('text/plain', task.id); event.dataTransfer.effectAllowed = 'move' }}>
     {onInspect ? (
     <button type="button" className={className} onClick={onInspect} aria-label={`Details for ${task.title}`}>
       {content}
     </button>
   ) : <div className={className}>{content}</div>}
-    {draggable && task.flexibility === 'flexible' && <span className="task-drag-handle" data-drag-id={task.id} aria-label={`Drag ${task.title}`}>⠿</span>}
+    {draggable && task.flexibility === 'flexible' && task.status !== 'completed' && <span className="task-drag-handle" data-drag-id={task.id} aria-label={`Drag ${task.title}`}>⠿</span>}
     {onToggle && <button type="button" className="preview-select" aria-pressed={selected} onClick={onToggle}>
       {selected ? 'Include in preview ✓' : 'Include in preview'}</button>}
   </div>
@@ -86,15 +90,15 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
     const task = state.tasks.find((item) => item.id === id)
     if (!task || task.flexibility === 'fixed' || dayIndex(day) < 0 || beforeId === id) return
     const shift = dayIndex(day) - dayIndex(task.day)
-    if (shift > task.deadlineDays) {
-      setMoveMessage(`${task.title} cannot move past its deadline.`)
-      return
-    }
+    const daysLate = Math.max(0, shift - task.deadlineDays)
     setUndoTasks(state.tasks)
     update((current) => ({ ...current, tasks: moveCalendarTask(current.tasks, id, day, beforeId) }))
     setPreviewOpen(false)
     setSelected([])
-    setMoveMessage(`${task.title} moved to ${WEEK_DAYS.find((entry) => entry.key === day)?.label}.`)
+    const destinationLabel = WEEK_DAYS.find((entry) => entry.key === day)?.label
+    setMoveMessage(daysLate
+      ? `${task.title} moved to ${destinationLabel}, ${daysLate} day${daysLate === 1 ? '' : 's'} past its deadline.`
+      : `${task.title} moved to ${destinationLabel}.`)
   }
   const locateDrop = (element: Element | null, y: number, day: string) => {
     const card = element?.closest<HTMLElement>('[data-task-id]')
@@ -212,7 +216,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
       <div className="week-frame">
         <div className="week-grid" role="list" aria-label="Commitments from Monday through Sunday">
           {WEEK_DAYS.map((day) => {
-            const tasks = tasksForDay(state.tasks, day.key)
+            const tasks = tasksForDay(state.tasks, day.key, true)
             const load = loads[day.key]
             const ghosts = day.key === destination
               ? selectedMoves.map((move) => state.tasks.find((task) => task.id === move.taskId)!).filter(Boolean)
@@ -254,7 +258,11 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
         <button type="button" onClick={() => { setPreviewOpen((open) => !open); setSelected(null) }}>{previewOpen ? 'Dismiss preview' : 'Ask Kai to rebalance'}</button>
         {inspected && (() => { const task = state.tasks.find((item) => item.id === inspected); return task && <section className="task-details" aria-label="Task details">
           <h2>{task.title}</h2><p>{taskTime(task) ?? 'No set time'} · {task.estimatedMinutes} minutes</p>
-          <p>{task.flexibility === 'fixed' ? 'Locked: this is a fixed commitment.' : `Flexible · deadline in ${task.deadlineDays} day(s) from its scheduled day.`}</p>
+          <p>{task.flexibility === 'fixed'
+            ? 'Locked: this is a fixed commitment.'
+            : task.deadlineDays < 0
+              ? `Flexible · currently scheduled ${Math.abs(task.deadlineDays)} day(s) after its deadline.`
+              : `Flexible · deadline in ${task.deadlineDays} day(s) from its scheduled day.`}</p>
           <p>{task.notes}</p><button type="button" onClick={() => setInspected(null)}>Close details</button>
         </section> })()}
         <img src="/game/portraits/kai.webp" alt="Kai" />

@@ -16,6 +16,7 @@ import {
 } from '../domain'
 import { Campus, daylight } from './Campus'
 import { ClockTower } from './ClockTower'
+import { Library } from './Library'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { ResumeCard } from './ResumeCard'
@@ -114,7 +115,9 @@ export default function Game() {
     if (view) sfx.enter(); else sfx.close()
     setState((s) => view === 'rebalance'
       ? { ...s, scene: 'clock-tower', view: null }
-      : { ...s, scene: view ? 'campus' : s.scene, view })
+      : view === 'work' || view === 'session'
+        ? { ...s, scene: 'library', view }
+        : { ...s, scene: view ? 'campus' : s.scene, view })
     setLive(view === 'rebalance' ? 'Clock Tower entered.'
       : view ? `${VIEW_TITLE[view]} opened.` : 'View closed.')
   }, [])
@@ -377,6 +380,22 @@ export default function Game() {
     )
   }
 
+  if (state.scene === 'library') {
+    return (
+      <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        <Library state={state} update={update} go={go} toast={toast}
+          onExit={() => {
+            setState((s) => ({ ...s, scene: 'campus', view: null }))
+            setLive('Back on the campus.')
+          }} />
+        <div className="toasts">
+          {toasts.map((t) => <div className="toast" key={t.id}>{t.text}</div>)}
+        </div>
+        <div className="sr" aria-live="polite">{live}</div>
+      </div>
+    )
+  }
+
   return (
     <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
       <Campus refs={{ stage, world, avatar }} load={load} tasks={state.tasks} day="thu"
@@ -438,42 +457,46 @@ export default function Game() {
           <span className="hud-div" aria-hidden="true" />
           <div className="acct">
             <button className="acct-btn" type="button" aria-expanded={menuOpen}
-            aria-label={`Account: ${account?.name ?? 'signed in'}`}
-            onClick={() => setMenuOpen((v) => !v)}>
-            <span className="acct-av" style={{ background: `hsl(${account?.hue ?? 40} 44% 46%)` }}>
-              {(account?.name ?? '?').trim().charAt(0).toUpperCase()}
-            </span>
-            <span className="acct-name">{firstName}</span>
-          </button>
-          {menuOpen && (
-            <>
-              <div className="acct-catch" onClick={() => setMenuOpen(false)} />
-              <div className="acct-menu" role="menu">
-                <div className="acct-who">
-                  <b>{account?.name}</b>
-                  <span>{isGuest ? 'Browsing without an account' : account?.email}</span>
-                </div>
-                {isGuest && (
-                  <Link className="acct-keep" to="/signup" onClick={() => setMenuOpen(false)}>
-                    Keep this progress →
-                    <small>Your week is saved in this browser. An account keeps it yours.</small>
-                  </Link>
-                )}
-                <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('settings') }}>
-                  Settings
-                </button>
-                <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('shop') }}>
-                  Shop · {state.coins} coins
-                </button>
-                <Link to="/" role="menuitem" onClick={() => setMenuOpen(false)}>Landing page</Link>
-                <button type="button" role="menuitem" className="acct-out" onClick={signOut}>
-                  Sign out
-                </button>
-              </div>
-            </>
-          )}
+              aria-haspopup="menu"
+              aria-label={`Account: ${account?.name ?? 'signed in'}`}
+              onClick={() => setMenuOpen((v) => !v)}>
+              <span className="acct-av" style={{ background: `hsl(${account?.hue ?? 40} 44% 46%)` }}>
+                {(account?.name ?? '?').trim().charAt(0).toUpperCase()}
+              </span>
+              <span className="acct-name">{firstName}</span>
+            </button>
           </div>
         </div>
+
+        {/* This must be a sibling of .hud-sys. That group uses clip-path for
+            its pixel-art silhouette, which also clips positioned descendants. */}
+        {menuOpen && (
+          <>
+            <div className="acct-catch" onClick={() => setMenuOpen(false)} />
+            <div className="acct-menu hud-acct-menu" role="menu">
+              <div className="acct-who">
+                <b>{account?.name}</b>
+                <span>{isGuest ? 'Browsing without an account' : account?.email}</span>
+              </div>
+              {isGuest && (
+                <Link className="acct-keep" to="/signup" onClick={() => setMenuOpen(false)}>
+                  Keep this progress →
+                  <small>Your week is saved in this browser. An account keeps it yours.</small>
+                </Link>
+              )}
+              <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('settings') }}>
+                Settings
+              </button>
+              <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); go('shop') }}>
+                Shop · {state.coins} coins
+              </button>
+              <Link to="/" role="menuitem" onClick={() => setMenuOpen(false)}>Landing page</Link>
+              <button type="button" role="menuitem" className="acct-out" onClick={signOut}>
+                Sign out
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="hud hud-quest">

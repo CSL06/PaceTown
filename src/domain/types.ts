@@ -11,6 +11,10 @@ export type Priority = 'low' | 'medium' | 'high'
 export type Effort = 'low' | 'medium' | 'high'
 export type Urgency = 'today' | 'tomorrow' | 'later'
 export type Flexibility = 'fixed' | 'flexible'
+export type ActivityKind =
+  | 'lecture' | 'tutorial' | 'lab' | 'assignment' | 'study' | 'meeting'
+  | 'shift' | 'commute' | 'exercise' | 'errand' | 'admin' | 'meal'
+  | 'social' | 'household' | 'general'
 
 export interface Task {
   id: string
@@ -29,16 +33,19 @@ export interface Task {
   mentalEffort: Effort
   flexibility: Flexibility
   urgency: Urgency
-  /** Days until the deadline. 0 means fixed to this day and immovable. */
+  /** Days until the deadline from its current day. Negative means scheduled late. */
   deadlineDays: number
   minimumSessionMinutes?: number
   notes?: string
   externalEventId?: string
   status?: 'pending' | 'completed'
   source?: 'manual' | 'parsed' | 'seeded' | 'calendar'
+  /** What sort of real-world activity this is. Guidance may use this; scheduling may not. */
+  activityKind?: ActivityKind
 }
 
 export type BlockerKind =
+  | 'ready'
   | 'unclear_start'
   | 'too_large'
   | 'missing_knowledge'
@@ -53,6 +60,8 @@ export interface Checkpoint {
   /** What finished looks like, in the student's own words. */
   definitionOfDone: string
   estimatedMinutes: number
+  /** Suggested session chrome. The student may still change it. */
+  timerPreference?: 'down' | 'up' | 'none'
   status?: 'pending' | 'active' | 'partial' | 'completed' | 'blocked'
 }
 

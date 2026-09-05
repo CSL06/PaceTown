@@ -41,6 +41,15 @@ describe('capacity', () => {
     expect(dailyLoad([task({ flexibility: 'fixed', estimatedMinutes: 300 }), task({ estimatedMinutes: 150 })], 'thu', 900).percentage).toBe(50)
   })
 
+  it('removes completed commitments from remaining load', () => {
+    const completedFixed = task({ id: 'fixed', flexibility: 'fixed', estimatedMinutes: 300, status: 'completed' })
+    const completedFlexible = task({ id: 'flex', estimatedMinutes: 150, status: 'completed' })
+    const load = dailyLoad([completedFixed, completedFlexible], 'thu', 900)
+    expect(load.fixedMinutes).toBe(0)
+    expect(load.contributors).toHaveLength(0)
+    expect(load.percentage).toBe(0)
+  })
+
   it('reports fixed commitments exceeding waking hours as overloaded', () => {
     expect(dailyLoad([task({ flexibility: 'fixed', estimatedMinutes: 1080 })], 'thu', 900).percentage).toBe(120)
     expect(dailyLoad([], 'thu', 900).percentage).toBe(0)

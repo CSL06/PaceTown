@@ -3,6 +3,24 @@ import { dayDistance, formatMinute, moveCalendarTask, taskTime, tasksForDay, wee
 import { demoTasks } from './seed'
 
 describe('weekly calendar', () => {
+  it('allows the seeded ERD assignment to move to either weekend day', () => {
+    const tasks = demoTasks()
+    const erd = tasks.find((task) => task.title === 'ERD assignment')!
+
+    expect(moveCalendarTask(tasks, erd.id, 'sat').find((task) => task.id === erd.id)?.day).toBe('sat')
+    expect(moveCalendarTask(tasks, erd.id, 'sun').find((task) => task.id === erd.id)?.day).toBe('sun')
+  })
+
+  it('preserves how far a manual placement sits beyond the real deadline', () => {
+    const tasks = demoTasks()
+    const erd = tasks.find((task) => task.title === 'ERD assignment')!
+    const saturday = moveCalendarTask(tasks, erd.id, 'sat')
+    expect(saturday.find((task) => task.id === erd.id)?.deadlineDays).toBe(-1)
+
+    const restored = moveCalendarTask(saturday, erd.id, 'fri')
+    expect(restored.find((task) => task.id === erd.id)?.deadlineDays).toBe(0)
+  })
+
   it('preserves a drop order within a day after serialization', () => {
     const tasks = demoTasks()
     const laundry = tasks.find((task) => task.day === 'thu' && task.title === 'Laundry')!
@@ -26,6 +44,14 @@ describe('weekly calendar', () => {
     const firstUntimed = thursday.findIndex((task) => task.startMinute === undefined)
     expect(firstUntimed).toBeGreaterThan(0)
     expect(thursday.slice(firstUntimed).every((task) => task.startMinute === undefined)).toBe(true)
+  })
+
+  it('can include completed commitments for a visible calendar history', () => {
+    const tasks = demoTasks()
+    const completed = { ...tasks[0], status: 'completed' as const }
+    const changed = tasks.map((task) => task.id === completed.id ? completed : task)
+    expect(tasksForDay(changed, completed.day)).not.toContainEqual(completed)
+    expect(tasksForDay(changed, completed.day, true)).toContainEqual(completed)
   })
 
   it('derives every day load from the actual week', () => {

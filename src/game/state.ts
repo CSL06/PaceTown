@@ -8,6 +8,7 @@
 
 import {
   DEFAULT_COSMETICS, DEMO_BRIEF, DEMO_CAPACITY, DEMO_SCHEDULE_TEXT, demoTasks,
+  seededActivityKind,
   type BlockerKind, type Capacity, type Checkpoint, type CosmeticSlot,
   type GuardianId, type RegulationId, type Task,
 } from '../domain'
@@ -15,7 +16,7 @@ import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 4
+export const SAVE_VERSION = 6
 
 const store = localStorageAdapter(SAVE_KEY)
 
@@ -38,6 +39,8 @@ export interface GameState {
   scheduleText: string
   brief: string
   deliverables: string[]
+  /** The only task allowed to consume the optional assignment brief. */
+  briefTaskId: string | null
   tasks: Task[]
 
   rebalanceSeen: boolean
@@ -123,11 +126,13 @@ export interface GameState {
   facing: 'up' | 'down' | 'left' | 'right'
   quiet: boolean
   contrast: boolean
-  scene: 'campus' | 'clock-tower'
+  scene: 'campus' | 'clock-tower' | 'library'
   view: ViewId | null
 }
 
 export function initialState(): GameState {
+  const tasks = demoTasks()
+  const briefTaskId = tasks.find((task) => task.title.toLowerCase() === 'erd assignment')?.id ?? null
   return {
     version: SAVE_VERSION,
     started: false,
@@ -139,7 +144,8 @@ export function initialState(): GameState {
     scheduleText: DEMO_SCHEDULE_TEXT,
     brief: DEMO_BRIEF,
     deliverables: [],
-    tasks: demoTasks(),
+    briefTaskId,
+    tasks,
 
     rebalanceSeen: false,
     rebalanceApproved: false,
@@ -246,6 +252,34 @@ const MIGRATIONS: Migration[] = [
       ...(typeof s.equipped === 'object' && s.equipped !== null ? s.equipped : {}),
     },
   }),
+  /* v5 gives commitments semantic guidance kinds and scopes the demo brief to
+     the ERD assignment. Older saves keep every task and completion state. */
+  (s) => {
+    const tasks = Array.isArray(s.tasks)
+      ? s.tasks.map((value) => {
+        if (!value || typeof value !== 'object') return value
+        const task = value as Record<string, unknown>
+        return {
+          ...task,
+          activityKind: typeof task.activityKind === 'string'
+            ? task.activityKind
+            : seededActivityKind(typeof task.title === 'string' ? task.title : ''),
+        }
+      })
+      : []
+    const erd = tasks.find((value) => value && typeof value === 'object' &&
+      String((value as Record<string, unknown>).title).toLowerCase() === 'erd assignment') as Record<string, unknown> | undefined
+    return {
+      ...s,
+      version: 5,
+      tasks,
+      briefTaskId: typeof s.briefTaskId === 'string' ? s.briefTaskId
+        : typeof erd?.id === 'string' ? erd.id : null,
+    }
+  },
+  /* v6 permits an explicit manual calendar move beyond a deadline. No stored
+     shape changes; negative deadlineDays now honestly records days overdue. */
+  (s) => ({ ...s, version: 6 }),
 ]
 
 /**
