@@ -19,7 +19,7 @@ import { ClockTower } from './ClockTower'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { ResumeCard } from './ResumeCard'
-import { GUARDIANS, PLACES, doorstep, focusGuardianFor, nextStepFor, type Place, type ViewId } from './layout'
+import { GUARDIANS, PLACES, doorstep, firstStepForIntro, focusGuardianFor, nextStepFor, type Place, type ViewId } from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
@@ -190,19 +190,30 @@ export default function Game() {
     const firstTime = !state.introSeen
     setState((s) => ({ ...s, started: true, introSeen: true }))
     if (!firstTime) return
+    const firstStep = firstStepForIntro(state)
     window.setTimeout(() => setScript({
       who: 'kai',
-      lines: [
-        'You made it. Take a breath before you look at any of it.',
-        `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
-        'Two of the flexible ones can. I will show you exactly which, and nothing changes until you say so.',
-      ],
-      choices: [
-        { label: 'Show me what can move', onPick: () => go('rebalance') },
-        { label: 'Let me look around first', onPick: () => {} },
-      ],
+      lines: firstStep === 'intake'
+        ? [
+            'You made it. Take a breath before you look at any of it.',
+            'Your week is already waiting at Town Hall — one plain-language list. Look at it with me, and then we decide what Thursday really needs.',
+          ]
+        : [
+            'You made it. Take a breath before you look at any of it.',
+            `Thursday is at ${load.percentage.toFixed(0)} percent. That is not a judgement — it is arithmetic. Four things are locked in and cannot move.`,
+            'Two of the flexible ones can. I will show you exactly which, and nothing changes until you say so.',
+          ],
+      choices: firstStep === 'intake'
+        ? [
+            { label: 'Show me my week', onPick: () => go('intake') },
+            { label: 'Let me look around first', onPick: () => {} },
+          ]
+        : [
+            { label: 'Show me what can move', onPick: () => go(firstStep) },
+            { label: 'Let me look around first', onPick: () => {} },
+          ],
     }), 400)
-  }, [state.introSeen, load.percentage, go])
+  }, [state.introSeen, state.rebalanceSeen, state.journal.length, load.percentage, go])
 
   /* E enters what you are standing next to; Escape backs out of anything. */
   useEffect(() => {
