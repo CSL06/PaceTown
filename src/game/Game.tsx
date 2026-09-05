@@ -170,7 +170,7 @@ export default function Game() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const k = e.key.toLowerCase()
-      if ((k === 'e' || k === 'enter') && near && !panelOpen && !dialogueOpen) {
+      if ((k === 'e' || k === 'enter') && state.scene === 'campus' && near && !panelOpen && !dialogueOpen) {
         e.preventDefault(); enter(near)
       }
       if (k === 'escape') {
@@ -180,7 +180,7 @@ export default function Game() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [near, panelOpen, dialogueOpen, enter, go])
+  }, [near, panelOpen, dialogueOpen, enter, go, state.scene])
 
   const stepsDone = LOOP_STEPS.filter(([, done]) => done(state)).length
   const level = levelOf(state.xp)

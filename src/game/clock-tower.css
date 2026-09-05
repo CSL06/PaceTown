@@ -35,12 +35,14 @@
 
 .clock-player { position: absolute; z-index: 4; width: 64px; height: 96px;
   background-size: 1200% 100%; background-position-x: 0; image-rendering: pixelated;
-  transform: translate(-50%, -100%); transition: left .36s linear, top .36s linear;
+  transform: translate(-50%, -100%); pointer-events: none;
   filter: drop-shadow(0 5px 3px rgba(67,43,24,.35)); }
-.clock-player.station-entry { left: 50%; top: 92%; }
-.clock-player.station-board { left: 50%; top: 57%; }
-.clock-player.station-kai { left: 68%; top: 73%; }
-.clock-player.station-door { left: 72%; top: 54%; }
+.clock-dpad { position: absolute; z-index: 9; bottom: 48px; left: 16px; display: grid;
+  grid-template-columns: repeat(3, 44px); gap: 4px; }
+.clock-dpad button { touch-action: none; user-select: none; width: 44px; height: 44px;
+  background: #fff4d6; color: #263746; border: 2px solid #a77a45; font-size: 22px; }
+.clock-dpad button:first-child { grid-column: 2; }
+.clock-dpad button:nth-child(2) { grid-column: 1; }
 .clock-speech { position: absolute; z-index: 7; right: 6%; bottom: 9%; width: min(360px, 88vw);
   padding: 14px 16px; background: rgba(255,250,235,.96); border: 2px solid #a77a45;
   box-shadow: 0 12px 35px rgba(65,43,24,.26); }
@@ -70,11 +72,11 @@
 .week-tabs button[aria-pressed="true"] { border-color: #b87723; background: #fff4cd; }
 .week-tabs b { font-family: var(--mono); font-size: 11px; }
 
-.week-frame { grid-column: 1; grid-row: 3; min-width: 0; min-height: 0; padding: 40px 38px 32px;
+.week-frame { position: relative; grid-column: 1; grid-row: 3; min-width: 0; min-height: 480px; padding: 0;
   background: url('/game/scenes/clock-tower/week-board-frame.png') center / 100% 100% no-repeat; }
-.week-grid { height: 100%; min-height: 430px; display: grid; grid-template-columns: repeat(7, minmax(108px, 1fr));
+.week-grid { position: absolute; inset: 14% 7.2% 27%; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(108px, 1fr));
   gap: 1px; overflow-x: auto; background: rgba(129,92,52,.25); border: 1px solid rgba(106,75,43,.35); }
-.week-day { min-width: 108px; display: grid; grid-template-rows: auto minmax(0, 1fr);
+.week-day { min-width: 108px; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr);
   background: rgba(255,251,235,.94); }
 .week-day > header { padding: 8px; border-bottom: 1px solid #d5c29e; display: grid; gap: 5px; }
 .week-day > header > div { display: flex; align-items: baseline; gap: 5px; }
@@ -145,9 +147,9 @@ button.week-task:hover { border-color: #b67a24; }
   .clock-board-screen { grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
     grid-template-rows: auto auto minmax(0, 1fr) auto; padding: 12px; }
   .week-tabs { display: flex; }
-  .week-frame { grid-column: 1; padding: 28px 24px 23px; min-height: 410px; }
-  .week-grid { display: block; min-height: 350px; }
-  .week-day { display: none; min-height: 350px; }
+  .week-frame { grid-column: 1; min-height: 540px; }
+  .week-grid { display: block; }
+  .week-day { display: none; height: 100%; }
   .week-day.is-mobile-active { display: grid; }
   .kai-plan { grid-column: 2; grid-row: 3; }
 }
@@ -167,7 +169,6 @@ button.week-task:hover { border-color: #b67a24; }
   .hotspot-door { left: 82%; top: 46%; }
   .clock-board-head p { display: none; }
   .clock-board-head h1 { font-size: 24px; }
-  .week-frame { padding: 21px 17px 18px; }
   .destination-picker { grid-template-columns: repeat(3, minmax(72px, 1fr)); }
 }
 

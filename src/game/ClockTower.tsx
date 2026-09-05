@@ -6,6 +6,7 @@ import {
 import { grow, record, type GameState } from './state'
 import type { ViewId } from './layout'
 import './clock-tower.css'
+import { useRoomMovement } from './useRoomMovement'
 
 const SOURCE_DAY = 'thu'
 const DEFAULT_DESTINATION = 'sat'
@@ -218,39 +219,15 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
 export function ClockTower({ state, update, go, toast, onExit }: Props) {
   const [boardOpen, setBoardOpen] = useState(false)
   const [kaiOpen, setKaiOpen] = useState(false)
-  const [station, setStation] = useState<'entry' | 'board' | 'kai' | 'door'>('entry')
-  const [facing, setFacing] = useState<'up' | 'down' | 'left' | 'right'>('up')
-  const [walking, setWalking] = useState(false)
+  const { room, avatar, walkTo, press } = useRoomMovement(boardOpen)
   const boardButton = useRef<HTMLButtonElement>(null)
-  const walkTimer = useRef<number | null>(null)
   const waking = wakingMinutes(state.capacity)
   const thursday = dailyLoad(state.tasks, SOURCE_DAY, waking)
 
-  const visit = (next: typeof station, action: () => void) => {
-    if (walkTimer.current !== null) window.clearTimeout(walkTimer.current)
-    const from = STATION_POSITION[station]
-    const to = STATION_POSITION[next]
-    const dx = to.x - from.x
-    const dy = to.y - from.y
-    setFacing(Math.abs(dx) > Math.abs(dy)
-      ? (dx > 0 ? 'right' : 'left')
-      : (dy > 0 ? 'down' : 'up'))
-    setWalking(true)
-    setStation(next)
-    walkTimer.current = window.setTimeout(() => {
-      setWalking(false)
-      walkTimer.current = null
-      action()
-    }, 360)
-  }
-
-  useEffect(() => () => {
-    if (walkTimer.current !== null) window.clearTimeout(walkTimer.current)
-  }, [])
+  const visit = (next: keyof typeof STATION_POSITION, action: () => void) => walkTo(STATION_POSITION[next], action)
 
   const closeBoard = useCallback(() => {
     setBoardOpen(false)
-    setStation('entry')
     window.requestAnimationFrame(() => boardButton.current?.focus())
   }, [])
 
@@ -265,7 +242,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
   }, [boardOpen, closeBoard, onExit])
 
   return (
-    <div className={`clock-scene${boardOpen ? ' is-board-open' : ''}`}>
+    <div ref={room} className={`clock-scene${boardOpen ? ' is-board-open' : ''}`}>
       <img className="clock-room" src="/game/scenes/clock-tower/interior.png"
         alt="A bright, sunlit planning room inside the Clock Tower" />
       <div className="clock-sun" aria-hidden="true" />
@@ -296,8 +273,18 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
         <span>Exit</span><small>Return to Campus Grove</small>
       </button>
 
-      <div className={`clock-player avatar f-${facing}${walking ? ' walking' : ''} station-${station}`} aria-label="Your avatar"
-        style={{ backgroundImage: 'url(/game/world/player-sheet.png)' }} />
+      <div ref={avatar} className="clock-player avatar f-up" aria-label="Your avatar"
+        style={{ left: '50%', top: '92%', backgroundImage: 'url(/game/world/player-sheet.png)' }} />
+      <div className="clock-dpad" aria-label="Room movement">
+        {(['up', 'left', 'down', 'right'] as const).map((direction) => (
+          <button key={direction} type="button" aria-label={`Move ${direction}`}
+            onPointerDown={(event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); press(direction, true) }}
+            onPointerUp={() => press(direction, false)} onPointerCancel={() => press(direction, false)}
+            onLostPointerCapture={() => press(direction, false)}>
+            {{ up: '↑', left: '←', down: '↓', right: '→' }[direction]}
+          </button>
+        ))}
+      </div>
 
       {kaiOpen && !boardOpen && (
         <div className="clock-speech" role="status">
@@ -309,7 +296,7 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
         </div>
       )}
 
-      <p className="clock-room-hint">Choose a place in the room · Esc returns to campus</p>
+      <p className="clock-room-hint">WASD / arrows to walk · Choose a place to visit · Esc returns to campus</p>
       </div>
 
       {boardOpen && (
