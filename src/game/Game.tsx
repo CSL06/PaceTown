@@ -24,12 +24,11 @@ import { GUARDIANS, PLACES, doorstep, firstStepForIntro, focusGuardianFor, nextS
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
-import { Chime, Firefly, Lanterns, WarmCup } from './panels/Minis'
 import { Settings } from './panels/Settings'
 import { Shop } from './panels/Shop'
 import { Collection, Keepsakes } from './panels/Keepsakes'
 import { Pocket } from './panels/Pocket'
-import { Ripples } from './panels/Ripples'
+import { RecoveryScene, type RecoveryView } from './recovery/RecoveryScene'
 import {
   Backpack, Briefing, Calm, Council, Garden, Home, Journal, LoadPanel, Mailbox,
   Recover, TownList,
@@ -54,10 +53,11 @@ const VIEW_TITLE: Record<ViewId, string> = {
   settings: 'Settings', shop: 'Shop',
 }
 
-const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
+type NonRecoveryView = Exclude<ViewId, RecoveryView>
+
+const PANELS: Record<NonRecoveryView, (p: PanelProps) => ReactElement> = {
   intake: Intake, understand: Understand, rebalance: Rebalance, work: Work, session: Session,
-  recover: Recover, ripples: Ripples, pocket: Pocket, firefly: Firefly, chime: Chime,
-  warmcup: WarmCup, lanterns: Lanterns, keepsakes: Keepsakes, collection: Collection,
+  recover: Recover, pocket: Pocket, keepsakes: Keepsakes, collection: Collection,
   journal: Journal, council: Council, mailbox: Mailbox, calm: Calm,
   home: Home, backpack: Backpack, garden: Garden, load: LoadPanel, townlist: TownList,
   briefing: Briefing, settings: Settings, shop: Shop,
@@ -66,7 +66,7 @@ const PANELS: Record<ViewId, (p: PanelProps) => ReactElement> = {
 /** Greetings fire once per place, then never again. */
 const GREETINGS: Partial<Record<string, [GuardianId, string]>> = {
   library: ['mira', 'I am Mira, and I explain things. Tell me what blocks you — we start with one small visible step.'],
-  garden: ['sol', 'I am Sol, and I keep effort sustainable. This water achieves nothing, and that is the point — sit a minute?'],
+  garden: ['sol', 'I am Sol, and I keep effort sustainable. Tell me what kind of pause you need, or look through every option yourself.'],
   market: ['goh', 'I am Goh, and I finish small things. Errands group well — bring me the list in your head.'],
   cafe: ['sky', 'I am Sky, and I keep you company. Work if you want — I will not ask how it is going.'],
   park: ['sol', 'I am Sol. Ten minutes with something green counts — outside, window, plant, or picture, all the same.'],
@@ -312,7 +312,10 @@ export default function Game() {
   const focusGuardian = focusGuardianFor(leadView)
 
   const panelProps: PanelProps = { state, load, update, go, toast }
-  const Panel = state.view ? PANELS[state.view] : null
+  const recoveryViews: RecoveryView[] = ['ripples', 'chime', 'warmcup', 'firefly', 'lanterns']
+  const recoveryView = state.view && recoveryViews.includes(state.view as RecoveryView)
+    ? state.view as RecoveryView : null
+  const Panel = state.view && !recoveryView ? PANELS[state.view as NonRecoveryView] : null
 
   /* A save that has never been through onboarding gets sent there first. The
      explore-without-an-account path marks itself onboarded, so it lands in the
@@ -380,6 +383,19 @@ export default function Game() {
             </div>
           </div>
         </div>
+      </div>
+    )
+  }
+
+  if (recoveryView) {
+    return (
+      <div className={`pt-game${state.contrast ? ' hc' : ''}`}>
+        {sceneWipe}
+        <RecoveryScene {...panelProps} view={recoveryView} />
+        <div className="toasts">
+          {toasts.map((t) => <div className="toast" key={t.id}>{t.text}</div>)}
+        </div>
+        <div className="sr" aria-live="polite">{live}</div>
       </div>
     )
   }

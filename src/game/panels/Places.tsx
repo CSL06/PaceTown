@@ -260,8 +260,8 @@ export function Recover({ state, load, update, go }: PanelProps) {
         </p>
         <div className="actions">
           <button className="primary" type="button" onClick={() => go('session')}>Resume Pace Session</button>
-          <button className="secondary" type="button" onClick={() => go('ripples')}>Gentle Ripples</button>
-          <button className="secondary" type="button" onClick={() => go('calm')}>Short reset</button>
+          <button className="secondary" type="button" onClick={() => go('calm')}>Choose a recovery activity</button>
+          <button className="secondary" type="button" onClick={() => go('pocket')}>Step away from the screen</button>
         </div>
       </div>
     )
@@ -270,16 +270,20 @@ export function Recover({ state, load, update, go }: PanelProps) {
   return (
     <div className="card">
       <div className="eyebrow">Recover</div>
-      <h2>Two ways to pause <HelpDot view="recover" state={state} load={load} /></h2>
-      <Guardian who="sol" says="Two equal pauses: Ripples here, or a short reset away from the screen. Neither earns more." />
+      <h2>What kind of pause would help? <HelpDot view="recover" state={state} load={load} /></h2>
+      <Guardian who="sol" says="I can suggest Gentle Ripples, but you choose. Every activity and every away-from-screen option is equally valid." />
       <div className="opts">
         <button className="opt" type="button" onClick={() => go('ripples')}>
           <span className="k">◎</span>
-          <span>Do something here<small>Gentle Ripples · 45–120 seconds · no score, no failure state</small></span>
+          <span>Gentle Ripples<small>Make room around one crowded thought · Sol’s suggestion</small></span>
         </button>
+        <button className="opt" type="button" onClick={() => go('chime')}><span className="k">♫</span><span>Chime Drift<small>Slow a tense transition through sound and breath</small></span></button>
+        <button className="opt" type="button" onClick={() => go('warmcup')}><span className="k">♨</span><span>Warm Cup<small>Notice and meet one present need</small></span></button>
+        <button className="opt" type="button" onClick={() => go('firefly')}><span className="k">✦</span><span>Firefly Stories<small>Find a kinder frame for a difficult thought</small></span></button>
+        <button className="opt" type="button" onClick={() => go('lanterns')}><span className="k">◇</span><span>Night Lanterns<small>Contain, keep, defer, or release a concern</small></span></button>
         <button className="opt" type="button" onClick={() => go('pocket')}>
           <span className="k">☀</span>
-          <span>Do something away from the screen<small>Pocket of Green · IRL-01 · Sol</small></span>
+          <span>Step away from the screen<small>Pocket of Green · outdoor, window, indoor, and accessible paths</small></span>
         </button>
       </div>
       <div className="actions">
@@ -369,6 +373,17 @@ export function Backpack({ state, load, go }: PanelProps) {
         <button className="primary" type="button" onClick={() => go('work')}>Bring one into a session</button>
         <button className="secondary" type="button" onClick={() => go('rebalance')}>Move one through rebalancing</button>
       </div>
+      {state.recoveryNotes.length > 0 && (
+        <>
+          <div className="eyebrow" style={{ marginTop: 18 }}>Kept from recovery</div>
+          {[...state.recoveryNotes].reverse().map((note) => (
+            <div className="next-action" key={note.at}>
+              <div className="eyebrow">Private note · {new Date(note.at).toLocaleString()}</div>
+              <p>{note.text}</p>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   )
 }

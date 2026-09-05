@@ -16,7 +16,7 @@ import type { PlaceId, ViewId } from './layout'
 import { localStorageAdapter } from './storage'
 
 export const SAVE_KEY = 'pacetown.game'
-export const SAVE_VERSION = 6
+export const SAVE_VERSION = 7
 
 const store = localStorageAdapter(SAVE_KEY)
 
@@ -108,6 +108,14 @@ export interface GameState {
     response: 'lighter' | 'same' | 'not_sure' | null
   }[]
 
+  /** Explicitly kept private reflections from recovery activities. */
+  recoveryNotes: {
+    at: number
+    activity: RegulationId
+    text: string
+    destination: 'backpack'
+  }[]
+
   skippedQuestKinds: string[]
   /** Recovery activities the student said they prefer. Ordering, never gating. */
   recoveryPrefs: RegulationId[]
@@ -184,6 +192,7 @@ export function initialState(): GameState {
 
     keepsakes: [],
     regulationSessions: [],
+    recoveryNotes: [],
     skippedQuestKinds: [],
     recoveryPrefs: [],
 
@@ -284,6 +293,12 @@ const MIGRATIONS: Migration[] = [
   /* v6 permits an explicit manual calendar move beyond a deadline. No stored
      shape changes; negative deadlineDays now honestly records days overdue. */
   (s) => ({ ...s, version: 6 }),
+  /* v7 gives Night Lanterns an explicit, opt-in Backpack destination. */
+  (s) => ({
+    ...s,
+    version: 7,
+    recoveryNotes: Array.isArray(s.recoveryNotes) ? s.recoveryNotes : [],
+  }),
 ]
 
 /**
