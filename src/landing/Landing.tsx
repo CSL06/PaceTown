@@ -16,7 +16,6 @@ import {
 import { GUARDIANS } from '../game/layout'
 import { useAuth } from '../auth/AuthContext'
 import { markOnboarded } from '../game/state'
-import { useTheme } from '../theme/ThemeProvider'
 import { LiveTown } from './LiveTown'
 import { useAmbient } from './useAmbient'
 import { useCountUp, useReveal } from './motion'
@@ -136,7 +135,6 @@ function Stat({ value, prefix = '', suffix = '', decimals = 0, label }: {
 export default function Landing() {
   const { account, exploreAsGuest } = useAuth()
   const navigate = useNavigate()
-  const { theme, toggle: toggleTheme } = useTheme()
   const ambient = useAmbient()
   const page = useReveal<HTMLDivElement>()
   const sceneRef = useRef<HTMLDivElement>(null)
@@ -235,27 +233,9 @@ export default function Landing() {
         </nav>
 
         <div className="lp-nav-actions">
-          <button
-            type="button"
-            className="lp-icon-btn"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-          >
-            {theme === 'dark' ? (
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
-                strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="4.2" />
-                <path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
-                strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M20.5 14.6A8.6 8.6 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1z" />
-              </svg>
-            )}
-          </button>
-
+          {/* No theme toggle here on purpose: the landing is pinned light, so
+              the control would have nothing to switch. The game keeps its own
+              theme setting in Settings. */}
           <button
             type="button"
             className={`lp-audio${ambient.playing ? ' on' : ''}`}

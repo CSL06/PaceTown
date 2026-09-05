@@ -155,14 +155,26 @@ test.describe('state survives', () => {
   })
 
   test('the theme choice persists across a reload', async ({ page }) => {
-    await page.goto('/')
-    await page.getByRole('button', { name: /switch to (light|dark) theme/i }).click()
-    const chosen = await page.evaluate(() => document.documentElement.dataset.theme)
-    expect(chosen).toBeTruthy()
+    // The landing is pinned light by design and no longer carries a toggle,
+    // so the theme control lives where it belongs: the game's own settings.
+    await page.goto('/game')
+    await page.getByRole('button', { name: /campus grove|continue your week/i })
+      .click({ timeout: 20_000 })
+    await dismissGreeting(page)
+
+    await page.getByRole('button', { name: /account:/i }).click()
+    await page.getByRole('menuitem', { name: /^settings$/i }).click()
+
+    const sheet = page.getByRole('dialog', { name: 'Settings' })
+    await expect(sheet).toBeVisible()
+    await sheet.getByRole('button', { name: /^dark$/i }).click()
+
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe('dark')
 
     await page.reload()
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme))
-      .toBe(chosen)
+      .toBe('dark')
   })
 })
 
