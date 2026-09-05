@@ -114,7 +114,7 @@ describe('session shows the saved note', () => {
     expect(states[states.length - 1].nextAction).toBe('Add the junction entity')
   })
 
-  it('writes reflect typing into the save before a recovery break', async () => {
+  it('writes reflect typing into the save, and it survives the recovery break and re-entry', async () => {
     const user = userEvent.setup()
     const states: GameState[] = []
     render(<Harness initial={withActiveSession({ session: { ...initialState().session, elapsedSec: 60 } })} onState={(state) => states.push(state)} />)
@@ -126,5 +126,14 @@ describe('session shows the saved note', () => {
     await user.click(screen.getByRole('button', { name: /made some progress/i }))
     await user.type(await screen.findByLabelText('What changed?'), 'Junction entity drafted')
     expect(states[states.length - 1].progressNote).toBe('Junction entity drafted')
+    await user.click(screen.getByRole('button', { name: /take a recovery break/i }))
+    await user.keyboard('{Escape}')
+    await user.click(screen.getByRole('button', { name: /your place is ready/i }))
+    const welcomeAgain = await screen.findByRole('dialog', {}, { timeout: 3000 })
+    expect(welcomeAgain).toHaveTextContent('Welcome back')
+    await user.click(screen.getByRole('button', { name: /keep going/i }))
+    await user.click(await screen.findByRole('button', { name: /pause or record progress/i }, { timeout: 3000 }))
+    await user.click(screen.getByRole('button', { name: /made some progress/i }))
+    expect(await screen.findByDisplayValue('Junction entity drafted', {}, { timeout: 3000 })).toBeInTheDocument()
   })
 })
