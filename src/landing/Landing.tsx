@@ -360,7 +360,7 @@ export default function Landing() {
               {' '}{Math.round(wakingMinutes(DEMO_CAPACITY) / 60)} waking hours.
             </p>
             <div className="lp-kai-note">
-              <img src="/game/portraits/kai.png" alt="Kai" width="92" height="138" loading="lazy" />
+              <img src="/game/portraits/kai.webp" alt="Kai" width="92" height="138" loading="lazy" />
               <div><strong>Kai</strong><span>I found {movers} flexible {movers === 1 ? 'thing' : 'things'} that can safely move.</span></div>
             </div>
           </div>
@@ -476,7 +476,7 @@ export default function Landing() {
                 <h3>{step.action}</h3>
                 <p>{step.detail}</p>
                 <div className="lp-step-guide">
-                  <img src={`/game/portraits/${step.guardian}.png`} alt="" loading="lazy" />
+                  <img src={`/game/portraits/${step.guardian}.webp`} alt="" loading="lazy" />
                   <span><b>{GUARDIANS[step.guardian].name}</b><small>{ROSTER.find((entry) => entry.id === step.guardian)?.title}</small></span>
                 </div>
               </li>
@@ -509,7 +509,7 @@ export default function Landing() {
               <p>Consent, not compliance. The town works with you, never around you.</p>
             </div>
             <div className="lp-charter-host">
-              <img src="/game/portraits/sol.png" alt="Sol" width="108" height="162" loading="lazy" />
+              <img src="/game/portraits/sol.webp" alt="Sol" width="108" height="162" loading="lazy" />
               <span className="lp-charter-bubble">No streaks.<br />No guilt.</span>
             </div>
           </div>
@@ -529,7 +529,7 @@ export default function Landing() {
         <section className="lp-final">
           <div className="lp-final-party" aria-hidden="true">
             {ROSTER.map((guardian) => (
-              <img key={guardian.id} src={`/game/portraits/${guardian.id}.png`} alt="" />
+              <img key={guardian.id} src={`/game/portraits/${guardian.id}.webp`} alt="" />
             ))}
           </div>
           <div className="lp-final-board" data-reveal>
