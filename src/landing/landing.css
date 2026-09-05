@@ -31,13 +31,34 @@
   --shell: 1240px;
 
   min-height: 100vh;
-  background: var(--ground);
   color: var(--text);
   font-family: var(--ui);
   font-size: 16px;
   line-height: 1.6;
   overflow-x: clip;
+
+  /* The colour always matched the game exactly (--pt-bg on both), but the
+     town is a warm illustrated world and this was flat paper, so the two read
+     as different products. These layers borrow the game's ground rather than
+     its artwork: the pixel kit's checkerboard at very low contrast, and the
+     campus's late-afternoon light as two soft washes. Fixed attachment so it
+     behaves like a backdrop the page moves over, not wallpaper that scrolls. */
+  background-color: var(--ground);
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 0%, var(--pt-accent-wash), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 90% 25%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 65%),
+    linear-gradient(45deg, var(--px-lo) 25%, transparent 25% 75%, var(--px-lo) 75%),
+    linear-gradient(45deg, var(--px-lo) 25%, transparent 25% 75%, var(--px-lo) 75%);
+  background-size: 100% 100%, 100% 100%, 8px 8px, 8px 8px;
+  background-position: 0 0, 0 0, 0 0, 4px 4px;
+  background-attachment: fixed, fixed, fixed, fixed;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
 }
+
+/* The checkerboard is the loudest of those layers, so it is held to a whisper.
+   Panels sit on solid surfaces above it and are unaffected. */
+.lp { --px-lo: color-mix(in srgb, var(--pt-text) 4%, transparent); }
+:root[data-theme="dark"] .lp { --px-lo: color-mix(in srgb, var(--pt-text) 5%, transparent); }
 
 .lp *, .lp *::before, .lp *::after { box-sizing: border-box; }
 .lp h1, .lp h2, .lp h3 { font-family: var(--display); font-weight: 400; margin: 0;
@@ -393,7 +414,7 @@
 /* --------------------------------------------------------------- sections */
 .lp-section { max-width: var(--shell); margin: 0 auto;
   padding: clamp(44px, 6.5vw, 88px) clamp(16px, 3vw, 34px); }
-.lp-section-alt { max-width: none; background: var(--deep);
+.lp-section-alt { max-width: none; background: color-mix(in srgb, var(--deep) 82%, transparent);
   border-top: 1px solid var(--edge); border-bottom: 1px solid var(--edge); }
 .lp-section-alt > * { max-width: var(--shell); margin-left: auto; margin-right: auto; }
 .lp-section-head { max-width: 60ch; margin-bottom: clamp(28px, 3.6vw, 46px); }
