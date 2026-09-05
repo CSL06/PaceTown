@@ -6,6 +6,7 @@ import { ThemeProvider } from './theme/ThemeProvider'
 import { ErrorBoundary } from './ui/ErrorBoundary'
 import AuthPage from './auth/AuthPage'
 import Landing from './landing/Landing'
+import ResetPage from './ResetPage'
 import './theme/theme.css'
 import './theme/pixel.css'
 import './styles.css'
@@ -44,6 +45,7 @@ createRoot(document.getElementById('root')!).render(
               {/* The presenter's one-click front door, and the "try it now"
                   link: signs in as a guest and opens the seeded week. */}
               <Route path="/game" element={<DemoEntry />} />
+              <Route path="/reset" element={<ResetPage />} />
               <Route path="/demo" element={<MentorDemo />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
