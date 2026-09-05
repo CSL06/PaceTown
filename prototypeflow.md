@@ -5,6 +5,40 @@ One presenter, one browser, ~5 minutes. Every input below is **prefilled in the
 app already** (the seeded demo week) — you only paste if you want to show the
 parser working from raw text.
 
+## Before you use it — the 10-minute outsider walkthrough
+
+You have never seen PaceTown. This is the shortest honest tour. One loop,
+no scores, no guilt:
+
+> See your whole week as one number → move what can safely move → turn one
+> scary task into one small step → work with a guardian beside you → rest
+> on purpose → everything you did is written down for next time.
+
+1. Open `http://localhost:5173/game` (or press **Enter Campus Grove** from
+   the landing page). Kai greets you and — on a first run — walks you to
+   **Town Hall**. Your week is already typed there in plain language; press
+   **Save these commitments**. The number on the HUD is calculated from it,
+   never written in.
+2. Walk to the **Clock Tower** (or Town List → Clock Tower). The Week Board
+   opens on Kai's suggestion: some tasks are softly outlined as previews.
+   Compare Thursday before → after, then **Approve**. Nothing moved until
+   you said so.
+3. Walk to the **Library** and **Talk to Mira**. Pick one task from your
+   open work, answer one short question (what is making it difficult), and
+   she proposes one small checkpoint with a clear finish line. **Use this
+   step**, then walk to your **study desk**.
+4. The session is one checkpoint, one timer (optional), one scratchpad.
+   **Ask Mira** when stuck — she answers from your task, not a canned
+   example. When you stop: **Pause or record progress** → say how it went →
+   leave a note. **Save and stand up**.
+5. Leave and come back: the desk greets you with **Welcome back** — what you
+   changed, your next action, time spent. The HUD card carries the same
+   summary. Rest at the **Garden Pavilion** or the **Park** whenever you
+   like; reading the **Post Office** journal shows the whole day honestly.
+
+That is the whole system. Everything below is the same tour, scripted for a
+presenter with timings.
+
 ## Before you show it
 
 ```powershell
@@ -32,10 +66,10 @@ intact.
 
 Town Hall opens with this schedule text prefilled:
 
-> Database Systems lecture from 9 to 12, 90 minute commute, Film Society at 5,
-> café shift from 6 to 10, ERD assignment due tomorrow takes 120 minutes,
-> revise normalisation notes for 62 minutes, weekly groceries 45 minutes,
-> bursary form due next week 30 minutes, laundry 30 minutes
+> Database Systems lecture from 9 am to 12 pm, 90 minute commute, Film Society
+> at 5 pm, café shift from 6 pm to 10 pm, ERD assignment due tomorrow takes
+> 120 minutes, revise normalisation notes for 62 minutes, weekly groceries
+> 45 minutes, bursary form due next week 30 minutes, laundry 30 minutes
 
 And this assignment brief prefilled:
 
@@ -120,9 +154,9 @@ stay in charge of every change.*
      same board is a drag-and-drop calendar: flexible tasks drag, fixed ones
      don't, a move past a deadline is refused, and **Undo last move** is
      always one click.
-   - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
-     stays Open. *"Nothing moved until I approved it. Reject would have left
-      my week exactly as it was."* (103% and 95% are the board's rounded
+    - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
+      stays Open. *"Nothing moved until I approved it. Dismissing the preview
+      would have left my week exactly as it was."* (103% and 95% are the board's rounded
       on-screen readings; precisely they are 102.9 → 94.6 — Heavy either way
       you read it.)
    - Numbers assume the seeded week, unedited. If you edited anything at Town
@@ -137,60 +171,65 @@ stay in charge of every change.*
 *Goal: one scary assignment becomes one small step, and you take it with
 company.*
 
-4. Open the **Library**. First the app asks what's *actually* in the way —
-   choose ***I do not know where to begin***. A message box opens like a
-   dialogue with that guardian: Mira's opener, and the plan she built for
-   your task. **← Back** returns you to the blocker list, so the choice is
-   never a trap.
-   - **What just happened (the logic):** instead of generic advice, the plan
-     follows your blocker to the right guardian — Mira, who understands study
-     tangles (Kai plans, Sol holds capacity, Sky sits with you, Goh gathers
-     missing pieces). Because your brief is pasted in, the first checkpoint is
-     grounded in your brief's first deliverable, not an example from someone
-     else's course. Pick the ~20-minute checkpoint; rewrite its title,
-     minutes, or definition of done — every word stays editable.
-   - Click **Extract deliverables** to show the brief turning into a checklist
-     (pattern matching, local, editable — extracted text never becomes your
-     submitted work).
-   - **Work with** is a guardian picker — the blocker's guardian is the routed
-     default (highlighted), and you can switch (Mira explains, Kai plans, Sol
-     keeps it small, Sky stays close, Goh gathers). The picker, the session,
-     and the resume card all follow the same chosen guardian.
-5. Click **Start a Pace Session with Mira**. Tour the workspace in 20 seconds:
-   - **One checkpoint** with its definition of done — the only thing on your
-     plate.
-   - **Timer**, untimed by default. *"A timer running out never completes work
-     here — only you can."*
-   - **Scratchpad** for messy notes, links, and half-thoughts.
-   - **Ask Mira → Explain**. **Say it:** *"Listen — she's talking about my
-     task and my checkpoint, not a canned example. All six help modes answer
-     from my task, my blocker, and my brief."* (Plan, Explain, Brainstorm,
-     Review, Debug, What next? — all local, no AI provider connected.)
-   - **Mira's action**: one guardian action button under your chosen
-     guardian — Mira **drafts an outline into the scratchpad**, Kai **splits
-     the checkpoint in two**, Sol **shrinks it to a 5-minute step**, Sky
-     **sits with you** (starts the count-up together), Goh **adds a gathering
-     checklist**.
-6. Select **Partial progress**, keep *"Add the enrolment junction entity"* as
-   the next action, click **Save and leave**.
-   - **What just happened (the logic):** partial progress earns 20 XP because in
-     this town, naming the next action *is* the success condition — completed,
-      partial, blocked, and rescheduled are all valid endings. Watch the HUD
-      quest card flip to *Take a short reset* — its single destination is the
-      Recover view: work is banked, so the system foregrounds exactly one next
-      thing instead of five equal buttons — the map, the dock, and the Council
-      all follow the same shared rule.
-   - **Leave and come back:** the quest card becomes a guardian-voiced
-     **resume ritual** — your guardian greets you with your task, checkpoint,
-     time so far, and the saved next action, with Resume / Edit plan /
-     Something else. Nothing about your place is ever lost.
+4. Enter the **Library** (the Library room on campus; the quest card also
+   routes you there). Walk to Mira and press `E` — **Talk to Mira** — and her
+   open-work list opens on Thursday: a day switcher (‹ ›) and the day's
+   unfinished commitments, three to a page (*"Showing 1–3 of 6 unfinished
+   commitments"* after Act 2's approval). Pick the **ERD assignment**.
+   - **What just happened (the logic):** the Library is now a room you walk,
+     not a form you fill. Mira always starts from the real commitment list —
+     sorted by day, paged so it never becomes a wall — and the task you left
+     mid-flight wears its own badge: **"You did this before — resume at your
+     desk"**. Your place survives; the list just points at it.
+5. Her summary card makes the task concrete ("a 120-minute mental commitment
+   due tomorrow — the brief names *Identify the entities and their
+   attributes*"), then asks one short question: **What is making it
+   difficult right now?** Choose ***I do not know where to start*** (More
+   choices reveals the rest). Mira proposes **one checkpoint** — *"Start:
+   Identify the entities and their attributes", 15 minutes, done means "a
+   rough attempt exists"* — with two buttons: **Use this step** and
+   **Make it smaller** (halves the minutes, never below five).
+   - **What just happened (the logic):** the proposal comes from the
+     `taskGuidance` module — a local, offline guidance provider that turns
+     the one task plus the blocker into one sensible first step, grounded in
+     the deliverables of your pasted brief, not a canned example. Rough is
+     expected, and the size is always negotiable — but there is exactly one
+     step on the table, never a project plan.
+   - **Say it:** *"One question, one proposal, one finish line. She is not
+     quoting a textbook — she read my brief."*
+6. Click **Use this step** — *"Your place is ready at the study desk"* — and
+   walk to the **study desk**. The session is one checkpoint and nothing
+   else: **Done when** (the finish line), a timer that follows the
+   checkpoint's shape (count-down here; it emptying never completes work —
+   the checkpoint simply stays open), a **scratchpad** for messy notes, and
+   **Ask Mira** — type the exact stuck point ("Why does a many-to-many
+   relationship need another entity?") and she answers from your task, your
+   checkpoint, and your brief. When you stop, two doors: **I'm finished…**
+   (this checkpoint only, or the whole task) or **Pause or record progress**
+   (made some progress / still stuck / need to stop for now). Either way the
+   reflect panel asks **What changed?** and **What is the easiest next
+   action?** — then **Save and stand up**.
+   - **What just happened (the logic):** partial progress earns 20 XP and
+     the saved next action 15 more, because in this town naming the next
+     action *is* the success condition — completed, partial, blocked, and
+     rescheduled are all valid endings. Watch the HUD quest card flip to
+     *Take a short reset* — its single destination is the Recover view:
+     work is banked, so the system foregrounds exactly one next thing
+     instead of five equal buttons — the map, the dock, and the Council
+     all follow the same shared rule.
+   - **Leave and come back:** the desk greets you with **Welcome back** —
+     what changed last time, your saved next action, minutes so far, and
+     **Keep going**. The HUD resume card carries the same ritual — task,
+     checkpoint, time so far, next action, and *"Last time: …"* in your
+     guardian's voice, with Resume / Edit plan / Something else. Nothing
+     about your place is ever lost.
 
 ## Act 4 — Recover both ways (1 min)
 
 *Goal: rest is part of the loop, on screen and off it — and pausing never
 costs you your place.*
 
-7. Go to the **Garden Pavilion** (or via **Pause & regulate** mid-session): tap
+7. Go to the **Garden Pavilion** (or via **I need a reset** mid-session): tap
    the pond a few times. Ripples spread, petals drift, a fish swims, flowers
    bloom as you participate. Toggle the breathing guide (inhale 4, hold 2,
    exhale 6 — or hide it entirely), then **Done for now → Lighter → Resume
@@ -222,7 +261,7 @@ costs you your place.*
 *Goal: keep a souvenir of the reset, then see the whole story written down.*
 
 9. Click **Turn it into a Keepsake** (from Pocket of Green's done state).
-   Follow the four-step wizard — policy → photo → prepare → approve: choose
+   Follow the four-step wizard — policy → photo → generate → preview: choose
    **Create keepsake, discard original**, tick the four privacy confirmations,
    **Generate**, approve the preview, and place it in the **Recovery Garden**.
    The step numbers and the `?` dot on every screen are first-timer aids —
@@ -248,11 +287,11 @@ costs you your place.*
 
 | Question | Answer to give (and where to click) |
 |---|---|
-| What if I disagree with the plan? | Reject the proposal, rewrite any checkpoint, pick another blocker, drag a task yourself — approval is always explicit (Clock Tower Week Board, Library). |
+| What if I disagree with the plan? | Dismiss the preview, rewrite any checkpoint, pick another blocker, drag a task yourself — approval is always explicit (Clock Tower Week Board, Library). |
 | What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover**; Exit Quest at Home closes the day with the next action kept. |
 | Where is my data? | Settings or Home → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
 | Does it work on a phone? | Same flow at 390px: Town List drawer, thumb D-pad, bottom sheet. Reduced-motion and high-contrast in Home and the top bar. |
-| What proves the math? | `npm test` — 296 cases pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
+| What proves the math? | `npm test` — 315 cases pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
 
 ## Troubleshooting (live-demo insurance)
 
@@ -338,40 +377,45 @@ movable work, with minutes and weighted demand. Why it exists: workload as a
 container you can lighten, not a verdict on you. How to show it: open it before
 and after rebalancing — it gets visibly lighter.
 
-### Do the work — one checkpoint with a guardian
+### Do the work — one checkpoint at the study desk
 
-**Library work plans** (`Loop.tsx` → Work, `src/domain/plans.ts`). What it is:
-pick a task, answer what's blocking you (unclear start, too large, missing
-knowledge/materials, low capacity, perfection pressure, something else), and a
-message box opens with that guardian's opener and an editable checkpoint list
-— Mira for understanding, Kai for planning, Sol for low capacity, Sky for
-perfection pressure, Goh for materials. ← Back returns to the blocker list; a
-"Work with" picker switches guardians with the blocker's own guardian routed
-as the default. The first checkpoint is grounded in your brief's deliverables
-when a brief exists. Why it exists: intimidating work starts when it becomes
-one small, owned step. How to show it: pick "I do not know where to begin",
-extract brief deliverables, rewrite a checkpoint title live, switch guardian
-and back.
+**The Library room** (`src/game/Library.tsx`, `src/domain/taskGuidance.ts`).
+What it is: a walkable room with three stations — Mira's desk, your study
+desk, and an enchanted reference book. **Talk to Mira** opens your open work
+for any day (day switcher, three per page); a task you left mid-flight wears
+the badge **"You did this before — resume at your desk"**. Her summary card
+then asks what is making it difficult, and the `taskGuidance` module proposes
+exactly one checkpoint with a definition of done — **Use this step** or
+**Make it smaller** (halves the minutes, never below five). Why it exists:
+intimidating work starts when it becomes one small, owned step, and returning
+work must announce itself instead of silently reopening. How to show it: pick
+the ERD assignment, answer "I do not know where to start", halve the
+checkpoint once, then Use this step.
 
-**Pace Session** (`Loop.tsx` → Session, `src/domain/guidance.ts`). What it is:
-the focused workspace for one checkpoint: its definition of done, an optional
-timer (untimed by default — a timer reaching zero never completes anything),
-a scratchpad, six help modes (Plan, Explain, Brainstorm, Review, Debug, What
-next?) under **Ask {your guardian}**, one guardian action button (Mira drafts
-an outline, Kai splits the checkpoint, Sol shrinks it, Sky sits with you, Goh
-adds a gathering list), and always-available escape routes (Pause & regulate,
-Reduce the scope, Reschedule, Save & leave). Sessions end as completed,
-partial, blocked, or rescheduled — all valid. Why it exists: help must arrive
-*inside* the work, and stopping honestly must be rewarded, not punished. How
-to show it: ask Mira to Explain (the answer references your task, not a canned
-example), click her action button, pick Partial progress, save the next action.
+**Pace Session** (`src/game/Library.tsx` session flow, `src/domain/guidance.ts`).
+What it is: the focused workspace at the study desk for one checkpoint: its
+definition of done under **Done when**, a timer that follows the checkpoint's
+shape (count-down, count-up, or none — a timer reaching zero never completes
+anything), a scratchpad, and **Ask Mira** — one free-text box whose answer is
+routed by what you typed (Plan, Explain, Brainstorm, Review, Debug, What
+next?) and grounded in your task, checkpoint, and brief. Stop with
+**I'm finished…** (this checkpoint, or the whole task) or **Pause or record
+progress** (some progress / stuck / stop for now); either way the reflect
+step asks "What changed?" and the easiest next action before **Save and stand
+up**. Sessions end as completed, partial, blocked, or rescheduled — all
+valid. Why it exists: help must arrive *inside* the work, and stopping
+honestly must be rewarded, not punished. How to show it: ask why a
+many-to-many relationship needs a junction entity (she answers from your
+brief), pick Partial progress, write the next action, save.
 
-**Resume ritual card** (`src/game/ResumeCard.tsx`). What it is: when a
-checkpoint is open and no outcome is banked, the quest card becomes your
-guardian's welcome-back — task, checkpoint, time so far, saved next action —
-with Resume / Edit plan / Something else. Why it exists: returning must feel
-like being handed your own place, not a restart. How to show it: save partial
-progress, then leave the Session and come back to the map.
+**Welcome back** (`src/game/Library.tsx` welcome flow, `src/game/ResumeCard.tsx`).
+What it is: two halves of one return ritual. At the study desk, a panel —
+what changed last time, the saved next action, minutes so far, and **Keep
+going**. On the map, the quest card becomes your guardian's voice — task,
+checkpoint, time so far, next action, and *"Last time: …"* — with Resume /
+Edit plan / Something else. Why it exists: returning must feel like being
+handed your own place, not a restart. How to show it: save partial progress,
+leave the Library, and come back to the desk.
 
 **Guardian Council** (`Places.tsx` → Council). What it is: when pressures
 compete, the three most relevant guardians each give one short read of the
@@ -424,7 +468,7 @@ exists: you shouldn't have to earn rest. Mention it when showing Ripples.
 **Pace Keepsakes pipeline** (`src/game/panels/Keepsakes.tsx`,
 `src/domain/keepsake.ts`). What it is: after an IRL quest, an optional photo
 can become private pixel art, walked through a four-step wizard (policy →
-photo → prepare → approve — each step numbered, each screen carrying a `?`
+photo → generate → preview — each step numbered, each screen carrying a `?`
 dot). You pick one of four explicit policies (verify and discard / keepsake
 and discard original / save both privately / cancel), the image is redrawn
 (which strips location metadata), you confirm a privacy checklist, a local
@@ -471,6 +515,14 @@ checkpoint is in progress. Quests can be replaced without penalty; frequently
 skipped kinds appear less often. The map, the dock, and the Council follow the
 same shared rule, so they never disagree. Name it when it flips to "Take a short reset."
 
+**Task guidance provider** (`src/domain/taskGuidance.ts`). What it is: the
+module behind Mira's proposals — one interface, `propose`, that turns a task,
+an intent (a blocker or simply "ready"), and the optional brief into one
+checkpoint with a definition of done and a timer preference. The seeded
+provider answers offline and deterministically; a remote provider can be
+swapped in later and falls back to the local one on any failure. Mention it
+if someone asks "where do the checkpoints come from."
+
 **Guardian dock** (`src/game/GuardianDock.tsx`). What it is: all five guardians
 on the left rail, each showing what their own module currently says about your
 week and one button for the screen worth opening right now. A guardian is
@@ -492,7 +544,7 @@ keyboard and screen-reader path through the whole game. Mention it whenever you
 walk somewhere: "or Town List, same destination."
 
 **Saves + storage** (`src/game/state.ts`, `src/game/storage.ts`). What it is:
-versioned saves in the browser (currently v4, migrated forward — never wiped)
+versioned saves in the browser (currently v6, migrated forward — never wiped)
 behind an adapter, so production can swap in IndexedDB later. Mention it when
 you reload mid-demo without fear.
 
