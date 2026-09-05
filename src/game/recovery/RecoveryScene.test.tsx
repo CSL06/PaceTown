@@ -49,9 +49,11 @@ describe('recovery activity scenes', () => {
   it('walks through choosing, pouring, adding and stirring a warm cup', async () => {
     const user = userEvent.setup()
     render(<Harness view="warmcup" />)
+    await user.click(screen.getByRole('button', { name: 'Warmth' }))
     await user.click(screen.getByRole('button', { name: 'Barley tea' }))
-    const pour = screen.getByRole('button', { name: 'Pour' })
+    const pour = screen.getByRole('button', { name: /hold to pour/i })
     await user.click(pour); await user.click(pour); await user.click(pour); await user.click(pour); await user.click(pour)
+    await user.click(screen.getByRole('button', { name: /pour complete/i }))
     await user.click(screen.getByRole('button', { name: /honey/i }))
     const stir = screen.getByRole('button', { name: /stir gently/i })
     await user.click(stir); await user.click(stir); await user.click(stir)

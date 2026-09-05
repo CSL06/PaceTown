@@ -251,9 +251,26 @@ function ChimeGame(props: PanelProps) {
 const DRINKS = ['Barley tea', 'Warm milk', 'Lemon water']
 const INGREDIENTS = ['Honey', 'Mint', 'Cinnamon', 'Nothing extra']
 
+const CUP_NEEDS = [
+  { label: 'Warmth', line: 'You do not need to earn comfort.' },
+  { label: 'Energy without rushing', line: 'A steadier start can carry more than a hurried one.' },
+  { label: 'Quiet', line: 'Nothing needs an answer during this minute.' },
+  { label: 'Company', line: 'Sky can stay while you return to one small thing.' },
+  { label: 'I’m not sure', line: 'Not knowing what you need is still useful information.' },
+] as const
+
+function WarmAsset({ index, className = '', label }: { index: number; className?: string; label?: string }) {
+  const col = index % 4
+  const row = Math.floor(index / 4)
+  return <span className={`warm-production ${className}`} role={label ? 'img' : undefined}
+    aria-label={label} aria-hidden={label ? undefined : true}
+    style={{ backgroundPosition: `${col * (100 / 3)}% ${row * 100}%` }} />
+}
+
 function WarmCupGame(props: PanelProps) {
   const { state, go } = props
-  const [step, setStep] = useState<'choose' | 'pour' | 'ingredient' | 'stir' | 'rest'>('choose')
+  const [step, setStep] = useState<'need' | 'choose' | 'pour' | 'ingredient' | 'stir' | 'rest'>('need')
+  const [need, setNeed] = useState<number | null>(null)
   const [drink, setDrink] = useState('')
   const [ingredient, setIngredient] = useState('')
   const [pour, setPour] = useState(0)
@@ -262,31 +279,40 @@ function WarmCupGame(props: PanelProps) {
   const [response, setResponse] = useState<Response | null>(null)
   const pourTimer = useRef<number | null>(null)
   const finish = useRecoveryFinish(props, 'warmcup')
-  const addPour = () => setPour((value) => { const next = Math.min(100, value + 20); if (next === 100) setStep('ingredient'); return next })
+  const addPour = () => setPour((value) => Math.min(100, value + 20))
   const stopPour = () => { if (pourTimer.current) window.clearInterval(pourTimer.current); pourTimer.current = null }
-  const cupFrame = step === 'choose' ? 0 : step === 'pour' ? Math.min(3, Math.floor(pour / 34) + 1) : 4
+  useEffect(() => stopPour, [])
+  const cupFrame = step === 'need' || step === 'choose' || pour === 0 ? 0 : pour < 100 ? 1 : 2
   return <Shell view="warmcup" state={state} go={go}>
     <section className="recovery-playfield cup-table">
-      <Sprite game="warmcup" index={cupFrame} className="warm-cup-sprite" label={`${drink || 'Empty'} cup`} />
-      {step === 'pour' && <Sprite game="warmcup" index={11 + Math.min(2, Math.floor(pour / 40))} className="warm-pour" />}
-      {(step === 'stir' || step === 'rest') && <Sprite game="warmcup" index={14 + (stirs % 3)} className="warm-steam" />}
+      <WarmAsset index={cupFrame} className="warm-cup-sprite" label={`${drink || 'Empty'} cup`} />
+      {step === 'pour' && pour < 100 && <WarmAsset index={3} className="warm-pour" label="Teapot pouring slowly" />}
+      {step === 'rest' && <WarmAsset index={7} className="warm-sky" label="Sky sitting with a warm cup" />}
       <div className="cup-step-card">
+        {step === 'need' && <><span className="recovery-kicker">Sky · notice before doing</span><b>What would help most right now?</b>
+          <p>The cup is a way to give that need a little space.</p><div className="choice-row cup-needs">{CUP_NEEDS.map((item, index) =>
+            <button key={item.label} type="button" onClick={() => { setNeed(index); setStep('choose') }}>{item.label}</button>)}</div></>}
         {step === 'choose' && <><b>Choose what feels comforting</b><div className="choice-row">{DRINKS.map((item) =>
           <button key={item} type="button" onClick={() => { setDrink(item); setStep('pour') }}>{item}</button>)}</div></>}
-        {step === 'pour' && <><b>Pour slowly</b><p>Press and hold, or tap a few times.</p>
+        {step === 'pour' && <><b>Pour slowly</b><p>Hold the button, or use Space/Enter in steady steps.</p>
           <div className="pour-meter"><i style={{ width: `${pour}%` }} /></div>
-          <button type="button" onPointerDown={() => { addPour(); stopPour(); pourTimer.current = window.setInterval(addPour, 360) }}
-            onPointerUp={stopPour} onPointerLeave={stopPour} onPointerCancel={stopPour} onClick={addPour}>Pour</button></>}
+          {pour < 100 ? <button key="pouring" type="button"
+            onPointerDown={(event) => { event.currentTarget.setPointerCapture?.(event.pointerId); stopPour(); addPour(); pourTimer.current = window.setInterval(addPour, 180) }}
+            onPointerUp={stopPour} onLostPointerCapture={stopPour} onPointerCancel={stopPour}
+            onKeyDown={(event) => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); addPour() } }}>Hold to pour</button>
+            : <button key="complete" type="button" onClick={() => setStep('ingredient')}>Pour complete · choose an ingredient</button>}</>}
         {step === 'ingredient' && <><b>Add something, or keep it simple</b><div className="choice-row">{INGREDIENTS.map((item, index) =>
-          <button key={item} type="button" onClick={() => { setIngredient(item); setStep('stir') }}><Sprite game="warmcup" index={5 + index} />{item}</button>)}</div></>}
+          <button key={item} type="button" onClick={() => { setIngredient(item); setStep('stir') }}>
+            {index < 3 && <WarmAsset index={4 + index} />}{item}</button>)}</div></>}
         {step === 'stir' && <><b>Give it a slow stir</b><p>{stirs < 3 ? 'Three easy circles. There is no perfect speed.' : `${drink}${ingredient === 'Nothing extra' ? '' : ` with ${ingredient.toLowerCase()}`} is ready.`}</p>
           {stirs < 3 ? <button type="button" onClick={() => setStirs((value) => value + 1)}>Stir gently</button>
             : <button type="button" onClick={() => setStep('rest')}>Take it to the window</button>}</>}
-        {step === 'rest' && <><b>Sit with the warmth</b><p>You made something without needing to optimize it.</p>
+        {step === 'rest' && <><span className="recovery-kicker">{need === null ? 'A quiet minute' : CUP_NEEDS[need].label}</span><b>Sit with the warmth</b>
+          <p>{need === null ? 'You made something without needing to optimize it.' : CUP_NEEDS[need].line}</p>
           <button type="button" onClick={() => setDone(true)}>I’m ready</button></>}
       </div>
     </section>
-    <nav className="recovery-controls"><span>No recipe can fail here.</span><button className="primary" type="button" onClick={() => setDone(true)}>Finish gently</button></nav>
+    <nav className="recovery-controls"><span>No recipe can fail here.</span>{step === 'rest' && <button className="primary" type="button" onClick={() => setDone(true)}>Finish gently</button>}</nav>
     {done && <Completion response={response} setResponse={setResponse} finish={finish}
       onBack={() => setDone(false)} options={[
         { label: 'Resume a Pace Session', detail: 'Return to the same work checkpoint.', view: state.activeCheckpointId ? 'session' : 'work' },
