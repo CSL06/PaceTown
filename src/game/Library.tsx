@@ -95,8 +95,6 @@ export function Library({ state, update, go, toast, onExit }: Props) {
   const [ticking, setTicking] = useState(false)
   const [draftOutcome, setDraftOutcome] = useState<SessionOutcome | null>(state.outcome)
   const [taskFinished, setTaskFinished] = useState(false)
-  const [progress, setProgress] = useState(state.progressNote)
-  const [nextAction, setNextAction] = useState(state.nextAction)
   const deskButton = useRef<HTMLButtonElement>(null)
   const candidates = useMemo(() => likelyTasks(state.tasks, queueDay), [queueDay, state.tasks])
   const selectedTask = candidates.find((task) => task.id === selectedTaskId) ?? candidates[0] ?? null
@@ -209,8 +207,6 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       },
     }, 'Prepared one manageable checkpoint', `${chosen.title} · ${chosen.estimatedMinutes} minutes.`, REWARDS.beginSession))
     toast(enterSession ? `Started · ${chosen.title}` : 'Your place is ready at the study desk.')
-    setProgress('')
-    setNextAction('')
     setTaskFinished(false)
     if (enterSession) setFlow('session')
     else {
@@ -284,8 +280,6 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       const changed = {
         ...current,
         outcome: draftOutcome,
-        progressNote: progress,
-        nextAction,
         tasks: taskFinished
           ? current.tasks.map((task) => task.id === current.activeTaskId ? { ...task, status: 'completed' as const } : task)
           : current.tasks,
@@ -297,12 +291,12 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       }
       if (current.savedSessionKey === key) return changed
       if (taskFinished) {
-        return grow(record(changed, `Finished “${sessionTask?.title ?? 'task'}”`, progress, sessionReward(draftOutcome)))
+        return grow(record(changed, `Finished “${sessionTask?.title ?? 'task'}”`, current.progressNote, sessionReward(draftOutcome)))
       }
       return grow(record(
         record(changed, `${draftOutcome === 'completed' ? 'Completed' : 'Saved progress on'} “${active.title}”`,
-          progress, sessionReward(draftOutcome)),
-        'Saved a clear next action', nextAction, REWARDS.savedNextAction,
+          current.progressNote, sessionReward(draftOutcome)),
+        'Saved a clear next action', current.nextAction, REWARDS.savedNextAction,
       ))
     })
     setTicking(false)
@@ -483,6 +477,14 @@ export function Library({ state, update, go, toast, onExit }: Props) {
         <MiraPanel kicker={`Pace Session · ${sessionTask?.title ?? 'one task'}`} title={active.title} onClose={closeFlow}>
           {flow === 'session' && <>
             <div className="session-focus"><span>Done when</span><p>{active.definitionOfDone}</p></div>
+            <label className="library-field">What changed so far
+              <input value={state.progressNote} placeholder="Nothing recorded yet — it will be waiting when you save."
+                onChange={(event) => update((current) => ({ ...current, progressNote: event.target.value }))} />
+            </label>
+            <label className="library-field">Saved next action
+              <input value={state.nextAction} placeholder="Something you could start in two minutes."
+                onChange={(event) => update((current) => ({ ...current, nextAction: event.target.value }))} />
+            </label>
             <div className="session-timer">
               <strong>{state.session.timerMode === 'none'
                 ? 'Untimed'
@@ -557,10 +559,10 @@ export function Library({ state, update, go, toast, onExit }: Props) {
                 : 'The checkpoint stays open, and your notes will be waiting when you return.'}
           </p>
           <label className="library-field">{taskFinished ? 'What did you finish?' : 'What changed?'}
-            <input value={progress} onChange={(event) => setProgress(event.target.value)} placeholder="Even a rough attempt counts." />
+            <input value={state.progressNote} onChange={(event) => update((current) => ({ ...current, progressNote: event.target.value }))} placeholder="Even a rough attempt counts." />
           </label>
           {!taskFinished && <label className="library-field">What is the easiest next action?
-            <input value={nextAction} onChange={(event) => setNextAction(event.target.value)} placeholder="Something you could start in two minutes." />
+            <input value={state.nextAction} onChange={(event) => update((current) => ({ ...current, nextAction: event.target.value }))} placeholder="Something you could start in two minutes." />
           </label>}
           <div className="library-actions"><button className="library-primary" type="button" onClick={saveOutcome}>
             {taskFinished ? 'Yes, mark the task finished' : draftOutcome === 'completed' ? 'Complete this checkpoint' : 'Save and stand up'}

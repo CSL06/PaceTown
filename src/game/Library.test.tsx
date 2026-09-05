@@ -1,15 +1,16 @@
 /**
  * @vitest-environment jsdom
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { hasProgress, Library } from './Library'
 import { initialState, type GameState } from './state'
 
-function Harness({ initial }: { initial: Partial<GameState> }) {
+function Harness({ initial, onState }: { initial: Partial<GameState>; onState?: (state: GameState) => void }) {
   const [state, setState] = useState<GameState>(() => ({ ...initialState(), started: true, onboarded: true, ...initial }))
+  useEffect(() => { onState?.(state) }, [state, onState])
   return <Library state={state} update={setState} go={vi.fn()} toast={vi.fn()} onExit={vi.fn()} />
 }
 
@@ -80,5 +81,50 @@ describe('open-work badge', () => {
     await user.click(screen.getByRole('button', { name: /talk to mira/i }))
     const dialog = await screen.findByRole('dialog', {}, { timeout: 3000 })
     expect(dialog).toHaveTextContent('You did this before — resume at your desk')
+  })
+})
+
+describe('session shows the saved note', () => {
+  it('pre-fills what changed and the next action when the student re-enters the session', async () => {
+    const user = userEvent.setup()
+    render(<Harness initial={withActiveSession({
+      progressNote: 'Mapped two entities',
+      nextAction: 'Add the junction entity',
+    })} />)
+    await user.click(screen.getByRole('button', { name: /your place is ready/i }))
+    const welcome = await screen.findByRole('dialog', {}, { timeout: 3000 })
+    expect(welcome).toHaveTextContent('Welcome back')
+    await user.click(screen.getByRole('button', { name: /keep going/i }))
+    expect(await screen.findByText('Done when', {}, { timeout: 3000 })).toBeInTheDocument()
+    expect(screen.getByLabelText('What changed so far')).toBeInTheDocument()
+    expect(screen.getByLabelText('Saved next action')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Mapped two entities')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Add the junction entity')).toBeInTheDocument()
+  })
+
+  it('writes typed session fields straight into the save', async () => {
+    const user = userEvent.setup()
+    const states: GameState[] = []
+    render(<Harness initial={withActiveSession()} onState={(state) => states.push(state)} />)
+    await user.click(screen.getByRole('button', { name: /your place is ready/i }))
+    expect(await screen.findByText('Done when', {}, { timeout: 3000 })).toBeInTheDocument()
+    await user.type(screen.getByLabelText('What changed so far'), 'Mapped two entities')
+    await user.type(screen.getByLabelText('Saved next action'), 'Add the junction entity')
+    expect(states[states.length - 1].progressNote).toBe('Mapped two entities')
+    expect(states[states.length - 1].nextAction).toBe('Add the junction entity')
+  })
+
+  it('writes reflect typing into the save before a recovery break', async () => {
+    const user = userEvent.setup()
+    const states: GameState[] = []
+    render(<Harness initial={withActiveSession({ session: { ...initialState().session, elapsedSec: 60 } })} onState={(state) => states.push(state)} />)
+    await user.click(screen.getByRole('button', { name: /your place is ready/i }))
+    const welcome = await screen.findByRole('dialog', {}, { timeout: 3000 })
+    expect(welcome).toHaveTextContent('Welcome back')
+    await user.click(screen.getByRole('button', { name: /keep going/i }))
+    await user.click(await screen.findByRole('button', { name: /pause or record progress/i }, { timeout: 3000 }))
+    await user.click(screen.getByRole('button', { name: /made some progress/i }))
+    await user.type(await screen.findByLabelText('What changed?'), 'Junction entity drafted')
+    expect(states[states.length - 1].progressNote).toBe('Junction entity drafted')
   })
 })
