@@ -12,7 +12,7 @@ import { LIBRARY_LABEL, LIBRARY_STATIONS, type LibraryStation } from './libraryL
 import { useRoomMovement } from './useRoomMovement'
 import './library.css'
 
-type Flow = 'task' | 'summary' | 'blocker' | 'checkpoint' | 'session' | 'ask' | 'answer' | 'finish' | 'outcome' | 'reflect' | 'book'
+type Flow = 'task' | 'summary' | 'blocker' | 'checkpoint' | 'session' | 'ask' | 'answer' | 'finish' | 'outcome' | 'reflect' | 'book' | 'welcome'
 
 interface Props {
   state: GameState
@@ -40,6 +40,13 @@ function likelyTasks(tasks: readonly Task[], day: string): Task[] {
 function briefDeliverables(state: GameState, task: Task | null): string[] {
   if (!task || state.briefTaskId !== task.id) return []
   return state.deliverables.length ? state.deliverables : extractDeliverables(state.brief)
+}
+
+/** True when the student left something behind: a note, a next action, or time. */
+export function hasProgress(state: GameState): boolean {
+  return state.progressNote.trim().length > 0
+    || state.nextAction.trim().length > 0
+    || state.session.elapsedSec > 0
 }
 
 function inferMode(question: string): HelpMode {
@@ -138,6 +145,7 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       openMira()
       return
     }
+    const resumed = active && state.blocker && hasProgress(state)
     update((current) => ({
       ...current,
       outcome: null,
@@ -148,7 +156,7 @@ export function Library({ state, update, go, toast, onExit }: Props) {
     }))
     setDraftOutcome(null)
     setTaskFinished(false)
-    setFlow('session')
+    setFlow(resumed ? 'welcome' : 'session')
   }
 
   const interact = (station: LibraryStation) => {
@@ -374,6 +382,9 @@ export function Library({ state, update, go, toast, onExit }: Props) {
               <button key={task.id} type="button" onClick={() => { setSelectedTaskId(task.id); setFlow('summary') }}>
                 <strong>{task.title}</strong>
                 <span>{taskTime(task) ?? `${task.estimatedMinutes} min`} · {task.flexibility === 'fixed' ? 'fixed in calendar' : 'flexible'}</span>
+                {task.id === state.activeTaskId && active && hasProgress(state)
+                  ? <span>You did this before — resume at your desk</span>
+                  : null}
               </button>
             ))}
           </div>
@@ -445,6 +456,21 @@ export function Library({ state, update, go, toast, onExit }: Props) {
             <button type="button" onClick={() => setProposal((items) => items.map((item, index) => index === proposalIndex
               ? { ...item, estimatedMinutes: Math.max(5, Math.ceil(item.estimatedMinutes / 2)) } : item))}>Make it smaller</button>
             {proposal.length > 1 && <button type="button" onClick={() => setProposalIndex((index) => (index + 1) % proposal.length)}>Something else</button>}
+          </div>
+        </MiraPanel>
+      )}
+
+      {flow === 'welcome' && active && (
+        <MiraPanel kicker="Mira · you were here before" title="Welcome back" onClose={closeFlow}>
+          <p className="library-copy">Nothing was lost. Here is where you left it.</p>
+          <div className="library-choices compact">
+            <div><strong>{state.progressNote.trim() || 'No note last time'}</strong><span>What changed</span></div>
+            <div><strong>{state.nextAction.trim() || 'Not set yet'}</strong><span>Saved next action</span></div>
+            <div><strong>{Math.ceil(state.session.elapsedSec / 60)} min so far</strong><span>Time in this session</span></div>
+          </div>
+          <div className="library-actions">
+            <button className="library-primary" type="button" onClick={() => setFlow('session')}>Keep going</button>
+            <button type="button" onClick={closeFlow}>Not now</button>
           </div>
         </MiraPanel>
       )}
