@@ -195,6 +195,10 @@ export function Library({ state, update, go, toast, onExit }: Props) {
       activeCheckpointId: chosen.id,
       outcome: null,
       savedSessionKey: null,
+      // A new checkpoint starts with no history: never inherit the previous
+      // task's progress note or next action.
+      progressNote: '',
+      nextAction: '',
       session: {
         ...current.session,
         elapsedSec: 0,

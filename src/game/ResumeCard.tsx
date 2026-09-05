@@ -13,6 +13,10 @@ function fmtSpent(totalSec: number): string {
   return minutes < 1 ? 'just opened' : `${minutes} min so far`
 }
 
+/* The outcome label only renders when an outcome is banked alongside an open
+   checkpoint. Currently unreachable from the HUD, which gates ResumeCard
+   behind `activeCheckpoint && !state.outcome` — kept as component-level
+   behavior, exercised only by component tests. */
 const OUTCOME_LABEL = {
   completed: 'Completed', partial: 'Partial progress',
   blocked: 'Blocked', rescheduled: 'Rescheduled',

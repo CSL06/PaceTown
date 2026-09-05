@@ -2,8 +2,9 @@
 
 A scripted, repeatable walkthrough that proves the system works end to end.
 One presenter, one browser, ~5 minutes. Every input below is **prefilled in the
-app already** (the seeded demo week) — you only paste if you want to show the
-parser working from raw text.
+app already** (the seeded demo week's schedule and brief) — you only paste if
+you want to show the parser working from raw text; the reflect panel's
+*What changed* note and next action you type live.
 
 ## Before you use it — the 10-minute outsider walkthrough
 

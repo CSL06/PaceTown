@@ -158,8 +158,12 @@ export function initialState(): GameState {
     notes: '',
     outcome: null,
     savedSessionKey: null,
-    progressNote: 'Listed 6 entities. Mapped Student–Course as many-to-many.',
-    nextAction: 'Add the enrolment junction entity.',
+    /* Demo seeds once pre-filled these with sample progress; they start blank
+       now, so a first-ever desk visit never shows "Welcome back" with text the
+       student never wrote (the welcome panel, HUD badge, and reflect pre-fill
+       all read these fields). */
+    progressNote: '',
+    nextAction: '',
 
     rippleTaps: 0,
     questOutcome: null,

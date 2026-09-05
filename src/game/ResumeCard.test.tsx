@@ -64,6 +64,15 @@ describe('ResumeCard', () => {
     expect(screen.getByText(/Last time \(Partial progress\): Mapped two entities/)).toBeInTheDocument()
   })
 
+  it('shows the last-time line without a label while the outcome is unbanked', () => {
+    const { state, go } = stub()
+    state.progressNote = 'Mapped two entities'
+    state.outcome = null
+    render(<ResumeCard state={state} go={go} />)
+    expect(screen.getByText(/Last time: Mapped two entities/)).toBeInTheDocument()
+    expect(screen.queryByText(/Partial progress/)).not.toBeInTheDocument()
+  })
+
   it('omits the last-time line when no note was saved', () => {
     const { state, go } = stub()
     render(<ResumeCard state={state} go={go} />)

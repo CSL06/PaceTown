@@ -25,6 +25,7 @@ function withActiveSession(over: Partial<GameState> = {}): Partial<GameState> {
       : [{ id: 'seed-cp', title: 'List the visible pieces', definitionOfDone: 'Every piece written down.', estimatedMinutes: 15, status: 'pending' }],
     progressNote: '',
     nextAction: '',
+    session: { ...base.session, elapsedSec: 0 },
     ...over,
   }
 }
@@ -40,6 +41,7 @@ describe('hasProgress', () => {
       nextAction: '',
       session: { ...initialState().session, elapsedSec: 0 },
     })).toBe(false)
+    expect(hasProgress(initialState())).toBe(false)
   })
 })
 
