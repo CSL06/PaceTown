@@ -11,7 +11,7 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'rea
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   emailProblem, hasAccounts, passwordProblem, passwordStrength,
-  currentSession, signIn, signInWithGoogle, signUp, upgradeGuest,
+  currentSession, signIn, signInWithGoogle, upgradeGuest,
 } from './session'
 import { useAuth } from './AuthContext'
 import { useFocusTrap } from '../ui/useFocusTrap'

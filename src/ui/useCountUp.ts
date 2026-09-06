@@ -11,11 +11,18 @@
  *
  *   - It never animates on mount. The first value is simply the value; only
  *     later changes travel. Counting up from zero when a screen opens is a
- *     splash-screen trick, and it would mean the Daily Load lies for 400ms
- *     every time you enter the town.
+ *     splash-screen trick, and it would mean the Daily Load displays a figure
+ *     that is not true for 400ms every time you enter the town.
  *   - It respects `prefers-reduced-motion`, where it snaps.
  *   - It always lands exactly on the target. Easing toward a value and
  *     stopping at 99.4% is how counters end up displaying the wrong number.
+ *
+ * On the shape of it: the hook holds `null` whenever it is not mid-flight and
+ * returns the real target in that case, so the resting path needs no state at
+ * all. Every `setState` therefore happens inside a rAF callback rather than in
+ * the effect body — which is both what `react-hooks/set-state-in-effect` asks
+ * for and, independently, the reason the settled value can never drift from
+ * the target it was given.
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -32,44 +39,46 @@ export interface CountUpOptions {
 
 export function useCountUp(target: number, options: CountUpOptions = {}): number {
   const { duration = 420, enabled = true } = options
-  const [shown, setShown] = useState(target)
-  const from = useRef(target)
+  /** The in-flight value, or null when settled — settled means "show target". */
+  const [flying, setFlying] = useState<number | null>(null)
+  /** The last value actually on screen, so an interrupted travel resumes. */
+  const displayed = useRef(target)
   const raf = useRef(0)
   /* Mount is not a change. Without this the first paint of every screen
      animates from zero, which briefly displays a figure that is not true. */
   const mounted = useRef(false)
 
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true
-      from.current = target
-      setShown(target)
-      return
-    }
+    const origin = displayed.current
+    displayed.current = target
 
     const reduced = typeof matchMedia === 'function' &&
       matchMedia('(prefers-reduced-motion: reduce)').matches
+    const snap = !mounted.current || !enabled || reduced ||
+      duration <= 0 || !Number.isFinite(target) || origin === target
+    mounted.current = true
 
-    if (!enabled || reduced || duration <= 0 || !Number.isFinite(target)) {
-      from.current = target
-      setShown(target)
-      return
+    if (snap) {
+      // Nothing to animate. If a previous travel is still on screen, clear it
+      // on the next frame — a callback, so no state is set from the body.
+      raf.current = requestAnimationFrame(() => setFlying(null))
+      return () => cancelAnimationFrame(raf.current)
     }
 
     const start = performance.now()
-    const origin = from.current
     const distance = target - origin
-    if (distance === 0) return
 
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / duration)
       if (t >= 1) {
-        // Land exactly, never on an eased approximation.
-        from.current = target
-        setShown(target)
+        // Land exactly, never on an eased approximation: returning to null
+        // means the hook reports the target itself.
+        setFlying(null)
         return
       }
-      setShown(origin + distance * ease(t))
+      const value = origin + distance * ease(t)
+      displayed.current = value
+      setFlying(value)
       raf.current = requestAnimationFrame(step)
     }
     raf.current = requestAnimationFrame(step)
@@ -78,5 +87,5 @@ export function useCountUp(target: number, options: CountUpOptions = {}): number
 
   useEffect(() => () => cancelAnimationFrame(raf.current), [])
 
-  return shown
+  return flying ?? target
 }

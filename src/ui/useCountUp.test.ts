@@ -35,10 +35,13 @@ function advance(ms: number) {
 
 describe('useCountUp', () => {
   it('shows the first value immediately rather than counting up from zero', () => {
-    // A screen opening at 103% must not briefly claim 0%.
+    // A screen opening at 103% must not briefly claim 0%. Asserted as the
+    // value over time rather than as "no frame was scheduled", which is an
+    // implementation detail — the resting path holds no state at all now.
     const { result } = renderHook(() => useCountUp(103))
     expect(result.current).toBe(103)
-    expect(frames).toHaveLength(0)
+    advance(500)
+    expect(result.current).toBe(103)
   })
 
   it('travels toward a changed value instead of jumping', () => {
@@ -75,8 +78,10 @@ describe('useCountUp', () => {
     }))
     const { result, rerender } = renderHook(({ v }) => useCountUp(v), { initialProps: { v: 0 } })
     rerender({ v: 50 })
+    // Already there on the very first read, and it stays there.
     expect(result.current).toBe(50)
-    expect(frames).toHaveLength(0)
+    advance(500)
+    expect(result.current).toBe(50)
   })
 
   it('snaps when disabled, so an unseen panel does not animate', () => {
@@ -86,7 +91,7 @@ describe('useCountUp', () => {
     expect(result.current).toBe(12)
   })
 
-  it('ignores a non-finite target rather than rendering NaN', () => {
+  it('reports a non-finite target without animating toward it', () => {
     const { result, rerender } = renderHook(({ v }) => useCountUp(v), { initialProps: { v: 10 } })
     rerender({ v: Number.NaN })
     expect(Number.isNaN(result.current)).toBe(true)
