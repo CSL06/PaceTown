@@ -10,6 +10,7 @@ import { grow, record, type GameState } from './state'
 import { GUARDIANS, type ViewId } from './layout'
 import { LIBRARY_LABEL, LIBRARY_STATIONS, type LibraryStation } from './libraryLayout'
 import { useRoomMovement } from './useRoomMovement'
+import './scene-kit.css'
 import './library.css'
 
 type Flow = 'task' | 'summary' | 'blocker' | 'checkpoint' | 'session' | 'ask' | 'answer' | 'finish' | 'outcome' | 'reflect' | 'book' | 'welcome'

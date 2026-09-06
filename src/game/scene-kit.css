@@ -1,0 +1,235 @@
+/**
+ * The interior scene kit.
+ *
+ * Every guardian activity had grown its own visual language. Measured before
+ * writing any of this: landing.css uses the pixel kit 42 times and auth.css 20,
+ * while library.css, clock-tower.css, recovery.css and onboarding.css used it
+ * **zero** times between them. Those four are exactly the screens that read as
+ * a different product — soft blurred shadows, `backdrop-filter: blur()`,
+ * hardcoded hex that ignores the theme, and smooth `ease` transitions, which is
+ * glassmorphism rather than pixel art.
+ *
+ * This file is the one place that answers "what does a surface look like
+ * inside a scene", so the answer stops being re-invented per room.
+ *
+ * Two rules worth stating, because they are the ones that get broken:
+ *
+ *   - Type is split, not swapped wholesale. Bitmap faces carry headings,
+ *     labels and buttons, where they are large enough to read; body prose
+ *     stays on `--pt-prose`. A 10px label in Silkscreen is both illegible and
+ *     much wider than the box drawn for it. The pixel feel comes from the
+ *     surfaces and the motion; the reading still has to work.
+ *
+ *   - Motion is split too. State changes step (`steps()`), because a pixel
+ *     button snaps between two frames. Entrances and exits ease, with a little
+ *     overshoot, because that is what makes a modern interface feel alive
+ *     rather than merely retro. Stepping everything is what makes a game feel
+ *     twenty years old; easing everything is what makes it feel like a website.
+ */
+
+/* The interiors keep their existing root class names, so the kit attaches to
+   those rather than asking every scene to add a second one. */
+.scene,
+.library-scene,
+.clock-scene {
+  /* Surfaces, from the theme rather than from hex literals, so interiors
+     follow light/dark like the rest of the app. */
+  /* These map to tokens that exist. An earlier pass invented
+     `--pt-panel` / `--pt-edge` / `--pt-good`, which are not real names, so
+     every one silently fell through to its literal fallback and the kit was
+     not theme-aware at all. The real surface tokens are `--pt-surface*`. */
+  --sk-panel: var(--pt-surface-2);
+  --sk-raised: var(--pt-surface);
+  --sk-sunk: var(--pt-sunk);
+  --sk-ink: var(--pt-text);
+  --sk-dim: var(--pt-text-2);
+  --sk-faint: var(--pt-text-3);
+  --sk-edge: var(--pt-border-strong);
+  --sk-accent: var(--pt-accent);
+  --sk-accent-ink: var(--pt-accent-ink);
+  --sk-on-accent: var(--pt-on-accent);
+  --sk-good: var(--pt-accent-ink);
+
+  color: var(--sk-ink);
+  font-family: var(--pt-prose);
+}
+
+/* ------------------------------------------------------------- surfaces */
+
+/* The one panel treatment: chamfered corners, a two-tone bevel that reads as
+   raised, and a hard drop shadow that follows the chamfer. `filter` and not
+   `box-shadow` — a box-shadow ignores the clip and casts a rectangle, which
+   is what gives away a fake pixel panel. */
+.sk-panel {
+  background: var(--sk-panel);
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+  box-shadow: var(--px-bevel-up);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+}
+
+/* Fields, quotes and anything the eye should read as set into the surface. */
+.sk-sunk {
+  background: var(--sk-sunk);
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+  box-shadow: var(--px-bevel-down);
+}
+
+/* ------------------------------------------------------------- type ---- */
+
+.sk-title {
+  margin: 0;
+  font-family: var(--pt-display);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: .01em;
+  color: var(--sk-ink);
+}
+
+/* The small caps kicker above a title. Bitmap type earns its keep here. */
+.sk-kicker {
+  display: block;
+  font-family: var(--pt-display);
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--sk-accent-ink);
+}
+
+.sk-prose {
+  font-family: var(--pt-prose);
+  color: var(--sk-dim);
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------ buttons -- */
+
+/* A button that physically moves. Press state drops it onto its own shadow
+   and inverts the bevel, which is the whole reason the kit exists. */
+.sk-btn {
+  font-family: var(--pt-display);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--sk-ink);
+  background: var(--sk-raised);
+  border: var(--px-border) solid var(--px-ink);
+  clip-path: var(--px-clip);
+  box-shadow: var(--px-bevel-up);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  padding: 10px 14px;
+  cursor: pointer;
+  /* Stepped: a pixel control has two frames, not a hundred. */
+  transition: transform .06s steps(2), filter .06s steps(2), background .1s steps(2);
+}
+.sk-btn:hover:not(:disabled) {
+  background: var(--sk-panel);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow)) brightness(1.05);
+}
+.sk-btn:active:not(:disabled) {
+  transform: translate(var(--px-drop), var(--px-drop));
+  filter: none;
+  box-shadow: var(--px-bevel-down);
+}
+.sk-btn:disabled {
+  transform: translate(var(--px-drop), var(--px-drop));
+  filter: none;
+  box-shadow: var(--px-bevel-down);
+  opacity: .45;
+  cursor: not-allowed;
+}
+.sk-btn-primary {
+  background: var(--sk-accent);
+  color: var(--sk-on-accent);
+}
+.sk-btn-primary:hover:not(:disabled) { background: var(--sk-accent); }
+
+/* ------------------------------------------------------------- motion -- */
+
+/*
+ * The vocabulary. These are the pieces that separate "a screen appeared" from
+ * "something happened", and they are shared so that every room reacts the same
+ * way to the same kind of event.
+ */
+
+/* A panel arriving. Rises and overshoots slightly, rather than cutting in. */
+@keyframes sk-enter {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 18px)) scale(.94); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.sk-enter { animation: sk-enter var(--pt-dur-enter) var(--pt-ease-pop) both; }
+
+/* The same, for things not centred by a translate. */
+@keyframes sk-rise {
+  from { opacity: 0; transform: translateY(14px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+.sk-rise { animation: sk-rise var(--pt-dur-slow) var(--pt-ease-out) both; }
+
+/* And the version for elements that are centred with `translateX(-50%)`.
+   `sk-rise` ends on `transform: none`, which silently destroys that centring
+   and slides the element half its own width off to the right — the animation
+   wins over the rule that positions it. Anything horizontally centred must
+   use this instead. */
+@keyframes sk-rise-cx {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px) scale(.97); }
+  to   { opacity: 1; transform: translateX(-50%); }
+}
+.sk-rise-cx { animation: sk-rise-cx var(--pt-dur-slow) var(--pt-ease-out) both; }
+
+/* Staggered children, so a list assembles instead of appearing all at once.
+   Six steps is enough for any list in this app; beyond that the delay caps. */
+.sk-stagger > * { animation: sk-rise var(--pt-dur-slow) var(--pt-ease-out) both; }
+.sk-stagger > :nth-child(1) { animation-delay: 40ms }
+.sk-stagger > :nth-child(2) { animation-delay: 80ms }
+.sk-stagger > :nth-child(3) { animation-delay: 120ms }
+.sk-stagger > :nth-child(4) { animation-delay: 160ms }
+.sk-stagger > :nth-child(5) { animation-delay: 200ms }
+.sk-stagger > :nth-child(n+6) { animation-delay: 240ms }
+
+/* Something was earned. A short squash-and-pop, stepped so it reads as pixel
+   art rather than as a CSS transform. */
+@keyframes sk-pop {
+  0%   { transform: scale(1) }
+  35%  { transform: scale(1.14) }
+  60%  { transform: scale(.96) }
+  100% { transform: scale(1) }
+}
+.sk-pop { animation: sk-pop var(--pt-dur-slow) steps(6) both; }
+
+/* Something was refused, or needs looking at. Deliberately small — this is a
+   recovery app, and a violent shake is the wrong feedback for a person who is
+   already over capacity. */
+@keyframes sk-nudge {
+  0%, 100% { transform: translateX(0) }
+  25%      { transform: translateX(-3px) }
+  75%      { transform: translateX(3px) }
+}
+.sk-nudge { animation: sk-nudge 220ms steps(3) 2; }
+
+/* An interactive thing in the world, waiting to be noticed. A hard shadow
+   that grows, not a glow that pulses — the shadow keeps it feeling physical. */
+@keyframes sk-beckon {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50%      { transform: translate(-50%, calc(-50% - 3px)); }
+}
+.sk-beckon { animation: sk-beckon 2.6s var(--pt-ease) infinite; }
+
+/* The ready state: a chamfer-following ring that breathes once per bar. */
+@keyframes sk-ready {
+  0%, 100% { filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow)); }
+  50%      { filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow))
+                     drop-shadow(0 0 7px var(--sk-accent)); }
+}
+.sk-ready { animation: sk-ready 1.9s var(--pt-ease) infinite; }
+
+/* Everything above is decoration. All of it goes under reduced motion — the
+   surfaces and the bevels stay, which is the point of doing the pixel feel in
+   shape rather than in movement. */
+@media (prefers-reduced-motion: reduce) {
+  .sk-enter, .sk-rise, .sk-rise-cx, .sk-stagger > *, .sk-pop, .sk-nudge,
+  .sk-beckon, .sk-ready {
+    animation: none !important;
+  }
+  .sk-btn { transition: none; }
+}

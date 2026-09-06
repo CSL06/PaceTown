@@ -5,6 +5,7 @@ import {
 } from '../domain'
 import { grow, record, type GameState } from './state'
 import type { ViewId } from './layout'
+import './scene-kit.css'
 import './clock-tower.css'
 import { useRoomMovement } from './useRoomMovement'
 import { dayIndex, moveCalendarTask } from '../domain/calendar'

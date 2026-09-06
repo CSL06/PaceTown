@@ -39,6 +39,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # A CSS custom property that is never defined does not throw, log, or
+      # fail a build -- it just silently deletes the declaration that used it.
+      # Three separate instances of that shipped before this check existed.
+      - name: Check CSS tokens
+        run: npm run check:tokens
+
       - name: Typecheck
         run: npm run typecheck
 

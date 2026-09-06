@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { STATION_POSITION, type RoomStation } from './clockLayout'
+import { ENTRY, STATION_POSITION, type RoomStation } from './clockLayout'
 
 type Direction = 'up' | 'down' | 'left' | 'right'
 const KEYS: Record<string, Direction> = {
@@ -30,7 +30,7 @@ export function useRoomMovement<Station extends string = RoomStation>(
   const talkRadius = options.talkRadius ?? 120
   const room = useRef<HTMLDivElement>(null)
   const avatar = useRef<HTMLDivElement>(null)
-  const position = useRef({ x: 50, y: 92 })
+  const position = useRef({ x: ENTRY.x, y: ENTRY.y })
   const keys = useRef<Partial<Record<Direction, boolean>>>({})
   const target = useRef<{ x: number; y: number; arrive: () => void } | null>(null)
   const [near, setNear] = useState<Station | null>(null)

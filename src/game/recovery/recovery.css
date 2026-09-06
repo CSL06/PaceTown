@@ -1,23 +1,69 @@
-.recovery-scene { --cream:#fff7df; --ink:#17364a; position:fixed; inset:0; z-index:40; overflow:hidden; color:var(--ink); background:#d8ebca var(--recovery-bg) center/cover no-repeat; image-rendering:pixelated; font-family:var(--sans); }
+/**
+ * The five recovery activities.
+ *
+ * Two things were wrong here and both were invisible rather than obvious.
+ *
+ * First, `--serif` and `--sans` were never defined anywhere in the app. Ten
+ * declarations in this file referenced them inside a `font:` shorthand, and a
+ * shorthand containing an invalid value is dropped whole — so every heading
+ * and every body run in these scenes silently fell back to whatever it
+ * inherited. The typography here was never actually applying.
+ *
+ * Second, the surfaces were hand-rolled: hardcoded hex, soft shadows and
+ * border-radius, which is why the activities read as a different product from
+ * the town they open out of. They now use the same pixel kit as everything
+ * else, via scene-kit.css.
+ */
+.recovery-scene { --cream:var(--pt-surface-2); --ink:var(--pt-text,#17364a);
+  --serif:var(--pt-display); --sans:var(--pt-prose); --mono:var(--pt-mono); position:fixed; inset:0; z-index:40; overflow:hidden; color:var(--ink); background:#d8ebca var(--recovery-bg) center/cover no-repeat; image-rendering:pixelated; font-family:var(--sans); }
 .recovery-wash { position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(255,247,218,.22),transparent 38%,rgba(10,29,37,.1)); }
 .recovery-header { position:absolute; z-index:8; inset:clamp(12px,2vw,28px) clamp(12px,2.5vw,38px) auto; display:flex; align-items:flex-start; justify-content:space-between; gap:18px; pointer-events:none; }
-.recovery-header>div:first-child { padding:10px 17px; border:2px solid rgba(91,60,26,.55); background:rgba(255,248,222,.9); box-shadow:4px 5px 0 rgba(71,49,25,.25); }
-.recovery-header span,.recovery-kicker { display:block; color:#875624; font:700 11px/1.2 var(--mono); letter-spacing:.14em; text-transform:uppercase; }
-.pt-game .recovery-header h1 { margin:2px 0 0; color:#17364a; font:700 clamp(25px,3.2vw,48px)/.95 var(--serif); }
+.recovery-header>div:first-child { padding:11px 18px; background:var(--pt-surface-2);
+  border:var(--px-border) solid var(--px-ink); clip-path:var(--px-clip);
+  box-shadow:var(--px-bevel-up);
+  filter:drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  animation:sk-rise var(--pt-dur-slow) var(--pt-ease-out) both; }
+.recovery-header span,.recovery-kicker { display:block; color:var(--pt-accent-ink);
+  font:400 9px/1.3 var(--pt-display); letter-spacing:.16em; text-transform:uppercase; }
+.pt-game .recovery-header h1 { margin:4px 0 0; color:var(--pt-text);
+  font:400 clamp(19px,2.2vw,30px)/1.15 var(--pt-display); }
 .recovery-header-actions { display:flex; align-items:center; gap:10px; pointer-events:auto; }
-.recovery-header-actions span { padding:9px 12px; background:rgba(255,248,222,.88); border:1px solid rgba(91,60,26,.4); }
-.recovery-header button,.recovery-controls button,.recovery-complete button,.cup-step-card button,.story-page button,.lantern-workbench button { min-height:42px; border:2px solid #75512c; border-radius:3px; color:#17364a; background:#fff8df; box-shadow:2px 3px 0 rgba(50,35,18,.35); font-weight:800; cursor:pointer; }
-.recovery-header button:hover,.recovery-controls button:hover,.recovery-complete button:hover,.cup-step-card button:hover,.story-page button:hover,.lantern-workbench button:hover { transform:translateY(-1px); filter:brightness(1.04); }
+.recovery-header-actions span { padding:9px 12px; background:var(--pt-surface-2);
+  border:var(--px-border) solid var(--px-ink); clip-path:var(--px-clip);
+  font-family:var(--pt-display); font-size:11px; }
+.pt-game .recovery-scene button { min-height:42px; padding:10px 15px;
+  color:var(--pt-text); background:var(--pt-surface);
+  border:var(--px-border) solid var(--px-ink); clip-path:var(--px-clip);
+  box-shadow:var(--px-bevel-up);
+  filter:drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  font-family:var(--pt-display); font-weight:400; font-size:12px; cursor:pointer;
+  transition:transform .06s steps(2), filter .06s steps(2), background .1s steps(2); }
+.pt-game .recovery-scene button:hover:not(:disabled) { background:var(--pt-surface-2);
+  filter:drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow)) brightness(1.05); }
+.pt-game .recovery-scene button:active:not(:disabled) {
+  transform:translate(var(--px-drop),var(--px-drop)); filter:none; box-shadow:var(--px-bevel-down); }
+.pt-game .recovery-scene button:disabled { opacity:.45; cursor:not-allowed;
+  transform:translate(var(--px-drop),var(--px-drop)); filter:none; box-shadow:var(--px-bevel-down); }
+/* `.recovery-sprite` / `.placed-sprite` were removed here: nothing rendered
+   them any more. They were the atlas-driven sprites of the old Minis panels,
+   which the recovery rebuild replaced, and they were the last references to
+   --atlas / --sprite-x, none of which any stylesheet or component defined. */
 .recovery-playfield { position:absolute; inset:0; outline:none; touch-action:none; }
-.recovery-controls { position:absolute; z-index:9; left:50%; bottom:clamp(12px,2.5vh,28px); transform:translateX(-50%); display:flex; align-items:center; justify-content:center; gap:10px; max-width:calc(100vw - 24px); padding:8px; border:2px solid rgba(91,60,26,.5); background:rgba(255,248,222,.9); box-shadow:4px 5px 0 rgba(50,35,18,.25); }
+.recovery-controls { position:absolute; z-index:9; left:50%; bottom:clamp(12px,2.5vh,28px); transform:translateX(-50%); display:flex; align-items:center; justify-content:center; gap:10px; max-width:calc(100vw - 24px); padding:9px; background:var(--pt-surface-2);
+  border:var(--px-border) solid var(--px-ink); clip-path:var(--px-clip);
+  box-shadow:var(--px-bevel-up);
+  filter:drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  animation:sk-rise-cx var(--pt-dur-slow) var(--pt-ease-out) both; }
 .recovery-controls button { padding:8px 15px; white-space:nowrap; }
-.recovery-controls .primary { color:#fff9df; background:#28676a; border-color:#173f46; }
+.recovery-scene .recovery-controls .primary { color:var(--pt-on-accent); background:var(--pt-accent); }
 .recovery-controls span { font-size:13px; }
-.recovery-instruction { position:absolute; z-index:4; left:50%; bottom:15%; transform:translateX(-50%); width:min(520px,calc(100vw - 32px)); padding:12px 18px; text-align:center; color:#16394a; border:2px solid rgba(81,55,27,.5); background:rgba(255,249,225,.88); box-shadow:3px 4px 0 rgba(45,31,16,.25); pointer-events:none; }
+.recovery-instruction { position:absolute; z-index:4; left:50%; bottom:15%; transform:translateX(-50%); width:min(520px,calc(100vw - 32px)); padding:13px 19px; text-align:center; color:var(--pt-text); background:var(--pt-surface-2);
+  border:var(--px-border) solid var(--px-ink); clip-path:var(--px-clip);
+  box-shadow:var(--px-bevel-up);
+  filter:drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
+  pointer-events:none; animation:sk-rise-cx var(--pt-dur-slow) var(--pt-ease-out) both; }
 .recovery-instruction b,.recovery-instruction span { display:block; }
 .recovery-instruction span { margin-top:3px; font-size:13px; }
-.recovery-sprite { display:inline-block; width:64px; height:64px; flex:0 0 64px; background-image:var(--atlas); background-size:var(--atlas-w) var(--atlas-h); background-position:var(--sprite-x) var(--sprite-y); background-repeat:no-repeat; image-rendering:pixelated; }
-.placed-sprite { position:absolute; pointer-events:none; }
 .ripple-water { overflow:hidden; background:#48bccc url('/game/recovery/atlases/gentle-ripples-water-v5.png') center/cover no-repeat; }
 .ripple-production { display:inline-block; width:clamp(92px,12vw,150px); aspect-ratio:1; background-image:url('/game/recovery/atlases/gentle-ripples-production-v2.png'); background-size:400% 200%; background-repeat:no-repeat; image-rendering:pixelated; filter:drop-shadow(3px 5px 2px rgba(23,54,55,.28)); }
 .ripple-water-scene { position:absolute; inset:0; pointer-events:none; }
@@ -73,7 +119,6 @@
 .cup-step-card>b,.lantern-workbench>b { display:block; font:700 22px/1.1 var(--serif); margin-bottom:10px; }
 .choice-row { display:flex; flex-wrap:wrap; gap:8px; }
 .choice-row button { display:flex; align-items:center; gap:5px; padding:7px 10px; }
-.choice-row .recovery-sprite { width:32px;height:32px;background-size:var(--atlas-w) var(--atlas-h); transform:scale(.5); margin:-8px; }
 .choice-row .warm-production { width:54px; flex:0 0 54px; margin:-4px; }
 .cup-needs button { flex:1 1 42%; justify-content:center; min-height:44px; }
 .pour-meter { height:14px; margin:12px 0; padding:2px; border:2px solid #77532f; background:#efe0b9; }
@@ -112,7 +157,11 @@
 .lantern-designs,.lantern-symbols { display:flex; gap:7px; margin:8px 0; }
 .lantern-designs button { flex:1; min-width:0; padding:0; overflow:hidden; }
 .lantern-designs .lantern-production { width:100%; min-width:72px; margin:-7% 0; }
-.lantern-designs button[aria-pressed=true],.lantern-symbols button[aria-pressed=true],.lantern-places button[aria-pressed=true],.recovery-response button[aria-pressed=true] { outline:4px solid #e0923d; outline-offset:1px; }
+.recovery-scene .lantern-designs button[aria-pressed=true],
+.recovery-scene .lantern-symbols button[aria-pressed=true],
+.recovery-scene .lantern-places button[aria-pressed=true],
+.recovery-scene .recovery-response button[aria-pressed=true] {
+  background:var(--pt-accent); color:var(--pt-on-accent); }
 .lantern-symbols button { display:flex; flex-direction:column; align-items:center; flex:1; padding:5px 8px; }
 .lantern-symbols button b { font-size:21px; }.lantern-symbols button span { font-size:10px; }
 .lantern-workbench label { display:block; margin:10px 0; font-weight:800; }.lantern-workbench label small{font-weight:400}
@@ -130,7 +179,10 @@
 .lantern-place-community { right:4%; bottom:22%; }.lantern-place-water { left:56%; bottom:15%; }
 .lantern-place-backpack { left:37%; bottom:17%; }
 .lantern-courtyard .recovery-instruction { top:10%; bottom:auto; width:min(430px,calc(100vw - 32px)); }
-.recovery-complete { position:absolute; z-index:20; left:50%; top:50%; transform:translate(-50%,-50%); width:min(620px,calc(100vw - 24px)); max-height:calc(100vh - 30px); overflow:auto; padding:24px; border:4px solid #72502d; background:rgba(255,249,228,.97); box-shadow:0 0 0 9999px rgba(10,24,32,.48),7px 8px 0 rgba(28,20,14,.42); }
+.recovery-complete { position:absolute; z-index:20; left:50%; top:50%; transform:translate(-50%,-50%); width:min(620px,calc(100vw - 24px)); max-height:calc(100vh - 30px); overflow:auto; padding:26px; background:var(--pt-surface-2);
+  border:var(--px-border) solid var(--px-ink); clip-path:var(--px-clip);
+  box-shadow:var(--px-bevel-up), 0 0 0 9999px rgba(10,24,32,.52);
+  animation:sk-enter var(--pt-dur-enter) var(--pt-ease-pop) both; }
 .pt-game .recovery-complete h2 { margin:5px 0; color:#17364a; font:700 30px/1.1 var(--serif); }
 .recovery-response { display:flex; flex-wrap:wrap; gap:7px; margin:15px 0; }.recovery-response button{padding:7px 12px}.recovery-response .quiet{border-style:dashed;background:transparent}
 .recovery-return { display:grid; gap:8px; }.recovery-return button { padding:10px 12px; text-align:left; }.recovery-return b,.recovery-return span { display:block; }.recovery-return span { margin-top:2px; font-size:12px; font-weight:400; }

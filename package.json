@@ -15,9 +15,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
+    "check:tokens": "node tools/check-tokens.mjs",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -b --force",
-    "check": "npm run lint && npm run typecheck && npm test",
+    "check": "npm run lint && npm run check:tokens && npm run typecheck && npm test",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

@@ -3,6 +3,7 @@ import { REWARDS, type RegulationId } from '../../domain'
 import type { ViewId } from '../layout'
 import { grow, record, type GameState } from '../state'
 import type { PanelProps } from '../panels/types'
+import '../scene-kit.css'
 import './recovery.css'
 
 type RecoveryView = Extract<ViewId, 'ripples' | 'chime' | 'warmcup' | 'firefly' | 'lanterns'>
