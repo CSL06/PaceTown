@@ -25,6 +25,7 @@ import {
   focusGuardianFor, nextStepFor, type Place, type ViewId,
 } from './layout'
 import { loadState, saveState, type GameState } from './state'
+import { Tally } from '../ui/Tally'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
 import { Settings } from './panels/Settings'
@@ -37,7 +38,7 @@ import {
   Recover, TownList,
 } from './panels/Places'
 import type { PanelProps } from './panels/types'
-import type { ReactElement } from 'react'
+import type { CSSProperties, ReactElement } from 'react'
 import './game.css'
 import './hud.css'
 import './overlays.css'
@@ -141,6 +142,10 @@ export default function Game() {
      game gets the same acknowledgement without eleven call sites having to
      remember to ask for one. */
   const [gains, setGains] = useState<{ id: number; text: string }[]>([])
+  /* Bumped on every gain so the burst animation replays. Keyed rather than
+     toggled: a class you add and remove will not restart a running
+     animation, which is why repeat rewards used to show nothing. */
+  const [burst, setBurst] = useState(0)
   const walletRef = useRef({ xp: state.xp, coins: state.coins, level: levelOf(state.xp).level })
 
   useEffect(() => {
@@ -156,6 +161,7 @@ export default function Game() {
     if (dCoins > 0) parts.push(`+${dCoins} coins`)
     const id = Date.now() + Math.random()
     setGains((g) => [...g, { id, text: parts.join(' · ') }])
+    setBurst((n) => n + 1)
     window.setTimeout(() => setGains((g) => g.filter((x) => x.id !== id)), 1700)
 
     if (nowLevel > before.level) sfx.levelUp(); else sfx.reward()
@@ -485,7 +491,9 @@ export default function Game() {
         >
           <span className="load-body">
             <span className="load-lbl">Daily Load</span>
-            <b className="load-num">{Math.round(load.percentage)}<i>%</i></b>
+            <b className="load-num">
+              <Tally value={Math.round(load.percentage)} /><i>%</i>
+            </b>
           </span>
           <span className="load-band">{load.band.label}</span>
         </button>
@@ -498,13 +506,16 @@ export default function Game() {
             aria-label={`${level.into} of ${level.need} XP toward level ${level.level + 1}`}>
             <span className="lvl-fill" style={{ width: `${(level.into / level.need) * 100}%` }} />
           </span>
-          <span className="lvl-num mono">{level.into}<i>/{level.need}</i></span>
+          <span className="lvl-num mono">
+            <Tally value={level.into} /><i>/{level.need}</i>
+          </span>
           <span className="hud-div" aria-hidden="true" />
           {/* Keyed on the value so a change replays the pop. */}
           <span className="coins">
             <i className="coin-glyph" aria-hidden="true" />
-            <b key={state.coins} className="mono">{state.coins}</b>
+            <b key={state.coins} className="mono"><Tally value={state.coins} /></b>
           </span>
+
         </div>
 
         <div className="hud-group hud-sys">
@@ -592,6 +603,16 @@ export default function Game() {
       <GuardianDock state={state} load={load} go={go} focus={focusGuardian} />
 
       <div className="gains" aria-hidden="true">
+        {/* Eight sparks thrown from the corner the counters live in. Keyed on
+            the burst count so consecutive rewards each get their own: adding
+            and removing a class does not restart a running animation. */}
+        {burst > 0 && (
+          <span className="reward-burst" key={burst}>
+            {Array.from({ length: 8 }, (_, i) => (
+              <i key={i} style={{ '--spark': `${i * 45}deg` } as CSSProperties} />
+            ))}
+          </span>
+        )}
         {gains.map((g) => <span key={g.id}>{g.text}</span>)}
       </div>
 

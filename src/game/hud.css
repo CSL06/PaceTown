@@ -114,7 +114,25 @@
 }
 
 /* ---------------------------------------------------------- progression */
-.hud-prog { gap: 9px }
+.hud-prog { gap: 9px; position: relative }
+
+/* Reward burst.
+   Eight sparks thrown from the counter that just changed. Thrown radially by
+   rotating first and translating along the rotated axis, so one keyframe
+   serves all eight directions and only the angle differs per spark.
+   Stepped rather than eased: this is pixel art, and a smoothly interpolated
+   particle reads as a CSS transform rather than as a game effect. */
+.reward-burst { position: absolute; right: 30px; top: 6px; width: 0; height: 0;
+  pointer-events: none }
+.reward-burst i {
+  position: absolute; left: 0; top: 0; width: 5px; height: 5px;
+  background: var(--pt-accent);
+  animation: reward-spark 620ms steps(7) forwards;
+}
+@keyframes reward-spark {
+  0%   { opacity: 1; transform: rotate(var(--spark)) translateY(-2px) scale(1) }
+  100% { opacity: 0; transform: rotate(var(--spark)) translateY(-32px) scale(.35) }
+}
 .lvl-badge {
   font-size: 10px; font-weight: 700; letter-spacing: .04em;
   color: var(--pt-on-accent); background: var(--accent);
@@ -201,6 +219,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hud-group, .load-chip[data-over], .coins b { animation: none !important }
+  .reward-burst { display: none !important }
   .lvl-fill { transition: none }
 }
 
@@ -212,7 +231,9 @@
   position: absolute;
   top: calc(var(--rail-h, 68px) - 6px);
   right: 14px;
-  z-index: 30;
+  /* Above the scrim (40) and the sheet (41): a reward is usually granted by
+     an open panel, and at z-index 30 the panel's own scrim dimmed it. */
+  z-index: 72;
   display: grid;
   gap: 4px;
   justify-items: end;
@@ -223,9 +244,9 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--accent-ink);
-  background: color-mix(in srgb, var(--pt-surface) 88%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--pt-surface);
+  box-shadow: var(--px-bevel-up);
+  filter: drop-shadow(var(--px-drop) var(--px-drop) 0 var(--px-shadow));
   padding: 4px 11px;
   border: var(--px-border) solid var(--px-ink);
   clip-path: var(--px-clip);

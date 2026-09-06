@@ -11,7 +11,9 @@
  */
 
 .library-scene { position: fixed; inset: 0; overflow: hidden; background: var(--pt-sunk); }
-.library-room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; image-rendering: auto; }
+.library-room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  object-position: center; image-rendering: auto;
+  animation: sk-arrive var(--pt-dur-enter) var(--pt-ease-out) both; }
 .library-room-controls { position: absolute; inset: 0; }
 
 /* ---------------------------------------------------------------- HUD -- */
@@ -208,6 +210,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .library-room,
   .library-desk.is-ready, .library-hotspot, .library-hud, .library-panel,
   .library-near-prompt, .library-choices > button, .checkpoint-card, .mira-answer,
   .library-scene.is-open::after { animation: none !important; }

@@ -187,6 +187,15 @@
 .sk-stagger > :nth-child(5) { animation-delay: 200ms }
 .sk-stagger > :nth-child(n+6) { animation-delay: 240ms }
 
+/* A room being arrived in. The scene wipe covers the cut; this is what
+   happens on the far side of it, so a room opens instead of simply being
+   there. Very slight — a big zoom would fight the wipe rather than finish it. */
+@keyframes sk-arrive {
+  from { opacity: 0; transform: scale(1.035); }
+  to   { opacity: 1; transform: none; }
+}
+.sk-arrive { animation: sk-arrive var(--pt-dur-enter) var(--pt-ease-out) both; }
+
 /* Something was earned. A short squash-and-pop, stepped so it reads as pixel
    art rather than as a CSS transform. */
 @keyframes sk-pop {
@@ -227,8 +236,8 @@
    surfaces and the bevels stay, which is the point of doing the pixel feel in
    shape rather than in movement. */
 @media (prefers-reduced-motion: reduce) {
-  .sk-enter, .sk-rise, .sk-rise-cx, .sk-stagger > *, .sk-pop, .sk-nudge,
-  .sk-beckon, .sk-ready {
+  .sk-enter, .sk-rise, .sk-rise-cx, .sk-arrive, .sk-stagger > *, .sk-pop,
+  .sk-nudge, .sk-beckon, .sk-ready {
     animation: none !important;
   }
   .sk-btn { transition: none; }

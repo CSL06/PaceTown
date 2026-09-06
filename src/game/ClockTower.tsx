@@ -10,6 +10,8 @@ import './clock-tower.css'
 import { useRoomMovement } from './useRoomMovement'
 import { dayIndex, moveCalendarTask } from '../domain/calendar'
 import { STATION_POSITION, STATION_LABEL } from './clockLayout'
+import { sfx } from './sfx'
+import { Tally } from '../ui/Tally'
 
 const SOURCE_DAY = 'thu'
 const DEFAULT_DESTINATION = 'sat'
@@ -33,11 +35,12 @@ function pct(value: number): string {
   return Number.isFinite(value) ? value.toFixed(0) : '∞'
 }
 
-function TaskBlock({ task, selected, suggested, leaving, onToggle, onInspect, draggable = false }: {
+function TaskBlock({ task, selected, suggested, leaving, landed, onToggle, onInspect, draggable = false }: {
   task: Task
   selected?: boolean
   suggested?: boolean
   leaving?: boolean
+  landed?: boolean
   onToggle?: () => void
   draggable?: boolean
   onInspect?: () => void
@@ -47,6 +50,7 @@ function TaskBlock({ task, selected, suggested, leaving, onToggle, onInspect, dr
     'week-task', `is-${task.category}`, task.flexibility === 'fixed' ? 'is-fixed' : '',
     task.status === 'completed' ? 'is-completed' : '',
     selected ? 'is-selected' : '', suggested ? 'is-ghost' : '', leaving ? 'is-leaving' : '',
+    landed ? 'is-landed' : '',
   ].filter(Boolean).join(' ')
   const content = (
     <>
@@ -83,6 +87,8 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
   const [previewOpen, setPreviewOpen] = useState(() => shouldAutoOpenPreview(state))
   const [inspected, setInspected] = useState<string | null>(null)
   const [undoTasks, setUndoTasks] = useState<Task[] | null>(null)
+  /* Task ids that have just been moved, held long enough to play the landing. */
+  const [landed, setLanded] = useState<string[]>([])
   const [dropTarget, setDropTarget] = useState<{ day: string; beforeId?: string } | null>(null)
   const touchDrag = useRef<string | null>(null)
   const [dragLabel, setDragLabel] = useState('')
@@ -143,6 +149,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
 
   const approve = () => {
     if (!selectedMoves.length) return
+    const moved = [...selectedIds]
     const applied = applySelected(state.tasks, proposal, selectedIds)
     const titles = selectedMoves.map((move) => move.title).join(', ')
     const afterSource = dailyLoad(applied, SOURCE_DAY, waking)
@@ -157,6 +164,11 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
       `Thursday ${pct(originalLoads.thu.percentage)}% → ${pct(afterSource.percentage)}%.`,
     reward)))
     toast(`Week rebalanced${reward.xp ? ` · +${reward.xp} XP` : ''}`)
+    sfx.commit()
+    // Marked briefly so each card lands visibly in its new column instead of
+    // the board silently re-rendering with three tasks somewhere else.
+    setLanded(moved)
+    window.setTimeout(() => setLanded([]), 900)
     setUndoTasks(null)
     setSelected([])
     setPreviewOpen(false)
@@ -241,6 +253,7 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
                       onInspect={() => setInspected(task.id)}
                       draggable
                       selected={selectedSet.has(task.id)}
+                      landed={landed.includes(task.id)}
                       leaving={day.key === SOURCE_DAY && selectedSet.has(task.id)}
                       onToggle={previewOpen && day.key === SOURCE_DAY && movableIds.has(task.id) ? () => toggle(task.id) : undefined} />
                   </div>)}
@@ -287,9 +300,11 @@ function WeekBoard({ state, update, go, toast, onClose }: Omit<Props, 'onExit'> 
         {previewOpen && destinationOptions.length > 0 && (
           <>
             <div className="load-preview" aria-label="Load before and after the selected preview">
-              <div><span>Thursday</span><b>{pct(originalLoads.thu.percentage)}%</b><i>→</i><strong>{pct(loads.thu.percentage)}%</strong></div>
+              <div><span>Thursday</span><b>{pct(originalLoads.thu.percentage)}%</b><i>→</i>
+                <strong><Tally value={Number(pct(loads.thu.percentage))} suffix="%" /></strong></div>
               <div><span>{WEEK_DAYS.find((day) => day.key === destination)?.label}</span>
-                <b>{pct(originalLoads[destination].percentage)}%</b><i>→</i><strong>{pct(loads[destination].percentage)}%</strong></div>
+                <b>{pct(originalLoads[destination].percentage)}%</b><i>→</i>
+                <strong><Tally value={Number(pct(loads[destination].percentage))} suffix="%" /></strong></div>
             </div>
             <div className="destination-picker" aria-label="Suggested destination day">
               {destinationOptions.map((option) => (

@@ -173,4 +173,53 @@ export const sfx = {
     const t = c.currentTime
     tone(233, t, 0.16, 0.055)
   },
+
+  /**
+   * A page or day turning. Short, dry and low-gain: this fires on every
+   * arrow press in the Library queue and the Week Board, so it has to be
+   * something you stop noticing rather than something you start resenting.
+   */
+  page() {
+    const c = audio(); if (!c) return
+    const t = c.currentTime
+    tone(392, t, 0.05, 0.045, 'triangle')
+    tone(523, t + 0.03, 0.06, 0.032, 'triangle')
+  },
+
+  /**
+   * A commitment being held down before it takes effect. Rises while the
+   * player keeps pressing, so the sound itself reports progress — `at` is
+   * 0..1 through the hold.
+   */
+  charge(at: number) {
+    const c = audio(); if (!c) return
+    const clamped = Math.min(1, Math.max(0, at))
+    tone(300 + clamped * 380, c.currentTime, 0.07, 0.035, 'triangle')
+  },
+
+  /**
+   * The moment a plan is accepted. Deliberately warmer and longer than
+   * `reward`: approving moves is the most consequential thing in the app,
+   * and it used to sound exactly like collecting five coins.
+   */
+  commit() {
+    const c = audio(); if (!c) return
+    const t = c.currentTime
+    tone(392, t, 0.22, 0.085)
+    tone(523, t + 0.08, 0.26, 0.08)
+    tone(659, t + 0.17, 0.34, 0.07)
+    tone(784, t + 0.26, 0.5, 0.055)
+  },
+
+  /**
+   * A recovery activity closing. Falling rather than rising — nothing was
+   * won here, something was set down.
+   */
+  settle() {
+    const c = audio(); if (!c) return
+    const t = c.currentTime
+    tone(587, t, 0.26, 0.06)
+    tone(440, t + 0.12, 0.34, 0.05)
+    tone(349, t + 0.26, 0.6, 0.04)
+  },
 }

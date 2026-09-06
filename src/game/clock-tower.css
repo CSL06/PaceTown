@@ -11,7 +11,8 @@
  */
 .clock-scene { position: absolute; inset: 0; overflow: hidden; background: #f6dfb8; color: #253341; }
 .clock-room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  object-position: center; image-rendering: pixelated; }
+  object-position: center; image-rendering: pixelated;
+  animation: sk-arrive var(--pt-dur-enter) var(--pt-ease-out) both; }
 .clock-sun { position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(125deg, rgba(255,255,224,.2), transparent 42%); }
 .clock-room-controls { position: absolute; inset: 0; }
@@ -144,6 +145,17 @@
   box-shadow: 2px 2px 0 var(--px-shadow);
   transition: transform .08s steps(2), box-shadow .08s steps(2); }
 button.week-task:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--px-shadow); }
+
+/* A card that has just been moved. Drops into its new column and settles,
+   so the eye can follow where three tasks went instead of the whole board
+   silently re-rendering with them somewhere else. */
+.week-task.is-landed { animation: week-land 620ms var(--pt-ease-pop) both; }
+@keyframes week-land {
+  0%   { transform: translateY(-16px) scale(1.04); box-shadow: 5px 7px 0 var(--px-shadow) }
+  60%  { transform: translateY(2px) scale(.99) }
+  100% { transform: none; box-shadow: 2px 2px 0 var(--px-shadow) }
+}
+@media (prefers-reduced-motion: reduce) { .week-task.is-landed { animation: none } }
 button.week-task { cursor: pointer; }
 .week-day [draggable="true"] { cursor: grab; }
 .week-day [data-task-id] { position: relative; }
@@ -210,7 +222,7 @@ button.week-task:hover { border-color: #b67a24; }
 /* The number that actually changed. It pops when the preview updates, because
    this is the one figure the whole screen exists to move. */
 .load-preview strong { color: var(--sk-good); font: 400 17px var(--pt-mono);
-  font-variant-numeric: tabular-nums; animation: sk-pop var(--pt-dur-slow) steps(6) both; }
+  font-variant-numeric: tabular-nums; }
 .clock-actions { display: grid; gap: 6px; clear: both; margin-top: 12px; }
 .clock-actions button { padding: 10px 12px; }
 .clock-scene .clock-actions .clock-primary { background: var(--sk-accent); color: var(--sk-on-accent); }
@@ -258,4 +270,10 @@ button.week-task:hover { border-color: #b67a24; }
 
 @media (prefers-reduced-motion: reduce) {
   .clock-player, .clock-hotspot { transition: none; }
+  /* Everything the scene kit added has to stop here too, or the room still
+     drifts and lands for a viewer who asked it not to. */
+  .clock-room, .clock-hud, .clock-hotspot, .clock-speech, .clock-near-prompt,
+  .kai-plan, .week-task.is-landed { animation: none !important; }
+  .clock-scene .clock-hud button, .clock-scene .clock-actions button,
+  button.week-task { transition: none; }
 }
