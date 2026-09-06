@@ -268,6 +268,22 @@
   100% { opacity: 0; transform: translate(-50%, -46px) scaleX(1.7) scaleY(1.25) }
 }
 
+/* Lamp light, from dusk onward. A warm pool on the ground rather than a new
+   sprite, so it sits under the lamp posts the illustration already draws and
+   needs no additional art. */
+.lamp-glow {
+  position: absolute; width: 74px; height: 74px; border-radius: 50%;
+  transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(circle,
+    rgba(255, 214, 130, .58) 0%, rgba(255, 196, 104, .26) 42%, transparent 70%);
+  animation: lamp-flicker 4.6s ease-in-out infinite;
+}
+@keyframes lamp-flicker {
+  0%, 100% { opacity: .78; transform: translate(-50%, -50%) scale(1) }
+  45%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.07) }
+  70%      { opacity: .86; transform: translate(-50%, -50%) scale(1.02) }
+}
+
 .amb-ripple {
   position: absolute; width: 30px; height: 11px; border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, .42); pointer-events: none;
@@ -573,7 +589,7 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
   .title-art, .cast.idle, .avatar.walking, .marker .ring, .dlg-caret { animation: none !important }
   /* A frozen puff of steam reads as a smudge on the map, so these go entirely
      rather than merely stopping. */
-  .amb-steam, .amb-ripple { display: none !important }
+  .amb-steam, .amb-ripple, .lamp-glow { display: none !important }
 }
 
 .helpdot-wrap { position: relative; display: inline-block; margin-left: 8px; vertical-align: middle }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 /**
  * The town's other destinations. Each is small on purpose — a place you enter,
  * do one thing, and leave.
@@ -296,7 +297,53 @@ export function Recover({ state, load, update, go }: PanelProps) {
 
 /* ----------------------------------------------------------- journal */
 
+/** Midnight of the day a timestamp falls in, as a stable key. */
+export function dayKey(at: number): string {
+  const d = new Date(at)
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+}
+
+/**
+ * The last seven days, oldest first, with what was recorded on each.
+ *
+ * Deliberately a record and not a scoreboard. There is no target, nothing is
+ * "missed", and an empty day is drawn exactly as calmly as a full one — the
+ * panel's own promise is "no mood score, no streak, and no missed-day
+ * messaging", and a week strip is the easiest place in the app to break that
+ * by accident.
+ */
+export function lastSevenDays(journal: readonly { at: number }[], now: number) {
+  const counts = new Map<string, number>()
+  for (const entry of journal) {
+    counts.set(dayKey(entry.at), (counts.get(dayKey(entry.at)) ?? 0) + 1)
+  }
+  const days: { key: string; label: string; date: Date; count: number }[] = []
+  for (let back = 6; back >= 0; back -= 1) {
+    const date = new Date(now)
+    date.setHours(0, 0, 0, 0)
+    date.setDate(date.getDate() - back)
+    const key = dayKey(date.getTime())
+    days.push({
+      key,
+      label: date.toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 2),
+      date,
+      count: counts.get(key) ?? 0,
+    })
+  }
+  return days
+}
+
 export function Journal({ state, load, go }: PanelProps) {
+  const now = Date.now()
+  const week = lastSevenDays(state.journal, now)
+  const busiest = Math.max(1, ...week.map((d) => d.count))
+  /* Opens on today, which is where the entries a person just made live. */
+  const [day, setDay] = useState<string | null>(dayKey(now))
+  const shown = day === null
+    ? state.journal
+    : state.journal.filter((e) => dayKey(e.at) === day)
+  const selected = week.find((d) => d.key === day)
+
   return (
     <div className="card">
       <div className="eyebrow">Post Office</div>
@@ -305,6 +352,37 @@ export function Journal({ state, load, go }: PanelProps) {
         Written automatically from real events. No mood score, no streak, and no missed-day
         messaging when you come back.
       </p>
+
+      {state.journal.length > 0 && (
+        <>
+          <div className="jr-week" role="group" aria-label="The last seven days">
+            {week.map((d) => (
+              <button
+                key={d.key}
+                type="button"
+                className={`jr-day${d.key === day ? ' is-on' : ''}${d.count === 0 ? ' is-quiet' : ''}`}
+                aria-pressed={d.key === day}
+                onClick={() => setDay(d.key === day ? null : d.key)}
+                title={d.date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+              >
+                <span className="jr-bar" aria-hidden="true">
+                  <i style={{ height: `${d.count === 0 ? 0 : 20 + (d.count / busiest) * 80}%` }} />
+                </span>
+                <span className="jr-lbl">{d.label}</span>
+                <span className="jr-n">{d.count || '·'}</span>
+              </button>
+            ))}
+          </div>
+          <p className="jr-note">
+            {day === null
+              ? `Everything recorded so far — ${state.journal.length} entries.`
+              : selected && selected.count > 0
+                ? `${selected.count} recorded on ${selected.date.toLocaleDateString(undefined, { weekday: 'long' })}.`
+                : 'Nothing was recorded that day. That is not a gap to fill.'}
+          </p>
+        </>
+      )}
+
       {state.journal.length === 0
         ? <>
             <p className="empty">Nothing recorded yet. Actions across town write here automatically.</p>
@@ -312,7 +390,7 @@ export function Journal({ state, load, go }: PanelProps) {
               <button className="primary" type="button" onClick={() => go('intake')}>Start at Town Hall</button>
             </div>
           </>
-        : [...state.journal].reverse().map((e) => {
+        : [...shown].reverse().map((e) => {
           const d = new Date(e.at)
           return (
             <div className="entry" key={e.at + e.text}>

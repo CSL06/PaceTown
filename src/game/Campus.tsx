@@ -79,6 +79,22 @@ const RIPPLES: readonly { px: number; py: number; delay: number }[] = [
   { px: 71.5, py: 34.0, delay: 2.8 },
 ]
 
+/**
+ * The lamp posts the illustration already draws, read off the map.
+ *
+ * The town knows what time it is — `daylight()` has always returned
+ * afternoon, dusk or night as the loop advances — but nothing in the world
+ * answered to it except a flat colour wash over everything. Lighting the
+ * lamps costs nothing and is the difference between a tinted picture and an
+ * evening.
+ */
+const LAMPS: readonly { px: number; py: number }[] = [
+  { px: 40.4, py: 74.5 }, { px: 53.4, py: 74.5 },
+  { px: 33.4, py: 56.5 }, { px: 30.2, py: 30.5 },
+  { px: 57.8, py: 40.2 }, { px: 76.2, py: 34.0 },
+  { px: 86.8, py: 62.0 }, { px: 79.6, py: 82.0 },
+]
+
 /** The day advances with the loop, not the clock. */
 export function daylight(stepsDone: number): 'afternoon' | 'dusk' | 'night' {
   return stepsDone >= 6 ? 'night' : stepsDone >= 3 ? 'dusk' : 'afternoon'
@@ -194,6 +210,14 @@ function CampusView({
             style={{ left: `${w.px}%`, top: `${w.py}%`, zIndex: groundZ(w.py),
               animationDelay: `${w.delay}s` }} />
         ))}
+        {/* Lit from dusk. Quiet Mode leaves them dark like everything else
+            that moves — the glow breathes, so it counts. */}
+        {!quiet && daylight(stepsDone) !== 'afternoon' && LAMPS.map((lamp, i) => (
+          <span key={`lamp${i}`} className="lamp-glow" aria-hidden="true"
+            style={{ left: `${lamp.px}%`, top: `${lamp.py}%`, zIndex: groundZ(lamp.py),
+              animationDelay: `${(i % 4) * 0.9}s` }} />
+        ))}
+
         {!quiet && RIPPLES.map((r, i) => (
           <span key={`ripple${i}`} className="amb-ripple" aria-hidden="true"
             style={{ left: `${r.px}%`, top: `${r.py}%`, zIndex: groundZ(r.py),
