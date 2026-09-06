@@ -18,3 +18,11 @@ test-results
 playwright-report
 blob-report
 .playwright
+
+# Package manager stores & Python cache
+.pnpm-store
+__pycache__/
+*.pyc
+
+# Prevent nested clone
+PaceTown/
