@@ -16,7 +16,7 @@ import type { CosmeticSlot } from '../domain'
 import type { WorldRefs } from './useWorld'
 
 const MAP = '/game/world/campus-daylight.webp'
-const PLAYER_SHEET = '/game/world/player-sheet.webp'
+const PLAYER_SHEET = '/game/world/player-sheet-v4.webp'
 const CAST_SHEET = '/game/world/cast-sheet.webp'
 
 /** Pressure by area, mixing fixed minutes with weighted flexible demand. */

@@ -19,8 +19,10 @@ const KEY_MAP: Record<string, 'up' | 'down' | 'left' | 'right'> = {
   arrowup: 'up', arrowleft: 'left', arrowdown: 'down', arrowright: 'right',
 }
 
-/** World pixels per second. Scales with WORLD_W, not with the screen. */
-const SPEED = 422
+/** World pixels per second. Balanced with .32s walk cycle so feet plant solidly without sliding. */
+const SPEED = 340
+/** Speed ramp rate per second — ~80ms soft acceleration. */
+const ACCEL_RATE = 12
 
 /* How hard the camera chases the avatar. Higher is tighter; this is loose
    enough to feel like a camera rather than a rigid frame, and tight enough
@@ -31,8 +33,8 @@ const CAMERA_CHASE = 7
    are going rather than where you have been. World pixels. */
 const LOOK_AHEAD = 60
 
-/** Footstep cadence, matched to the two-frame walk animation. */
-const STEP_MS = 340
+/** Footstep cadence, synced to the 4-phase walk animation (.32s / 2 foot-strikes). */
+const STEP_MS = 160
 
 export type Facing = 'up' | 'down' | 'left' | 'right'
 
@@ -147,6 +149,7 @@ export function useWorld(refs: WorldRefs, opts: Options) {
     let last = performance.now()
     let saveTimer = 0
     let lastStep = 0
+    let currentSpeed = 0
 
     const step = (now: number) => {
       raf = requestAnimationFrame(step)
@@ -162,6 +165,7 @@ export function useWorld(refs: WorldRefs, opts: Options) {
       if (keys.current.down) vy += 1
 
       if (!vx && !vy) {
+        currentSpeed = 0
         // Ease the look-ahead back to centre so stopping does not leave the
         // camera hanging off to one side.
         lead.current.x += (0 - lead.current.x) * Math.min(1, dt * 4)
@@ -174,8 +178,11 @@ export function useWorld(refs: WorldRefs, opts: Options) {
       const m = Math.hypot(vx, vy)
       vx /= m; vy /= m
 
-      let x = (pos.current.px / 100) * WORLD_W + vx * SPEED * dt
-      let y = (pos.current.py / 100) * WORLD_H + vy * SPEED * dt
+      // Gentle acceleration lerp for organic start
+      currentSpeed += (SPEED - currentSpeed) * Math.min(1, dt * ACCEL_RATE)
+
+      let x = (pos.current.px / 100) * WORLD_W + vx * currentSpeed * dt
+      let y = (pos.current.py / 100) * WORLD_H + vy * currentSpeed * dt
       x = Math.max((WALK_BOUNDS.minX / 100) * WORLD_W, Math.min((WALK_BOUNDS.maxX / 100) * WORLD_W, x))
       y = Math.max((WALK_BOUNDS.minY / 100) * WORLD_H, Math.min((WALK_BOUNDS.maxY / 100) * WORLD_H, y))
 
