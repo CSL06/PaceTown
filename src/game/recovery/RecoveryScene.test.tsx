@@ -79,6 +79,24 @@ describe('recovery activity scenes', () => {
     expect(screen.queryByText('The reachable book')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /i’m too far behind/i }))
     expect(screen.getByText('The reachable book')).toBeInTheDocument()
+    // The other three stories stay closed.
+    expect(screen.queryByText('The first lit stone')).not.toBeInTheDocument()
+  })
+
+  it('makes the player gather the reframe rather than handing it over', async () => {
+    const user = userEvent.setup()
+    render(<Harness view="firefly" />)
+    await user.click(screen.getByRole('button', { name: /i’m too far behind/i }))
+
+    // The reframed line is the point of the activity, so it is not simply
+    // printed on arrival — it is uncovered one light at a time.
+    expect(screen.queryByText(/choose the one piece/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /carry this line/i })).toBeDisabled()
+
+    const lights = screen.getAllByRole('button', { name: /gather a light/i })
+    expect(lights).toHaveLength(4)
+    for (const light of lights) await user.click(light)
+
     expect(screen.getByText(/choose the one piece/i)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /carry this line/i }))
     expect(screen.getByRole('dialog', { name: /recovery check-in/i })).toBeInTheDocument()

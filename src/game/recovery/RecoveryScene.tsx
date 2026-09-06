@@ -3,6 +3,7 @@ import { REWARDS, type RegulationId } from '../../domain'
 import type { ViewId } from '../layout'
 import { grow, record, type GameState } from '../state'
 import type { PanelProps } from '../panels/types'
+import { sfx } from '../sfx'
 import '../scene-kit.css'
 import './recovery.css'
 
@@ -445,23 +446,82 @@ function FireflyAsset({ index, className = '', label }: { index: number; classNa
     style={{ backgroundPosition: `${col * (100 / 3)}% ${row * 100}%` }} />
 }
 
+/** Where the four fireflies sit over the page, in percent of the playfield. */
+const FIREFLY_MARKS = [
+  { x: 18, y: 32 }, { x: 74, y: 24 }, { x: 30, y: 71 }, { x: 66, y: 63 },
+] as const
+
 function FireflyGame(props: PanelProps) {
   const { state, go } = props
   const [story, setStory] = useState<number | null>(null)
+  /* How many lights have been gathered onto the thought. The reframe is not
+     handed over as a finished sentence to read -- it is uncovered one light
+     at a time, so the player performs the reframe rather than being told it.
+     Four, because that is enough to feel like work and short enough that
+     nobody is made to grind through a coping exercise. */
+  const [caught, setCaught] = useState<number[]>([])
   const [done, setDone] = useState(false)
   const [response, setResponse] = useState<Response | null>(null)
   const finish = useRecoveryFinish(props, 'firefly')
+
+  const total = FIREFLY_MARKS.length
+  const gathered = caught.length
+  const transformed = gathered >= total
+
+  const catchOne = (index: number) => {
+    if (caught.includes(index)) return
+    const next = [...caught, index]
+    setCaught(next)
+    if (next.length >= total) sfx.settle(); else sfx.click()
+  }
+
+  const pick = (index: number) => { setStory(index); setCaught([]) }
+
   return <Shell view="firefly" state={state} go={go}>
     <section className="recovery-playfield firefly-library">
       <FireflyAsset index={7} className="firefly-mira" label="Mira reading nearby" />
       {story === null ? <div className="firefly-thoughts"><span className="recovery-kicker">Mira · follow the thought that is following you</span>
         <h2>Which thought is taking up the most room?</h2><p>You can choose without explaining.</p>
-        <div>{STORIES.map((item, index) => <button key={item.thought} type="button" onClick={() => setStory(index)}>
+        <div>{STORIES.map((item, index) => <button key={item.thought} type="button" onClick={() => pick(index)}>
           <FireflyAsset index={6} /><span>{item.thought}</span></button>)}</div></div>
-        : <article className="story-page"><FireflyAsset index={story} className="story-vignette" label={STORIES[story].title} />
-          <div className="story-copy"><span>One small story</span><h2>{STORIES[story].title}</h2><p>{STORIES[story].story}</p>
-            <blockquote>{STORIES[story].line}</blockquote><div><button type="button" onClick={() => setDone(true)}>Carry this line</button>
-              <button type="button" onClick={() => setStory(null)}>Follow another light</button></div></div></article>}
+        : <>
+          {/* The lights themselves. Each one gathered fades the thought a
+              little further and brings the other reading a little closer. */}
+          {FIREFLY_MARKS.map((mark, index) => (
+            <button key={index} type="button"
+              className={`firefly-light${caught.includes(index) ? ' is-caught' : ''}`}
+              style={{ left: `${mark.x}%`, top: `${mark.y}%`,
+                animationDelay: `${index * 0.7}s` } as CSSProperties}
+              aria-label={`Gather a light (${gathered} of ${total} gathered)`}
+              disabled={caught.includes(index)}
+              onClick={() => catchOne(index)}>
+              <FireflyAsset index={6} />
+            </button>
+          ))}
+          <article className="story-page">
+            <FireflyAsset index={story} className="story-vignette" label={STORIES[story].title} />
+            <div className="story-copy">
+              <span>{transformed ? 'One small story' : `${gathered} of ${total} lights gathered`}</span>
+              <h2>{STORIES[story].title}</h2>
+
+              {/* Both readings occupy the same space, so one visibly gives way
+                  to the other instead of a new panel replacing the old. */}
+              <div className="story-swap" style={{ '--lit': `${gathered / total}` } as CSSProperties}>
+                <p className="story-was">{STORIES[story].thought}</p>
+                <p className="story-now">{STORIES[story].story}</p>
+              </div>
+
+              {transformed
+                ? <blockquote className="sk-pop">{STORIES[story].line}</blockquote>
+                : <p className="story-prompt">Gather the lights around this page.</p>}
+
+              <div>
+                <button type="button" disabled={!transformed} onClick={() => setDone(true)}>Carry this line</button>
+                <button type="button" onClick={() => pick(story === 0 ? 1 : 0)}>Follow another light</button>
+              </div>
+            </div>
+          </article>
+        </>}
     </section>
     <nav className="recovery-controls"><span>Choosing none is valid too.</span><button className="primary" type="button" onClick={() => setDone(true)}>Leave quietly</button></nav>
     {done && <Completion response={response} setResponse={setResponse} finish={finish}

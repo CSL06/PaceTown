@@ -123,9 +123,66 @@
 .cup-needs button { flex:1 1 42%; justify-content:center; min-height:44px; }
 .pour-meter { height:14px; margin:12px 0; padding:2px; border:2px solid #77532f; background:#efe0b9; }
 .pour-meter i { display:block; height:100%; background:#bb744e; transition:width .25s; }
-.firefly-light { position:absolute; z-index:3; width:72px; height:72px; padding:3px; border:0; border-radius:50%; background:transparent; cursor:pointer; filter:drop-shadow(0 0 9px #ffe986); animation:firefly 3.6s ease-in-out infinite alternate; }
-.firefly-0{left:16%;top:31%}.firefly-1{left:32%;top:58%;animation-delay:-1s}.firefly-2{left:55%;top:27%;animation-delay:-2s}.firefly-3{left:72%;top:52%;animation-delay:-.5s}.firefly-4{left:83%;top:25%;animation-delay:-2.5s}
+/* The previous `.firefly-light` and its `.firefly-0..4` position classes were
+   removed here: nothing rendered them once the recovery rebuild replaced the
+   Minis panels, and their `animation: firefly` drift was still being applied
+   to the catchable lights below by name collision -- which made the hit
+   targets physically move away from the pointer. */
 .story-page { left:50%; top:50%; transform:translate(-50%,-50%); }
+
+/* ---------------------------------------------------------- the lights ---
+   Firefly Stories used to be a menu: pick a thought, read a paragraph, press
+   a button. The reframe was handed over finished. These are the four lights
+   that have to be gathered before the other reading is legible, so the player
+   performs the reframe instead of being told it. */
+.firefly-light {
+  position:absolute; z-index:6; width:44px; height:44px; padding:0;
+  transform:translate(-50%,-50%);
+  background:transparent; border:0; box-shadow:none; filter:none; clip-path:none;
+  cursor:pointer; min-height:0;
+}
+.pt-game .recovery-scene .firefly-light {
+  background:transparent; border:0; box-shadow:none; filter:none; clip-path:none;
+}
+/* The glow breathes; the button does not move. A drifting hit target is
+   hard to hit on a phone, and asking someone who is already overloaded to
+   chase something is the wrong ask for this room. The life is in the light,
+   not in making the player work for it. */
+.firefly-light::after {
+  content:""; position:absolute; inset:-8px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,236,150,.55), transparent 68%);
+  pointer-events:none;
+  animation:firefly-breathe 3.4s ease-in-out infinite;
+}
+.firefly-light:hover::after { background:radial-gradient(circle, rgba(255,241,178,.8), transparent 70%); }
+.firefly-light:focus-visible { outline:3px solid #ffe9a3; outline-offset:3px; }
+.firefly-light.is-caught { opacity:0; pointer-events:none; transform:translate(-50%,-50%) scale(1.7);
+  transition:opacity .5s ease, transform .5s ease; animation:none; }
+@keyframes firefly-breathe {
+  0%,100% { opacity:.62; transform:scale(.9) }
+  50%     { opacity:1;   transform:scale(1.12) }
+}
+
+/* Both readings share one cell, so the first visibly gives way to the second
+   rather than a new panel replacing the old one. --lit is 0..1. */
+/* Two rules further down lay out every div in the story page as a flex row --
+   `.story-page div` and, more specifically, `.story-page .story-copy > div`,
+   both meant for the button row. Either one turns this into a row and shrinks
+   the two readings into narrow columns, so this has to out-specify the
+   stronger of them. */
+.story-page .story-copy > .story-swap { display:grid; width:100%; margin:6px 0 2px; }
+.story-page .story-copy > .story-swap > p {
+  grid-area:1 / 1; margin:0; min-width:0; transition:opacity .45s ease;
+}
+.story-was { opacity:calc(1 - var(--lit) * .82); font-style:italic; color:#7a5a34; }
+.story-now { opacity:var(--lit); }
+.story-prompt { margin:8px 0 0; color:#875624; font:400 12px var(--mono); letter-spacing:.06em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .firefly-light::after { animation:none }
+  .firefly-light.is-caught { transition:none }
+  .story-swap > p { transition:none }
+}
 .story-page h2 { font:700 30px/1.1 var(--serif); margin:6px 0; }
 .story-page>span { color:#875624; font:700 11px var(--mono); text-transform:uppercase; letter-spacing:.12em; }
 .story-page div { display:flex; gap:8px; }
