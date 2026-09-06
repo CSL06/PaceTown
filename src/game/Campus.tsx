@@ -164,16 +164,8 @@ function CampusView({
             style={{ left: `${14 + i * 4}%`, top: `${12 + i * 4}%`, width: '22%', height: '20%',
               opacity: 0.55 + i * 0.25 }} />
         ))}
-        {/* Errands — parcels stack at the Market */}
-        {Array.from({ length: (byPlace.get('Market') ?? 0) * 3 }, (_, i) => (
-          <span key={`p${i}`} className="fx parcel"
-            style={{ left: `${74.5 + (i % 3) * 1.6}%`, top: `${53 + Math.floor(i / 3) * 1.7}%` }} />
-        ))}
-        {/* Social — the Café fills */}
-        {Array.from({ length: (byPlace.get('Café') ?? 0) * 3 }, (_, i) => (
-          <span key={`c${i}`} className="fx crowd"
-            style={{ left: `${12 + i * 1.8}%`, top: `${57 + (i % 2) * 1.4}%` }} />
-        ))}
+        {/* Café crowds and Market parcels need authored pixel assets before
+            they return. The old CSS rectangles read as random map artifacts. */}
         {/* Physical — the Garden softens into shade */}
         {(byPlace.get('Garden') ?? 0) > 0 && (
           <span className="fx shade" style={{ left: '72%', top: '12%', width: '16%', height: '14%' }} />

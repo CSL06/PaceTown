@@ -237,8 +237,6 @@
 
 .fx { position: absolute; pointer-events: none; z-index: 3 }
 .fog { border-radius: 50%; background: rgba(239,227,204,.30); filter: blur(24px) }
-.parcel { width: 14px; height: 12px; background: #9C5A3C; border: 1px solid rgba(23,38,56,.7) }
-.crowd { width: 11px; height: 17px; background: rgba(146,86,106,.9); border: 1px solid rgba(23,38,56,.5) }
 .shade { background: rgba(23,38,56,.34); border-radius: 50%; filter: blur(22px) }
 .is-quiet .fx { display: none }
 .is-quiet .cast.idle { animation: none }
