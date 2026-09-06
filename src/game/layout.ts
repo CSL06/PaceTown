@@ -5,19 +5,26 @@
  * render size. The world is drawn from
  * assets/app-runtime-v1/game/world/campus-daylight.webp.
  *
- * The source illustration is 1200x800. The world is exactly 3x that, so the
- * map upscales on a whole-pixel grid, and a native 64x96 sprite stands 32
- * map-pixels tall — a little under a doorway, which is the proportion the
- * illustration was drawn for. Any other multiple either blurs the map or
- * forces a fractional sprite, which is what mangled the pixel art before.
+ * Scale, which this file previously got wrong twice: the illustration is
+ * 1536x1024 (measured, not assumed), and the world is exactly 2x that. An
+ * integer multiple is the whole point — at the old 3600x2400 the upscale was
+ * 2.34x, so source pixels landed on 2- *or* 3-pixel blocks and every straight
+ * edge in the artwork stair-stepped unevenly. At 2x each source pixel is a
+ * clean 2x2 block.
+ *
+ * Everything below expressed in world pixels — blocker radii, TALK_RADIUS,
+ * PLAYER_COLLISION_MARGIN, and SPEED/LOOK_AHEAD in useWorld.ts — was rescaled
+ * by 3072/3600 when the world was re-based, so the collision geometry still
+ * lines up with the same painted scenery.
  */
 
 import type { GuardianId } from '../domain'
 
-export const MAP_W = 1200
-export const MAP_H = 800
-/** Integer upscale of the illustration. Changing this blurs the map. */
-export const MAP_SCALE = 3
+/** Native size of campus-daylight.webp. Measured, not assumed. */
+export const MAP_W = 1536
+export const MAP_H = 1024
+/** Integer upscale of the illustration. Whole numbers only — see above. */
+export const MAP_SCALE = 2
 export const WORLD_W = MAP_W * MAP_SCALE
 export const WORLD_H = MAP_H * MAP_SCALE
 
@@ -70,9 +77,11 @@ export const PLACES: readonly Place[] = [
   { id: 'recover', name: 'Recovery Garden', px: 69.5, py: 30.5,
     arrival: { px: 62.0, py: 43.0 }, view: 'garden',
     blurb: 'Growth from sustainable choices' },
-  { id: 'hall', name: 'Town Hall', px: 49.8, py: 36.0, view: 'intake',
+  { id: 'hall', name: 'Town Hall', px: 49.8, py: 36.0,
+    arrival: { px: 49.8, py: 44.0 }, view: 'intake',
     blurb: 'Task intake and brief review' },
-  { id: 'cafe', name: 'Sky’s Tea Corner', px: 14.5, py: 42.5, arrival: { px: 28.0, py: 62.0 }, view: 'warmcup', who: 'sky',
+  { id: 'cafe', name: 'Sky’s Tea Corner', px: 14.5, py: 42.5,
+    arrival: { px: 28.0, py: 60.2 }, view: 'warmcup', who: 'sky',
     blurb: 'Body doubling and Warm Cup' },
   { id: 'market', name: 'Market', px: 78.0, py: 47.0, arrival: { px: 66.0, py: 61.0 }, view: 'lanterns', who: 'goh',
     blurb: 'Errands and Night Lanterns' },
@@ -82,20 +91,35 @@ export const PLACES: readonly Place[] = [
   { id: 'council', name: 'Guardian Council', px: 49.8, py: 52.0,
     arrival: { px: 49.8, py: 75 }, view: 'council',
     blurb: 'One recommendation when pressures compete' },
-  { id: 'mailbox', name: 'Future Mailbox', px: 16.0, py: 74.0, view: 'mailbox',
+  { id: 'mailbox', name: 'Future Mailbox', px: 16.0, py: 74.0,
+    arrival: { px: 20.0, py: 78.5 }, view: 'mailbox',
     blurb: 'Send a next action to your future self' },
-  { id: 'post', name: 'Post Office', px: 27.5, py: 80.0, view: 'journal',
+  { id: 'post', name: 'Post Office', px: 27.5, py: 80.0,
+    arrival: { px: 25.0, py: 84.0 }, view: 'journal',
     blurb: 'Journal and postcards' },
-  { id: 'backpack', name: 'Backpack point', px: 49.8, py: 79.0, view: 'backpack',
+  // The generic offset put this one inside the closed south gate.
+  { id: 'backpack', name: 'Backpack point', px: 49.8, py: 79.0,
+    arrival: { px: 44.5, py: 78.5 }, view: 'backpack',
     blurb: 'Inspect what you are carrying' },
-  { id: 'calm', name: 'Calm Corner', px: 77.0, py: 74.0, view: 'calm',
+  { id: 'calm', name: 'Calm Corner', px: 77.0, py: 74.0,
+    arrival: { px: 69.5, py: 79.0 }, view: 'calm',
     blurb: 'All five activities, no prerequisites' },
-  { id: 'park', name: 'Park', px: 91.0, py: 85.0, view: 'pocket', who: 'sol',
+  // No `who`: Sol's domain thematically, but Sol stands at the Pavilion, and
+  // claiming a guardian here put his portrait and name on an empty lawn.
+  { id: 'park', name: 'Park', px: 91.0, py: 85.0,
+    arrival: { px: 88.0, py: 80.0 }, view: 'pocket',
     blurb: 'Pocket of Green, outdoor recovery' },
 ]
 
 /** Solid footprints, generous enough to walk between. Radii are world pixels.
- * rx/ry are used where a painted pond or planter is visibly elliptical. */
+ *
+ * `shape` matters more than it looks. Buildings are drawn as rectangles and
+ * were all being modelled as ellipses, which is wrong in both directions at
+ * once: the ellipse leaves the four corners of a building walk-through while
+ * bulging past its edges at the midpoints. `rect` treats rx/ry as half-width
+ * and half-height instead, which is what a wall actually is. Ellipses stay the
+ * default because ponds, planters and tree beds really are round.
+ */
 export interface WorldBlocker {
   id: string
   px: number
@@ -103,31 +127,50 @@ export interface WorldBlocker {
   r: number
   rx?: number
   ry?: number
+  shape?: 'ellipse' | 'rect'
 }
 
 export const BLOCKERS: readonly WorldBlocker[] = [
-  { id: 'library', px: 22.9, py: 19, r: 320 },
-  { id: 'clock-tower', px: 49.8, py: 12, r: 230 },
-  { id: 'recovery-pavilion', px: 79.2, py: 17, r: 250, rx: 230, ry: 210 },
-  { id: 'recovery-pond', px: 69.0, py: 33.0, r: 210, rx: 360, ry: 145 },
-  { id: 'cafe', px: 14.5, py: 41, r: 225 },
-  { id: 'cafe-building', px: 14.5, py: 51, r: 280 },
-  // The market's visible stall is already covered by the larger building
-  // footprint below. A second circle here seals the only road to the garden.
-  { id: 'market-building', px: 78.0, py: 53, r: 170 },
-  { id: 'market-east-building', px: 90.0, py: 52.0, r: 250, rx: 250, ry: 210 },
-  { id: 'home', px: 91.5, py: 42, r: 143 },
-  { id: 'calm-corner', px: 77.0, py: 72, r: 105 },
-  { id: 'west-pond', px: 2.0, py: 40, r: 135 },
+  // --- buildings: rectangles, because that is how they are painted -------
+  { id: 'library', px: 23.5, py: 20.0, r: 330, rx: 330, ry: 232, shape: 'rect' },
+  // One box replaces the three overlapping circles that used to approximate
+  // the café: the main body, the shopfront and the terrace under the awning.
+  { id: 'cafe-building', px: 20.5, py: 49.5, r: 292, rx: 292, ry: 150, shape: 'rect' },
+  { id: 'market-building', px: 78.0, py: 52.5, r: 145, rx: 145, ry: 145, shape: 'rect' },
+  { id: 'market-east-building', px: 90.0, py: 51.5, r: 213, rx: 213, ry: 172, shape: 'rect' },
+  { id: 'market-west-stalls', px: 69.0, py: 50.0, r: 128, rx: 126, ry: 119, shape: 'rect' },
+  { id: 'home', px: 91.5, py: 42.0, r: 122, rx: 122, ry: 122, shape: 'rect' },
+  // The gate is drawn shut and its wall runs off to either side. All three
+  // are flat masonry, so all three are boxes.
+  { id: 'south-gate', px: 48.2, py: 85.8, r: 222, rx: 224, ry: 105, shape: 'rect' },
+  { id: 'south-wall-west', px: 35.0, py: 89.0, r: 154, rx: 152, ry: 45, shape: 'rect' },
+  { id: 'south-wall-east', px: 61.0, py: 89.0, r: 154, rx: 152, ry: 45, shape: 'rect' },
+
+  // --- round things stay round -------------------------------------------
+  { id: 'clock-tower', px: 49.8, py: 12, r: 196 },
+  { id: 'recovery-pavilion', px: 79.2, py: 17, r: 213, rx: 196, ry: 179 },
+  { id: 'recovery-pond', px: 69.0, py: 33.0, r: 179, rx: 307, ry: 124 },
+  // The gazebo's base and steps reach y≈86; the old r:90 circle stopped at
+  // y≈76 and left the lower half walk-through.
+  { id: 'calm-corner', px: 76.5, py: 77.0, r: 128, rx: 124, ry: 145 },
   // The central tree and circular planter are the most common place for a
   // player to appear embedded in the artwork. Keep its centre solid while
   // leaving the surrounding path open for a full circuit.
-  { id: 'guardian-council-planter', px: 49.8, py: 61, r: 280, rx: 260, ry: 205 },
-  { id: 'east-pond', px: 96.0, py: 30, r: 170, rx: 260, ry: 160 },
+  { id: 'guardian-council-planter', px: 49.8, py: 61, r: 239, rx: 222, ry: 175 },
+
+  // --- water --------------------------------------------------------------
+  // One small ellipse used to cover a fraction of the river: the waterfall
+  // reach and the lower lake were both walkable, so you could stroll across
+  // the water at the west edge.
+  { id: 'north-river', px: 7.5, py: 17.5, r: 128, rx: 126, ry: 113 },
+  { id: 'west-river', px: 4.0, py: 27.0, r: 119, rx: 109, ry: 135 },
+  { id: 'west-pond', px: 2.5, py: 46.0, r: 128, rx: 126, ry: 213 },
+  { id: 'east-pond', px: 96.0, py: 30, r: 145, rx: 222, ry: 137 },
 ]
 
+
 /** Space reserved around a sprite's feet while resolving outdoor collision. */
-export const PLAYER_COLLISION_MARGIN = 26
+export const PLAYER_COLLISION_MARGIN = 22
 
 /** Walkable bounds, in world percent, matching the movement clamp. */
 export const WALK_BOUNDS = { minX: 2.5, maxX: 97.5, minY: 13.125, maxY: 97.5 }
@@ -143,12 +186,17 @@ export function isBlockedPosition(
   return BLOCKERS.some((b) => {
     const rx = (b.rx ?? b.r) + margin
     const ry = (b.ry ?? b.r) + margin
-    return Math.hypot((x - (b.px / 100) * WORLD_W) / rx,
-      (y - (b.py / 100) * WORLD_H) / ry) < 1
+    const dx = x - (b.px / 100) * WORLD_W
+    const dy = y - (b.py / 100) * WORLD_H
+    return b.shape === 'rect'
+      ? Math.abs(dx) < rx && Math.abs(dy) < ry
+      : Math.hypot(dx / rx, dy / ry) < 1
   })
 }
 
-/** Project a point outside a blocker along its radial ellipse direction. */
+/** Push a point out of a blocker: radially for an ellipse, and along the
+ * shallowest axis for a rectangle so you slide along a wall instead of being
+ * flung around its corner. */
 export function resolveBlockerPosition(
   x: number,
   y: number,
@@ -161,6 +209,18 @@ export function resolveBlockerPosition(
   const ry = (blocker.ry ?? blocker.r) + margin
   const dx = x - bx
   const dy = y - by
+
+  if (blocker.shape === 'rect') {
+    const overlapX = rx - Math.abs(dx)
+    const overlapY = ry - Math.abs(dy)
+    if (overlapX <= 0 || overlapY <= 0) return { x, y }
+    // Leave by the nearest face. Ejecting along the deeper axis would shove a
+    // player walking into a long wall out at its end.
+    return overlapX < overlapY
+      ? { x: bx + (dx < 0 ? -rx : rx), y }
+      : { x, y: by + (dy < 0 ? -ry : ry) }
+  }
+
   const distance = Math.hypot(dx / rx, dy / ry)
   if (distance >= 1) return { x, y }
   if (distance <= 0.001) return { x: bx, y: by + ry }
@@ -184,7 +244,22 @@ export function safePosition(
 }
 
 /** Interaction radius, in world pixels. Generous on purpose. */
-export const TALK_RADIUS = 203
+export const TALK_RADIUS = 173
+
+/**
+ * Paint order for anything standing on the ground.
+ *
+ * Overlapping characters have to be drawn back-to-front by their feet, or a
+ * character standing behind another is drawn in front of them. The player
+ * used to be pinned above every guardian with a flat `z-index: 7`, so walking
+ * north past Sky put you in front of her while you were visibly behind her.
+ *
+ * The band is 130..975 for the walkable range of `py`, which sits above the
+ * markers (4) and below the atmosphere layers (1200+). See game.css.
+ */
+export function groundZ(py: number): number {
+  return Math.round(Math.min(100, Math.max(0, py)) * 10)
+}
 
 /** Clear path below the central planter. */
 export const SPAWN = { px: 49.8, py: 75 }
@@ -209,7 +284,7 @@ export const GUARDIAN_POSITIONS: Record<GuardianId, GuardianPlacement> = {
   kai: { px: 54.0, py: 31.0, facing: 'down' },
   sol: { px: 85.0, py: 30.5, facing: 'down' },
   goh: { px: 70.0, py: 61.0, facing: 'down' },
-  sky: { px: 25.0, py: 61.0, facing: 'down' },
+  sky: { px: 24.5, py: 59.2, facing: 'down' },
 }
 
 /** Order of frames in assets/app-runtime-v1/game/world/cast-sheet.webp. */

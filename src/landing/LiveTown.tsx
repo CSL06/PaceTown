@@ -24,8 +24,8 @@ const MAP = '/game/world/campus-daylight.webp'
 const PLAYER_SHEET = '/game/world/player-sheet.webp'
 const CAST_SHEET = '/game/world/cast-sheet.webp'
 
-const SPEED = 430
-const ARRIVE = 26
+const SPEED = 367
+const ARRIVE = 22
 
 type Facing = 'up' | 'down' | 'left' | 'right'
 
@@ -197,7 +197,7 @@ export function LiveTown({ active = true, reducedMotion, onTakeOver }: Props) {
       const approach = TOUR_APPROACH[id]
       const finalStop = approach
         ? { x: approach.px / 100 * WORLD_W, y: approach.py / 100 * WORLD_H }
-        : { x: spot.x + 96, y: spot.y + 10 }
+        : { x: spot.x + 82, y: spot.y + 9 }
       const previous = leg.current > 0 ? ROUTE[(leg.current - 1) % ROUTE.length] : null
       const transit = TOUR_TRANSIT[previous ? `${previous}->${id}` : `start->${id}`] ?? []
       waypointQueue.current = [

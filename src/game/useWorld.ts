@@ -9,8 +9,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
-  BLOCKERS, doorstep, isWalkablePosition, PLACES, PLAYER_COLLISION_MARGIN, resolveBlockerPosition,
-  safePosition, TALK_RADIUS, WALK_BOUNDS, WORLD_H, WORLD_W, type Place,
+  BLOCKERS, doorstep, groundZ, isWalkablePosition, PLACES, PLAYER_COLLISION_MARGIN,
+  resolveBlockerPosition, safePosition, TALK_RADIUS, WALK_BOUNDS, WORLD_H, WORLD_W, type Place,
 } from './layout'
 import { sfx } from './sfx'
 
@@ -20,7 +20,7 @@ const KEY_MAP: Record<string, 'up' | 'down' | 'left' | 'right'> = {
 }
 
 /** World pixels per second. Scales with WORLD_W, not with the screen. */
-const SPEED = 495
+const SPEED = 422
 
 /* How hard the camera chases the avatar. Higher is tighter; this is loose
    enough to feel like a camera rather than a rigid frame, and tight enough
@@ -29,7 +29,7 @@ const CAMERA_CHASE = 7
 
 /* The camera leads slightly in the direction of travel, so you see where you
    are going rather than where you have been. World pixels. */
-const LOOK_AHEAD = 70
+const LOOK_AHEAD = 60
 
 /** Footstep cadence, matched to the two-frame walk animation. */
 const STEP_MS = 340
@@ -108,6 +108,9 @@ export function useWorld(refs: WorldRefs, opts: Options) {
     el.className = `spr avatar f-${facing.current}${walking && !opts.reducedMotion ? ' walking' : ''}`
     el.style.left = `${pos.current.px}%`
     el.style.top = `${pos.current.py}%`
+    // Depth sort against the guardians by foot position, so walking north
+    // past someone puts you behind them rather than always in front.
+    el.style.zIndex = String(groundZ(pos.current.py))
   }, [refs.avatar, opts.reducedMotion])
 
   const checkProximity = useCallback(() => {

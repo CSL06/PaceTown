@@ -144,7 +144,7 @@
 .stage { position: absolute; inset: 0; overflow: hidden; }
 /* 3x the 1200x800 illustration: a whole-pixel upscale, so `pixelated` keeps
    every edge sharp. See layout.ts for why 3 and not 2. */
-.world { position: absolute; top: 0; left: 0; width: 3600px; height: 2400px; will-change: transform; }
+.world { position: absolute; top: 0; left: 0; width: 3072px; height: 2048px; will-change: transform; }
 .map { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .world-debug { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
 .world-debug-blocker { position: absolute; border: 3px solid rgba(214,68,68,.88);
@@ -153,24 +153,61 @@
   transform: translate(-50%,-50%); box-shadow: 0 0 0 2px rgba(255,248,228,.9); }
 .world-debug-point.guardian { border-radius: 50%; background: #4f9c98; }
 .world-debug-point.arrival { background: #e7a23b; }
-.vignette { position: absolute; inset: 0; pointer-events: none; z-index: 9;
+.vignette { position: absolute; inset: 0; pointer-events: none; z-index: 1220;
   box-shadow: inset 0 -100px 140px -70px rgba(73,50,30,.26), inset 0 70px 110px -70px rgba(255,245,196,.2); }
-.daytint { position: absolute; inset: 0; pointer-events: none; z-index: 8; transition: background 2s ease; }
+.daytint { position: absolute; inset: 0; pointer-events: none; z-index: 1200; transition: background 2s ease; }
 .daytint.afternoon { background: linear-gradient(180deg, rgba(255,196,120,.05), rgba(255,170,110,.03)); }
 .daytint.dusk { background: linear-gradient(180deg, rgba(255,201,112,.08), rgba(210,145,83,.12)); }
 .daytint.night { background: linear-gradient(180deg, rgba(92,126,159,.12), rgba(50,77,105,.2)); }
 
 /* Native frame size, drawn 1:1. A fractional sprite size is what smeared the
-   pixel art — never give these a percentage width. */
+   pixel art — never give these a percentage width.
+ *
+ * Anchoring: every frame in both sheets draws its content from row 2 to row
+ * 93 of the 96px box (measured, and identical across all 17 frames), so the
+ * soles sit 2px above the bottom edge. `translate(-50%,-100%)` puts that
+ * bottom edge on the world point, which is why the contact shadow below is
+ * offset by those 2px rather than sitting flush with the box.
+ *
+ * `transform-origin` is the bottom centre so that anything animating these
+ * scales up *from the feet*. The feet are the one part that must never move.
+ */
 .spr { position: absolute; transform: translate(-50%, -100%); width: 64px; height: 96px;
-  image-rendering: pixelated; z-index: 5; pointer-events: none; background-repeat: no-repeat; }
-.spr::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 78%; height: 11px;
-  transform: translateX(-50%); border-radius: 50%; background: rgba(10,16,22,.5);
-  filter: blur(3px); z-index: -1; }
+  image-rendering: pixelated; z-index: 5; pointer-events: none; background-repeat: no-repeat;
+  transform-origin: 50% 100%; }
+
+/* Contact shadow. It used to be 50px wide and centred below the box, which
+   read as a dark puddle trailing the character; the stance is only ~35px, so
+   this is tightened to sit under the feet and centred on the sole line. */
+.spr::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 46%; height: 9px;
+  transform: translateX(-50%); border-radius: 50%; background: rgba(12,18,24,.42);
+  filter: blur(2.5px); z-index: -1; }
+
 .cast { background-size: 500% 100%; }
+
+/* Idle. This used to translate the whole sprite — shadow included — 2px up
+   the screen, so the guardians visibly levitated and detached from their own
+   shadows. It now stretches from the feet instead: the soles and the contact
+   shadow stay put, and only the body rises. */
 .cast.idle { animation: breathe 3.4s ease-in-out infinite; }
-@keyframes breathe { 0%,100% { transform: translate(-50%,-100%) } 50% { transform: translate(-50%, calc(-100% - 2px)) } }
-.avatar { background-size: 1200% 100%; z-index: 7; }
+@keyframes breathe {
+  0%, 100% { transform: translate(-50%, -100%) scaleY(1) }
+  50%      { transform: translate(-50%, -100%) scaleY(1.015) }
+}
+/* Standing next to someone should register. The cast sheet is one
+   front-facing frame per guardian, so turning to look is not available — this
+   is the acknowledgement that is: a deeper, quicker breath while you are in
+   talking range. Still anchored at the feet, like the resting idle. */
+.cast.idle.attentive { animation-name: breathe-close; animation-duration: 2.3s; }
+@keyframes breathe-close {
+  0%, 100% { transform: translate(-50%, -100%) scaleY(1) }
+  50%      { transform: translate(-50%, -100%) scaleY(1.03) }
+}
+
+/* A routine stops while someone is being spoken to. */
+.cast.idle.hold { animation-play-state: paused; }
+
+.avatar { background-size: 1200% 100%; }
 .avatar.f-down { background-position-x: 0% }
 .avatar.f-up { background-position-x: 27.27% }
 .avatar.f-left { background-position-x: 81.81% }
@@ -205,6 +242,43 @@
 .shade { background: rgba(23,38,56,.34); border-radius: 50%; filter: blur(22px) }
 .is-quiet .fx { display: none }
 .is-quiet .cast.idle { animation: none }
+
+/* ---------- ambient life ----------
+   Tea steam on the café terrace and light on the recovery pond. Small, slow,
+   and low-contrast on purpose: this is meant to be noticed on the second
+   look, not to pull attention off the panel someone is reading. Both are
+   removed entirely by Quiet Mode (in Campus.tsx) and by reduced motion. */
+/* Namespaced `amb-`, and not optionally. Bare `.ripple` and `@keyframes
+   ripple` already belong to the Ripples panel further down this file, and
+   recovery.css defines its own `steam` keyframes. Keyframe names are global
+   and the last definition parsed wins, so an unprefixed name here silently
+   inherits someone else's animation. */
+/* A wisp, not a dot: an upright ellipse reads as steam at this zoom where a
+   small circle just disappears into the illustration. */
+.amb-steam {
+  position: absolute; width: 9px; height: 17px; border-radius: 50% / 44%;
+  background: rgba(255, 254, 250, .88); filter: blur(3.5px);
+  transform: translate(-50%, 0); pointer-events: none;
+  animation: amb-steam 5.6s ease-in-out infinite;
+}
+@keyframes amb-steam {
+  0%   { opacity: 0; transform: translate(-50%, 4px) scale(.5) }
+  18%  { opacity: .85 }
+  62%  { opacity: .42 }
+  100% { opacity: 0; transform: translate(-50%, -46px) scaleX(1.7) scaleY(1.25) }
+}
+
+.amb-ripple {
+  position: absolute; width: 30px; height: 11px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .42); pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: amb-ripple 6.4s ease-out infinite;
+}
+@keyframes amb-ripple {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(.3) }
+  28%  { opacity: .5 }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5) }
+}
 
 /* ---------- HUD ----------
    The top rail moved to hud.css. These are the pieces the rest of the
@@ -497,6 +571,9 @@ tr.total td { border-bottom: none; font-weight: 600; padding-top: 12px }
 
 @media (prefers-reduced-motion: reduce) {
   .title-art, .cast.idle, .avatar.walking, .marker .ring, .dlg-caret { animation: none !important }
+  /* A frozen puff of steam reads as a smudge on the map, so these go entirely
+     rather than merely stopping. */
+  .amb-steam, .amb-ripple { display: none !important }
 }
 
 .helpdot-wrap { position: relative; display: inline-block; margin-left: 8px; vertical-align: middle }

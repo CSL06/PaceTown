@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
-  doorstep, firstStepForIntro, focusGuardianFor, GUARDIAN_POSITIONS, isBlockedPosition,
-  GUARDIAN_AT, isWalkablePosition, nextStepFor, PLACES, safePosition, SPAWN,
-  TALK_RADIUS, WORLD_H, WORLD_W,
+  BLOCKERS, doorstep, firstStepForIntro, focusGuardianFor, groundZ, GUARDIAN_POSITIONS,
+  isBlockedPosition, resolveBlockerPosition,
+  GUARDIAN_AT, isWalkablePosition, MAP_H, MAP_SCALE, MAP_W, nextStepFor, PLACES, safePosition,
+  SPAWN, SPRITE_W, TALK_RADIUS, WORLD_H, WORLD_W,
 } from './layout'
 import { nearestPlace } from './useWorld'
 
@@ -21,7 +22,9 @@ describe('campus placement', () => {
   it('uses clear paving-side arrivals for the visually crowded districts', () => {
     expect(doorstep(PLACES.find((place) => place.id === 'library')!)).toEqual({ px: 22.9, py: 34 })
     expect(doorstep(PLACES.find((place) => place.id === 'clock')!)).toEqual({ px: 58, py: 28 })
-    expect(doorstep(PLACES.find((place) => place.id === 'cafe')!)).toEqual({ px: 28, py: 62 })
+    // Moved north with Sky: at py 62 both of them straddled the terrace
+    // railing, and a flat map image cannot occlude a sprite's feet.
+    expect(doorstep(PLACES.find((place) => place.id === 'cafe')!)).toEqual({ px: 28, py: 60.2 })
     expect(doorstep(PLACES.find((place) => place.id === 'market')!)).toEqual({ px: 66, py: 61 })
   })
 
@@ -53,7 +56,10 @@ describe('campus placement', () => {
         (standing.px - arrival.px) / 100 * WORLD_W,
         (standing.py - arrival.py) / 100 * WORLD_H,
       )
-      expect(distance).toBeGreaterThan(80)
+      // A sprite is SPRITE_W wide, so that is the figure "not stacked"
+      // actually means. The old literal 80 was a world-pixel value that
+      // silently stopped meaning anything when the world was re-based.
+      expect(distance).toBeGreaterThan(SPRITE_W)
       expect(distance).toBeLessThan(TALK_RADIUS)
     }
   })
@@ -75,6 +81,62 @@ describe('campus placement', () => {
   it('blocks the recovery pond and east market building shown in the artwork', () => {
     expect(isBlockedPosition({ px: 69, py: 33 })).toBe(true)
     expect(isBlockedPosition({ px: 90, py: 52 })).toBe(true)
+  })
+
+  it('states the real size of the illustration', () => {
+    // This was documented as 1200x800 at an integer 3x upscale. It is neither,
+    // and the wrong figure is the kind that quietly propagates into new art.
+    expect([MAP_W, MAP_H]).toEqual([1536, 1024])
+  })
+
+  it('upscales the map by a whole number', () => {
+    // A fractional multiple lands source pixels on 2- or 3-pixel blocks, which
+    // is what made straight edges in the artwork stair-step unevenly.
+    expect(Number.isInteger(MAP_SCALE)).toBe(true)
+    expect(WORLD_W).toBe(MAP_W * MAP_SCALE)
+    expect(WORLD_H).toBe(MAP_H * MAP_SCALE)
+  })
+
+  it('gives every place an explicit arrival rather than a generic offset', () => {
+    // The old fallback was "anchor + 7% down", which dropped the Backpack
+    // point inside the closed south gate.
+    for (const place of PLACES) {
+      expect(place.arrival, `${place.name} should not rely on the generic offset`)
+        .toBeDefined()
+    }
+  })
+
+  it('no longer claims a guardian stands in the Park', () => {
+    // Sol's domain thematically, but Sol stands at the Pavilion — the Town
+    // List was putting his portrait and name on an empty lawn.
+    expect(PLACES.find((place) => place.id === 'park')!.who).toBeUndefined()
+    // Every remaining `who` is a guardian actually stationed there.
+    for (const place of PLACES) {
+      if (place.who) expect(GUARDIAN_AT[place.who]).toBe(place.id)
+    }
+  })
+
+  it('keeps the player out of the water on the west edge', () => {
+    // A single small pond ellipse used to leave the waterfall reach and the
+    // lower lake walkable, so you could stroll across the river.
+    for (const point of [
+      { px: 8, py: 16 }, { px: 5, py: 20 }, { px: 4, py: 28 }, { px: 3, py: 50 },
+    ]) expect(isBlockedPosition(point), `${point.px},${point.py} is open water`).toBe(true)
+  })
+
+  it('closes the south gate and its wall without sealing the plaza', () => {
+    expect(isBlockedPosition({ px: 49.8, py: 86 })).toBe(true)
+    expect(isBlockedPosition({ px: 35, py: 89 })).toBe(true)
+    expect(isBlockedPosition({ px: 61, py: 89 })).toBe(true)
+    // The paving in front of the gate is still where the player stands.
+    expect(isWalkablePosition({ px: 49.8, py: 78 })).toBe(true)
+    expect(isWalkablePosition(SPAWN)).toBe(true)
+  })
+
+  it('blocks the scenery that sat outside every footprint', () => {
+    expect(isBlockedPosition({ px: 25.5, py: 50 })).toBe(true)   // cafe shopfront
+    expect(isBlockedPosition({ px: 69, py: 50 })).toBe(true)     // west market stalls
+    expect(isBlockedPosition({ px: 76.5, py: 82 })).toBe(true)   // gazebo base
   })
 
   it('keeps every destination connected to spawn by walkable ground', () => {
@@ -102,6 +164,73 @@ describe('campus placement', () => {
       })
       expect(connected, `${place.name} should be reachable`).toBe(true)
     }
+  })
+})
+
+describe('rectangular footprints', () => {
+  const wall = { id: 'test-wall', px: 50, py: 50, r: 200, rx: 200, ry: 100, shape: 'rect' as const }
+
+  it('covers the corners an ellipse of the same extents would miss', () => {
+    // The whole reason buildings became rectangles: at 0.9 of each half-extent
+    // a corner is inside the box but outside the inscribed ellipse.
+    const cornerX = (50 / 100) * WORLD_W + 200 * 0.9
+    const cornerY = (50 / 100) * WORLD_H + 100 * 0.9
+    const inside = Math.hypot((cornerX - (50 / 100) * WORLD_W) / 200,
+      (cornerY - (50 / 100) * WORLD_H) / 100) < 1
+    expect(inside, 'this corner should be outside the ellipse').toBe(false)
+    // The rect resolver still ejects it, because for a box it is inside.
+    const out = resolveBlockerPosition(cornerX, cornerY, wall, 0)
+    expect(out.x === cornerX && out.y === cornerY).toBe(false)
+  })
+
+  it('ejects along the nearest face so you slide instead of being flung', () => {
+    const cx = (50 / 100) * WORLD_W
+    const cy = (50 / 100) * WORLD_H
+    // Deep horizontally, shallow vertically: should leave through the top.
+    const out = resolveBlockerPosition(cx + 10, cy - 95, wall, 0)
+    expect(out.x).toBe(cx + 10)
+    expect(out.y).toBe(cy - 100)
+
+    // Shallow horizontally: should leave through the side, keeping y.
+    const side = resolveBlockerPosition(cx + 195, cy + 10, wall, 0)
+    expect(side.x).toBe(cx + 200)
+    expect(side.y).toBe(cy + 10)
+  })
+
+  it('leaves a point already outside untouched', () => {
+    const out = resolveBlockerPosition(10, 10, wall, 0)
+    expect(out).toEqual({ x: 10, y: 10 })
+  })
+
+  it('models the buildings as boxes and the scenery as ellipses', () => {
+    const shapeOf = (id: string) => BLOCKERS.find((b) => b.id === id)?.shape ?? 'ellipse'
+    for (const id of ['library', 'cafe-building', 'home', 'south-gate']) {
+      expect(shapeOf(id), `${id} is drawn as a building`).toBe('rect')
+    }
+    for (const id of ['recovery-pond', 'west-pond', 'guardian-council-planter']) {
+      expect(shapeOf(id), `${id} is drawn round`).toBe('ellipse')
+    }
+  })
+})
+
+describe('groundZ', () => {
+  it('sorts characters back to front by their feet', () => {
+    // Someone lower down the map stands nearer the camera.
+    expect(groundZ(61)).toBeGreaterThan(groundZ(34))
+    expect(groundZ(97)).toBeGreaterThan(groundZ(61))
+  })
+
+  it('stays between the markers below and the atmosphere above', () => {
+    // Markers sit at 4 and the day tint at 1200; the band must not collide.
+    for (const py of [13.125, 50, 97.5]) {
+      expect(groundZ(py)).toBeGreaterThan(4)
+      expect(groundZ(py)).toBeLessThan(1200)
+    }
+  })
+
+  it('survives a position outside the world without inverting the order', () => {
+    expect(groundZ(-40)).toBe(0)
+    expect(groundZ(400)).toBe(1000)
   })
 })
 

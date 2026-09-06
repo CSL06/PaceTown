@@ -5,7 +5,9 @@
 
 /* ---------------------------------------------------------- sky colour grade */
 .cos-grade {
-  position: absolute; inset: 0; z-index: 8; pointer-events: none;
+  /* Inside .world, above the foot-sorted sprite band (see game.css) so the
+     grade tints the characters instead of being occluded by them. */
+  position: absolute; inset: 0; z-index: 1210; pointer-events: none;
   transition: background 1.2s ease;
 }
 .stage.cos-sky-overcast .cos-grade {

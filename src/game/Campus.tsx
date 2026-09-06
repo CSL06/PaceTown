@@ -10,7 +10,7 @@ import { memo } from 'react'
 import { weightedDemand, type DailyLoad, type DemandCategory, type Task } from '../domain'
 import {
   BLOCKERS, CAST_ORDER, GUARDIAN_AT, GUARDIAN_POSITIONS, GUARDIANS, PLAYER_COLLISION_MARGIN,
-  PLACES, doorstep, type Place, type PlaceId,
+  PLACES, doorstep, groundZ, type Place, type PlaceId,
 } from './layout'
 import type { CosmeticSlot } from '../domain'
 import type { WorldRefs } from './useWorld'
@@ -57,6 +57,28 @@ export function loadWeather(tasks: readonly Task[], day: string): WeatherRow[] {
   ]
 }
 
+/**
+ * Two small signs of life, placed against the illustration.
+ *
+ * Steam rises from the cups on the café terrace beside Sky, and the recovery
+ * pond catches the light. Both are deliberately tiny and slow: the brief is a
+ * town that feels inhabited, not one that competes with the panel a student is
+ * trying to read. Each carries its own foot position so it sorts into the
+ * scene like a character does — the steam is behind Sky, not painted over her.
+ */
+const STEAM: readonly { px: number; py: number; delay: number }[] = [
+  // On the cups themselves. Measured off the terrace tables rather than
+  // guessed: one table beside Sky, one under the far umbrella.
+  { px: 20.3, py: 58.0, delay: 0 },
+  { px: 21.1, py: 58.3, delay: 1.9 },
+  { px: 25.6, py: 58.0, delay: 3.4 },
+]
+
+const RIPPLES: readonly { px: number; py: number; delay: number }[] = [
+  { px: 66.5, py: 32.5, delay: 0 },
+  { px: 71.5, py: 34.0, delay: 2.8 },
+]
+
 /** The day advances with the loop, not the clock. */
 export function daylight(stepsDone: number): 'afternoon' | 'dusk' | 'night' {
   return stepsDone >= 6 ? 'night' : stepsDone >= 3 ? 'dusk' : 'afternoon'
@@ -73,10 +95,14 @@ interface Props {
   stepsDone: number
   /** Bought appearance. Never affects anything but how the town looks. */
   equipped: Record<CosmeticSlot, string>
+  /** True while a conversation is open, so ambient routines hold still. */
+  talking?: boolean
   onEnter: (place: Place) => void
 }
 
-function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equipped, onEnter }: Props) {
+function CampusView({
+  refs, tasks, day, near, leadPlace, quiet, stepsDone, equipped, talking = false, onEnter,
+}: Props) {
   const weather = loadWeather(tasks, day)
   const byPlace = new Map(weather.map((w) => [w.place, w.level]))
 
@@ -141,16 +167,38 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equip
           const place = PLACES.find((p) => p.id === GUARDIAN_AT[id])
           if (!place) return null
           const at = GUARDIAN_POSITIONS[id]
+          // The cast sheet holds one front-facing frame each, so nobody can
+          // turn to look at you. A deeper, quicker breath while you are in
+          // range is the acknowledgement that is available without new art.
+          const attentive = !quiet && !talking && near?.id === GUARDIAN_AT[id]
           return (
-            <div key={id} className={`spr cast f-${at.facing}${quiet ? '' : ' idle'}`} role="img"
-              aria-label={GUARDIANS[id].name}
+            <div key={id}
+              className={`spr cast f-${at.facing}${quiet ? '' : ' idle'}`
+                + `${talking ? ' hold' : ''}${attentive ? ' attentive' : ''}`}
+              role="img" aria-label={GUARDIANS[id].name}
               style={{
                 left: `${at.px}%`, top: `${at.py}%`,
+                // Sorted by the feet, so whoever stands further down the map
+                // is drawn in front. See groundZ in layout.ts.
+                zIndex: groundZ(at.py),
                 backgroundImage: `url(${CAST_SHEET})`,
                 backgroundPositionX: `${(i / (CAST_ORDER.length - 1)) * 100}%`,
               }} />
           )
         })}
+
+        {/* Ambient life. Quiet Mode removes it, as it does everything that
+            moves; reduced motion is handled in game.css. */}
+        {!quiet && STEAM.map((w, i) => (
+          <span key={`steam${i}`} className="amb-steam" aria-hidden="true"
+            style={{ left: `${w.px}%`, top: `${w.py}%`, zIndex: groundZ(w.py),
+              animationDelay: `${w.delay}s` }} />
+        ))}
+        {!quiet && RIPPLES.map((r, i) => (
+          <span key={`ripple${i}`} className="amb-ripple" aria-hidden="true"
+            style={{ left: `${r.px}%`, top: `${r.py}%`, zIndex: groundZ(r.py),
+              animationDelay: `${r.delay}s` }} />
+        ))}
 
         {PLACES.map((place) => {
           const at = doorstep(place)
@@ -168,6 +216,8 @@ function CampusView({ refs, tasks, day, near, leadPlace, quiet, stepsDone, equip
           )
         })}
 
+        {/* The avatar's z-index is rewritten every frame by useWorld's paint(),
+            for the same foot-sorting reason as the cast above. */}
         <div className="spr avatar f-down" ref={refs.avatar} role="img" aria-label="Your avatar"
           style={{ backgroundImage: `url(${PLAYER_SHEET})` }} />
 

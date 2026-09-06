@@ -20,7 +20,10 @@ import { Library } from './Library'
 import { Dialogue, type DialogueScript } from './Dialogue'
 import { GuardianDock } from './GuardianDock'
 import { ResumeCard } from './ResumeCard'
-import { GUARDIANS, PLACES, doorstep, firstStepForIntro, focusGuardianFor, nextStepFor, type Place, type ViewId } from './layout'
+import {
+  GUARDIAN_AT, GUARDIANS, PLACES, doorstep, firstStepForIntro,
+  focusGuardianFor, nextStepFor, type Place, type ViewId,
+} from './layout'
 import { loadState, saveState, type GameState } from './state'
 import { useWorld } from './useWorld'
 import { Intake, Rebalance, Session, Understand, Work } from './panels/Loop'
@@ -193,7 +196,18 @@ export default function Game() {
   }, [moveTo, go])
 
   const enter = useCallback((place: Place) => {
-    moveTo(doorstep(place))
+    /* Walk-up entries used to teleport. `enter` is reached two ways — pressing
+       E beside a place, and clicking its marker from across town — and it
+       moved the avatar to the doorstep in both cases. When you had already
+       walked to Sky, that snapped you sideways the instant you pressed E,
+       which is the single most unnatural thing in the demo route.
+
+       `near` is exactly the test we want and costs nothing: useWorld sets it
+       to the place whose doorstep is within TALK_RADIUS. If this is that
+       place, the player is already standing there — so only travel when there
+       is actually a distance to close. */
+    if (near?.id !== place.id) moveTo(doorstep(place))
+
     if (state.greeted[place.id]) { go(place.view); return }
     if (place.id === 'clock') {
       const n = proposeRebalance(state.tasks, {
@@ -224,7 +238,7 @@ export default function Game() {
         { label: 'Not now', onPick: () => {} },
       ],
     })
-  }, [moveTo, go, state.greeted, state.tasks, state.capacity])
+  }, [moveTo, go, near, state.greeted, state.tasks, state.capacity])
 
   /* First run: Kai explains the number the whole week turns on. Fired from the
      click rather than an effect — an effect that also sets `introSeen` would
@@ -444,7 +458,7 @@ export default function Game() {
         {sceneWipe}
       <Campus refs={{ stage, world, avatar }} load={load} tasks={state.tasks} day="thu"
         near={near} leadPlace={leadPlace} quiet={state.quiet} stepsDone={stepsDone}
-        equipped={state.equipped} onEnter={enter} />
+        equipped={state.equipped} talking={dialogueOpen} onEnter={enter} />
       <div className="vignette" aria-hidden="true" />
 
       <div className="hud hud-top">
@@ -587,7 +601,14 @@ export default function Game() {
 
       <div className={`prompt${near && !panelOpen && !dialogueOpen ? ' on' : ''}`}>
         <kbd>E</kbd>
-        <span>{near ? (near.who ? `Talk to ${GUARDIANS[near.who].name}` : `Enter ${near.name}`) : ''}</span>
+        {/* Only offer a name when that guardian is actually stationed here.
+            The Park lists Sol as its domain, but Sol stands at the Pavilion —
+            "Talk to Sol" beside an empty lawn is a promise the scene breaks. */}
+        <span>{near
+          ? (near.who && GUARDIAN_AT[near.who] === near.id
+              ? `Talk to ${GUARDIANS[near.who].name}`
+              : `Enter ${near.name}`)
+          : ''}</span>
       </div>
 
       <div className={`hint-move${moved ? ' gone' : ''}`}>
