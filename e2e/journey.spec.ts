@@ -10,16 +10,24 @@ import { expect, test, type Page } from '@playwright/test'
  * and it ends on a choice rather than dismissing itself. The overlay covers
  * the lower HUD until all of that is done.
  */
-async function dismissGreeting(page: Page) {
+async function dismissGreeting(page: Page, { appearWithin = 15_000 } = {}) {
   const greeting = page.getByRole('group', { name: 'Conversation' })
 
-  /* Wait generously for it to arrive. It fires on a 400ms timer after entering,
-     and a slow CI runner can push that well past a short poll — in which case
-     the helper returns, the greeting appears a moment later, and it either
-     swallows the next click or, worse, absorbs the next Escape (the app closes
-     the conversation before the panel, by design). Both failure modes showed up
-     in CI and neither was an app bug. */
-  if (!await greeting.isVisible({ timeout: 15_000 }).catch(() => false)) return
+  /* A *real* wait for it to arrive. The previous version asked
+     `isVisible({ timeout })`, which looks like a wait and is not: `isVisible`
+     resolves against the current DOM and ignores the option entirely, so it
+     returned in about 4ms. The greeting then landed on its 400ms timer with a
+     panel already open, and absorbed the Escape the test was about to press —
+     the app closes a conversation before a panel, by design. Measured, not
+     guessed: see the probe in the commit message.
+
+     Callers that have suppressed the intro pass a short window, since for them
+     a greeting is possible but not expected. */
+  try {
+    await greeting.waitFor({ state: 'visible', timeout: appearWithin })
+  } catch {
+    return // It is not coming. Nothing to dismiss.
+  }
 
   for (let i = 0; i < 14; i += 1) {
     if (!await greeting.isVisible().catch(() => false)) break
@@ -75,7 +83,8 @@ async function enterTownQuietly(page: Page) {
   await page.getByRole('button', { name: /campus grove|continue your week/i })
     .click({ timeout: 20_000 })
   // Belt and braces: a place greeting could still appear on a first entry.
-  await dismissGreeting(page)
+  // The intro is suppressed above, so none is expected — keep the window short.
+  await dismissGreeting(page, { appearWithin: 1500 })
 }
 
 test.describe('arriving', () => {
@@ -142,12 +151,11 @@ test.describe('the demo path', () => {
 })
 
 test.describe('inside the town', () => {
+  /* These tests are about the HUD and the sheet, not about onboarding, so they
+     enter with the intro already seen. Racing Kai's 400ms greeting is what made
+     this group flaky: it would appear over an open panel and eat the Escape. */
   test.beforeEach(async ({ page }) => {
-    await page.goto('/game')
-    await page.getByRole('button', { name: /campus grove|continue your week/i })
-      .click({ timeout: 15_000 })
-
-    await dismissGreeting(page)
+    await enterTownQuietly(page)
   })
 
   test('the HUD shows the week and the Town List reaches every place', async ({ page }) => {
@@ -177,6 +185,107 @@ test.describe('inside the town', () => {
     await expect(sheet).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(sheet).toBeHidden()
+  })
+})
+
+/**
+ * Steers the avatar toward a world point by holding a direction in short
+ * bursts and re-reading its position between them.
+ *
+ * Deliberately a convergence loop rather than a fixed sequence of timed key
+ * presses: movement is delta-time based, so a fixed press on a loaded runner
+ * covers a different distance than it does locally. This checks where it
+ * actually got to and keeps nudging, which makes it independent of speed.
+ */
+async function walkTo(page: Page, tx: number, ty: number, steps = 60) {
+  const read = () => page.evaluate(() => {
+    const a = document.querySelector<HTMLElement>('.stage .avatar')
+    return a ? { px: parseFloat(a.style.left), py: parseFloat(a.style.top) } : null
+  })
+  for (let i = 0; i < steps; i += 1) {
+    const at = await read()
+    if (!at) return null
+    const dx = tx - at.px
+    const dy = ty - at.py
+    if (Math.abs(dx) < 0.9 && Math.abs(dy) < 0.9) return at
+    const key = Math.abs(dx) > Math.abs(dy)
+      ? (dx > 0 ? 'ArrowRight' : 'ArrowLeft')
+      : (dy > 0 ? 'ArrowDown' : 'ArrowUp')
+    await page.keyboard.down(key)
+    await page.waitForTimeout(110)
+    await page.keyboard.up(key)
+    await page.waitForTimeout(45)
+  }
+  return read()
+}
+
+/**
+ * The demo route, end to end: spawn in the Council courtyard, walk to Sky,
+ * talk to her, open her feature, come back.
+ *
+ * The property that matters here is the one that is easy to regress and
+ * invisible to a unit test: pressing E beside someone you walked to must not
+ * teleport you to their doorstep.
+ */
+test.describe('the demo route', () => {
+  test.beforeEach(async ({ page }) => {
+    await enterTownQuietly(page)
+  })
+
+  test('walk to Sky, talk, open Warm Cup, and come back', async ({ page }) => {
+    const avatar = () => page.evaluate(() => {
+      const a = document.querySelector<HTMLElement>('.stage .avatar')
+      return a ? { px: parseFloat(a.style.left), py: parseFloat(a.style.top) } : null
+    })
+
+    // Spawn is the paving below the Council planter.
+    expect(await avatar()).toEqual({ px: 49.8, py: 75 })
+
+    // West along the plaza, then north onto the café terrace.
+    await walkTo(page, 30, 74)
+    const arrived = await walkTo(page, 27.5, 60.6)
+    expect(arrived, 'should have reached the café terrace').not.toBeNull()
+
+    await expect(page.locator('.prompt')).toContainText(/Talk to Sky/i, { timeout: 10_000 })
+
+    // Pressing E here must not move the avatar.
+    const before = await avatar()
+    await page.keyboard.press('e')
+    await expect(page.getByRole('group', { name: 'Conversation' })).toBeVisible({ timeout: 10_000 })
+    expect(await avatar(), 'walking up to Sky then pressing E must not teleport').toEqual(before)
+
+    // Ambient routines hold while someone is talking.
+    expect(await page.evaluate(() =>
+      [...document.querySelectorAll('.cast.idle')].every((c) => c.classList.contains('hold')),
+    )).toBe(true)
+
+    // Through the greeting and into Sky's own feature.
+    const convo = page.getByRole('group', { name: 'Conversation' })
+    const yes = page.getByRole('button', { name: /^yes$/i })
+    for (let i = 0; i < 8; i += 1) {
+      if (await page.locator('.recovery-scene').isVisible().catch(() => false)) break
+      if (await yes.isVisible().catch(() => false)) await yes.click()
+      else if (await convo.isVisible().catch(() => false)) await convo.click()
+      await page.waitForTimeout(250)
+    }
+    await expect(page.locator('.recovery-scene')).toBeVisible({ timeout: 10_000 })
+
+    // And back out to the campus, standing where we left off.
+    await page.getByRole('button', { name: /leave activity|^leave$/i }).click()
+    await expect(page.locator('.stage')).toBeVisible({ timeout: 10_000 })
+    expect(await avatar()).toEqual(before)
+  })
+
+  test('travelling from the Town List still moves you', async ({ page }) => {
+    // The no-teleport rule must not have broken travel, which is the only way
+    // to reach places on the far side of town.
+    await page.getByRole('button', { name: /town list/i }).click()
+    await page.getByRole('dialog', { name: 'Town List' }).locator('.tl-row')
+      .filter({ hasText: 'Calm Corner' }).first().click()
+    await expect(page.evaluate(() => {
+      const a = document.querySelector<HTMLElement>('.stage .avatar')
+      return a ? { px: parseFloat(a.style.left), py: parseFloat(a.style.top) } : null
+    })).resolves.toEqual({ px: 69.5, py: 79 })
   })
 })
 
