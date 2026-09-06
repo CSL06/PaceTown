@@ -281,13 +281,20 @@ export default function Landing() {
               <strong>Create about {breathingMinutes} minutes of breathing room</strong>
               <span>Kai found {movers} flexible commitments. Nothing moves until you approve it.</span>
             </div>
+            {/* The primary action plays. A visitor previously had to pass
+                sign-up, a loading gate and a title screen before touching the
+                game, and nothing the app does well is visible until then.
+                `explore` signs in as a guest against the same save the account
+                later adopts, so nothing is lost by starting this way. */}
             <div className="lp-hero-actions" data-reveal data-reveal-index="3">
-              <Link className="lp-cta lp-cta-big" to={account ? '/town' : '/signup'}>
-                {account ? 'Continue today’s mission' : 'Start today’s mission'}
+              {account
+                ? <Link className="lp-cta lp-cta-big" to="/town">Continue today’s mission</Link>
+                : <button type="button" className="lp-cta lp-cta-big" onClick={explore}>
+                    Start today’s mission
+                  </button>}
+              <Link className="lp-ghost lp-ghost-big" to={account ? '/town' : '/signup'}>
+                {account ? 'Open the town' : 'Create an account'}
               </Link>
-              <button type="button" className="lp-ghost lp-ghost-big" onClick={explore}>
-                Explore the town — no account
-              </button>
             </div>
             <ul className="lp-trust" data-reveal data-reveal-index="4">
               <li>Free, no card</li>

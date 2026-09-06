@@ -11,7 +11,7 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'rea
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   emailProblem, hasAccounts, passwordProblem, passwordStrength,
-  signIn, signInWithGoogle, signUp,
+  currentSession, signIn, signInWithGoogle, signUp, upgradeGuest,
 } from './session'
 import { useAuth } from './AuthContext'
 import { useFocusTrap } from '../ui/useFocusTrap'
@@ -97,14 +97,25 @@ export default function AuthPage({ mode }: Props) {
 
     setBusy(true)
     setError(null)
+    /* Captured before the call, because after it there is no guest left to
+       ask about. */
+    const wasGuest = currentSession()?.account.guest === true
+
+    /* `upgradeGuest` converts the signed-in guest in place, keeping its id
+       and leaving no orphan account behind; it falls back to `signUp` when
+       there is no guest, so this is the correct call in both cases. The HUD
+       offers this as "Keep this progress", and creating a second account
+       alongside the guest is not what that promises. */
     const result = isSignup
-      ? await signUp({ name, email, password })
+      ? await upgradeGuest({ name, email, password })
       : await signIn(email, password)
     setBusy(false)
 
     if (!result.ok) { setError(result.error); return }
-    // A brand new account has no week yet; an existing one does.
-    navigate(isSignup ? '/welcome' : from, { replace: true })
+    /* A brand new account has no week yet, so it goes through onboarding. An
+       upgraded guest already has one — sending them to /welcome would walk
+       them through setting up a week they have been playing. */
+    navigate(isSignup && !wasGuest ? '/welcome' : from, { replace: true })
   }
 
   const finishGoogle = async (event: FormEvent) => {

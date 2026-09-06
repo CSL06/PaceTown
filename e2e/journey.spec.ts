@@ -133,8 +133,12 @@ test.describe('the auth guard', () => {
 
 test.describe('the demo path', () => {
   test('opens the town in one click with no account', async ({ page }) => {
+    /* The *primary* hero action plays. It used to lead to sign-up, which put
+       three gates between a visitor and anything the product does well. This
+       asserts the strong version: the first button on the page reaches the
+       town, without an account. */
     await page.goto('/')
-    await page.getByRole('button', { name: /explore the town/i }).click()
+    await page.getByRole('button', { name: /start today.s mission/i }).click()
 
     await expect(page).toHaveURL(/\/town/)
     // Past the loading gate and onto the title screen.
