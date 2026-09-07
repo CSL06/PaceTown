@@ -92,8 +92,8 @@ and every number I show is calculated from it."*
 
 ## Act 1 — The week, understood (Steps 1–2, ~1.5 min)
 
-*Goal: you're a student opening the app for the first time, and within two
-steps you can see your whole week as one honest number.*
+*Goal: hook the viewer in the first ten seconds — your week already has a
+number, and you're about to take control of it.*
 
 **Recording basics:** walk with `W` `A` `S` `D` or arrow keys — the avatar
 animates in the direction you walk — press `E` next to a glowing place to
@@ -108,10 +108,16 @@ them in that order — that is the take.
 Thursday at 103% in the title hook.
 
 > **ACTION** Press **Enter Campus Grove**.
-> **SAY** *"You made it. Take a breath before you look at any of it. Your
-> week is already waiting at Town Hall — one plain-language list."*
+> **SAY** *"Ever feel like your week is already booked before you even wake
+> up? That's the feeling this little town was built to fix. Your week has a
+> number — right there, 103%. It's not a judgement and it's not a score. It's
+> arithmetic. And in the next five minutes, I'm going to show you exactly
+> what to do about it."*
 > **ACTION** Click **Show me my week**. You land inside the Town Hall intake
-> panel — Step 2 happens here, no navigation needed.
+> panel.
+> **SAY** *"And notice — PaceTown doesn't throw a dashboard at you. It takes
+> you to Town Hall, where your whole week is typed out in plain words.
+> Because before you can fix a week, you have to actually see it."*
 
 **Dev note:** the intro targets a brand-new save: it points at the
 plain-language list, not the math, so the numbers' origin comes first. The
@@ -126,11 +132,17 @@ live from the seeded week, never typed in.
 > **ACTION** Point at the parse preview: **9 commitments, confidence 1.00,
 > and 3 visible assumptions** (e.g. "No deadline given for 'weekly groceries
 > 45 minutes' — treated as flexible this week").
-> **SAY** *"The parser never invents commitments, every assumption is shown,
-> and what I edited is what got saved — nothing happens silently."*
+> **SAY** *"Nine commitments — all pulled from one sentence you typed. And
+> look here: every guess the machine made is sitting right out in the open.
+> No hidden assumptions. No silent surprises. That's the whole deal — nothing
+> happens quietly in PaceTown."*
 > **ACTION** Click **Review as editable list**, change one row (laundry 30 →
 > 45 minutes), then click **Save these commitments**. Press `Esc` to step
 > back to the campus map.
+> **SAY** *"I just edited one thing — groceries get fifteen extra minutes —
+> and the whole week downstream will respect that. You're the editor of your
+> own schedule. PaceTown just does the bookkeeping. Now let's go make some
+> room."*
 
 **Dev note:** the seeded text parses into 9 commitments — fixed (lectures,
 commute, shift, club: 570 minutes) and flexible (everything else) — and
@@ -142,8 +154,8 @@ ranges, and surfaces every guess as an assumption.
 
 ## Act 2 — Make space, with consent (Step 3, ~1 min)
 
-*Goal: you're overloaded, so the town offers to rearrange the week — but you
-stay in charge of every change.*
+*Goal: show that a full week can get lighter — and that nothing moves until
+you say so.*
 
 ### Step 3 — Approve Kai's proposal
 
@@ -156,14 +168,20 @@ stay in charge of every change.*
 > form, weekly groceries, laundry — with ghost previews already on Saturday.
 > Fixed lectures, the café shift, and the club meeting sit **locked** with a
 > ⌑ badge; the ERD assignment is never offered (due tomorrow).
-> **SAY** *"Thursday 103% → 95% (Heavy), Saturday 10% → 18% and stays Open.
-> Nothing moved until I approved it. Dismissing the preview would have left
-> my week exactly as it was."*
+> **SAY** *"This is where most planners quietly give up on you. Not here.
+> Kai has already found three things that can safely move — the bursary form,
+> groceries, the laundry. And everything you actually have to keep — your
+> lecture, your shift — is locked. Visibly. Forever. Nothing gets guessed."*
 > **ACTION** Pick a destination day (Friday/Saturday/Sunday options), compare
 > the before/after loads, uncheck one move and watch Thursday's after-value
 > change live, then click **Approve 3 moves**.
-> **SAY** *"Or drag a flexible task to another day yourself — same consent
-> rule, fixed tasks never move."*
+> **SAY** *"Watch this: Thursday goes from 103% down to 95%. Saturday goes
+> from 10% to 18% — and stays completely open. We just gave Thursday back a
+> real slice of its day, without touching one thing you have to keep. And
+> nothing — nothing — moved until I pressed approve. That's consent, built
+> into the app. You stay the boss of your own week."*
+> **SAY** *"Or go fully manual: drag a task to another day yourself. Same
+> rule — fixed things never move, deadlines are always respected."*
 > **ACTION** Optional glance: open the **Backpack** — the load got lighter.
 > Press `Esc` back to the campus map.
 
@@ -176,8 +194,8 @@ assume the unedited seeded week.
 **→ Next:** Step 4 walks to the Library from the campus map.
 ## Act 3 — One checkpoint, one session (Steps 4–7, ~2.5 min)
 
-*Goal: one scary assignment becomes one small step, and you take it with
-company.*
+*Goal: turn the scariest assignment into one small, doable step — and prove
+that leaving and coming back loses nothing.*
 
 ### Step 4 — One question, one proposal
 
@@ -188,14 +206,20 @@ company.*
 > Thursday: a day switcher (‹ ›) and the day's unfinished commitments, three
 > to a page (*"Showing 1–3 of 6 unfinished commitments"* after the approval —
 > skip Act 2 and the same page shows 9). Pick the **ERD assignment**.
+> **SAY** *"Okay — here's the moment. The assignment you've been avoiding.
+> Let's make it boring. In the best possible way."*
 > **ACTION** On the summary card, choose **Something is getting in the way**,
 > then **What is making it difficult right now?** → choose ***I do not know
 > where to start*** (More choices reveals the rest). Mira proposes **one
 > checkpoint** — *"Start: Identify the entities and their attributes", 15
 > minutes, done means "a rough attempt exists"* — then click **Use this
 > step** (*"Your place is ready at the study desk"*).
-> **SAY** *"One question, one proposal, one finish line. She is not quoting
-> a textbook — she read my brief."*
+> **SAY** *"One question. What's actually in the way? Not the whole
+> assignment — just the reason it's scary. 'I don't know where to start.'
+> That's allowed. And Mira hands you exactly one step: identify the
+> entities. Fifteen minutes. Done means a rough attempt exists. One question,
+> one proposal, one finish line — that's the whole trick to starting big
+> work: make the first step so small you can't say no."*
 
 **Dev note:** the proposal comes from the local `taskGuidance` module — one
 task + blocker → one sensible first step, grounded in the pasted brief's
@@ -213,11 +237,16 @@ the list wears the badge *"You did this before — resume at your desk"*.
 > changed so far** and **Saved next action**, pre-filled and editable live —
 > a timer that follows the checkpoint's shape (count-down here; emptying
 > never completes work), a **scratchpad**, and **Ask Mira**.
+> **SAY** *"This is your desk now. One checkpoint, one finish line that tells
+> you exactly what done means. A timer that will never fail you — it just
+> counts; only you decide when it's done. Nothing here decides for you."*
 > **ACTION** Type a stuck point into **Ask Mira** ("Why does a many-to-many
 > relationship need another entity?") and press ask — she answers from your
 > task, checkpoint, and brief. Read one line of her answer aloud.
-> **SAY** *"One checkpoint, one timer that never decides anything, one
-> scratchpad — and help that reads my actual task, not a canned example."*
+> **SAY** *"Stuck? Ask Mira — in your own words. 'Why does a many-to-many
+> relationship need another entity?' And she answers from your task, your
+> checkpoint, your brief. Not a textbook. Your work. And every note you
+> write here is saved as you type — nothing can get lost."*
 
 **Dev note:** the trail fields write straight into the save on every
 keystroke, so nothing typed here is lost by navigating away; the Ask-Mira
@@ -230,11 +259,14 @@ next? and grounded in your task.
 **Where you are:** inside the session from Step 5.
 
 > **ACTION** Choose **Pause or record progress** → **Made some progress**.
+> **SAY** *"Here's the part I love. You don't have to finish to win."*
 > **ACTION** In the reflect panel, **What changed?** — type one line
 > ("Listed the core entities"). **What is the easiest next action?** — keep
 > *"Add the enrolment junction entity"*. Click **Save and stand up**.
-> **SAY** *"Partial progress earns 20 XP and the saved next action 15 more,
-> because in this town naming the next action* is *the success condition."*
+> **SAY** *"Partial progress — twenty XP for showing up, fifteen more for
+> naming the next step. Because in PaceTown, knowing exactly what to do next
+> is the success condition. Watch the card — it flips to 'take a short
+> reset'. The game already knows what you need next."*
 > **ACTION** Pause and watch the HUD quest card flip to *Take a short
 > reset*.
 
@@ -251,11 +283,16 @@ map, dock, and Council all follow the same shared rule.
 > and open the **study desk** again. The **Welcome back** panel shows the
 > work title, what changed last time, the saved next action, and minutes so
 > far — each on its own row — then click **Keep going**.
-> **SAY** *"Nothing about my place was lost — the note I typed, the next
-> action, the minutes. Coming back feels like being handed my own desk."*
+> **SAY** *"Now — the real test. Close it. Walk away. Come back. Welcome
+> back. There's your task, your note, your next action, your minutes.
+> Nothing lost, nothing to rebuild. It's like your desk kept your seat
+> warm."*
 > **ACTION** `Esc` to the map and point at the HUD resume card: task,
 > checkpoint, time so far, next action, and *"Last time: …"* — with Resume /
 > Edit plan / Something else.
+> **SAY** *"And even before you walk in, the card already tells you where you
+> left off — in your guardian's voice. That's what a calm week feels like:
+> you always know exactly where you are."*
 
 **Dev note:** the save holds checkpoint, notes, timer, and next action; the
 desk panel and the HUD card read the same recorded items, so both surfaces
@@ -264,8 +301,7 @@ agree.
 
 ## Act 4 — Recover both ways (Steps 8–9, ~1.5 min)
 
-*Goal: rest is part of the loop, on screen and off it — and pausing never
-costs you your place.*
+*Goal: rest is part of the loop — and it's never a reward you have to earn.*
 
 ### Step 8 — Ripples at the pond
 
@@ -275,8 +311,13 @@ costs you your place.*
 > reset** mid-session). Tap the pond a few times — ripples spread, petals
 > drift, a fish swims, flowers bloom. Toggle the breathing guide (inhale 4,
 > hold 2, exhale 6 — or hide it entirely).
-> **SAY** *"No score, no failure, and leaving early is also a valid ending."*
+> **SAY** *"Sometimes the smartest thing you can do is absolutely nothing.
+> No score. No failure. No timer breathing down your neck. Just ripples,
+> petals, and a minute that's completely yours. Even your breath gets a
+> gentle circle — and it never makes you hold or chase anything."*
 > **ACTION** Choose **Done for now → Lighter → Resume checkpoint**.
+> **SAY** *"And when you're ready — one tap, and you're back at your
+> checkpoint, exactly as you left it. Rest here never costs you your place."*
 
 **Dev note:** participation — not points, speed, or duration — completes the
 activity; the Lighter/Same/Not sure answer is a stored preference, never a
@@ -292,9 +333,10 @@ rewarded once, not farmed.
 > **ACTION** Go to the **Park → Pocket of Green**. Pick **open-window
 > observation** (three-step wizard: setting → how to confirm → how it went),
 > **self-confirm**, **Done**.
-> **SAY** *"Both paths earn identically — 20 XP on the first recovery,
-> nothing after. The system must never pay more for photographic proof than
-> for your word."*
+> **SAY** *"Take a real break — five minutes with something green. A window.
+> A plant. A photo. Your choice, your setting, your word. No proof required.
+> Your honesty is worth exactly as much as anyone's photo — that's not a
+> policy, it's a promise."*
 
 **Dev note:** the real-world twin of the pond — 5–10 minutes with something
 green via four settings (outside, window, indoor plant, image). An optional
@@ -305,7 +347,8 @@ only the first recovery pays.
 
 ## Act 5 — Memory and evidence (Steps 10–11, ~1 min)
 
-*Goal: keep a souvenir of the reset, then see the whole story written down.*
+*Goal: keep a souvenir and a record — proof that sustainable choices add
+up.*
 
 ### Step 10 — A private keepsake
 
@@ -315,8 +358,10 @@ only the first recovery pays.
 > policy → photo → generate → preview: choose **Create keepsake, discard
 > original**, tick the four privacy confirmations, **Generate**, approve the
 > preview, and place it in the **Recovery Garden**.
-> **SAY** *"A keepsake is a memory, never proof. A failed check would never
-> have blocked it, and a pretty result proves nothing."*
+> **SAY** *"And if you want a souvenir of that — a private pixel keepsake,
+> right here in your town. Your photo becomes art, and none of it is shared,
+> tracked, or used to prove anything. Because a memory shouldn't have to
+> prove itself."*
 
 **Dev note:** the photo is redrawn into pixels (stripping location data) and
 snapped to the town palette by a local filter — or drawn as a symbolic card
@@ -335,9 +380,13 @@ and `?` dots are first-timer aids.
 > reward, the recovery choice, the keepsake with its deletion state, and the
 > next action waiting for next time. Glance up at the HUD: XP, coins, level,
 > one garden plant grown, the Library fog eased.
-> **SAY** *"The town responds to sustainable choices — starting, asking for
-> help, replanning honestly, resting on purpose — never to streaks or hours.
-> That's PaceTown: find your pace, grow your place."*
+> **SAY** *"And at the end of the day, the whole story is written down for
+> you — the rebalance, the progress, the rest, the memory. Not a scoreboard.
+> A record. With one garden plant that grew because you chose well."*
+> **SAY** *"This is PaceTown. A town that grows when you take care of
+> yourself — not when you push past your limit. No streaks, no shame, no
+> guilt. Just a calmer way to get through the week. Find your pace. Grow
+> your place."*
 
 **Dev note:** the Journal is an automatic private timeline — no mood scores,
 no streaks, no missed-day shame; empty days say so plainly. Nothing needs
