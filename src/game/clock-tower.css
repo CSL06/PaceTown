@@ -107,7 +107,20 @@
   grid-template-columns: minmax(0, 1fr) minmax(260px, 330px); grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 10px 14px; padding: 18px; color: #273746;
   background: linear-gradient(rgba(255,248,226,.94), rgba(247,231,194,.97)),
-    url('/game/scenes/clock-tower/interior.webp') center / cover; overflow: auto; }
+    url('/game/scenes/clock-tower/interior.webp') center / cover; overflow: auto;
+  /* The board is a light-paper surface with light artwork, so every text
+     token it hands its children must stay dark in both themes. Pinning the
+     scene-kit tokens here keeps the title, day labels, task cards, Kai panel
+     and previews readable instead of inheriting light text in dark mode. */
+  --sk-panel: #fdf3dd;
+  --sk-raised: #fff9ec;
+  --sk-sunk: #f9efd8;
+  --sk-ink: #273746;
+  --sk-dim: #5b4a33;
+  --sk-faint: #7a6a4f;
+  --sk-accent-ink: #8a5a16;
+  --sk-good: #8a5a16;
+  --sk-on-accent: #17240f; }
 .clock-board-head { grid-column: 1 / -1; display: flex; align-items: start; gap: 20px; }
 .clock-board-head > div { flex: 1; }
 .clock-kicker { display: block; color: var(--sk-accent-ink); font-family: var(--pt-display);
