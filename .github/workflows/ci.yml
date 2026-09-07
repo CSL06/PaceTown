@@ -45,6 +45,12 @@ jobs:
       - name: Check CSS tokens
         run: npm run check:tokens
 
+      # An asset path built at runtime -- `url(/…/thing-${kind}.png)` -- names
+      # no file anywhere, so grep cannot tell you whether the file is dead.
+      # Four live atlases were deleted on exactly that false evidence.
+      - name: Check assets
+        run: npm run check:assets
+
       - name: Typecheck
         run: npm run typecheck
 

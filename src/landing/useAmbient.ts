@@ -23,6 +23,9 @@ const PREF_KEY = 'pacetown.ambient'
 /**
  * Drop a licensed loop here to use it instead of the generated score. Absent
  * by default — no error is shown to the visitor when it is missing.
+ *
+ * asset-optional: the repository deliberately ships no track, and the engine
+ * falls back to the synthesised score when this 404s.
  */
 const TRACK_SRC = '/audio/ambient.mp3'
 
