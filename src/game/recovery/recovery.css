@@ -73,7 +73,7 @@
 .ripple-leaf { --leaf-x:50%; --leaf-y:50%; --leaf-dx:0vw; --leaf-dy:0vh; position:absolute; left:var(--leaf-x); top:var(--leaf-y); width:clamp(42px,5vw,72px); aspect-ratio:1; transform:translate(-50%,-50%); filter:drop-shadow(2px 4px 2px rgba(12,71,75,.3)); transition:transform 1.9s cubic-bezier(.16,.7,.22,1),opacity 1.9s ease; animation:leaf-float 2.8s steps(3,end) infinite alternate; }
 .ripple-leaf.scattering,.ripple-leaf.cleared { transform:translate(calc(-50% + var(--leaf-dx)),calc(-50% + var(--leaf-dy))) rotate(38deg) scale(.72); opacity:0; animation:none; }
 .leaf-1,.leaf-4,.leaf-8,.leaf-12,.leaf-16{animation-delay:-.7s}.leaf-2,.leaf-6,.leaf-10,.leaf-14{animation-delay:-1.4s}.leaf-3,.leaf-7,.leaf-11,.leaf-15{animation-delay:-2.1s}
-.ripple-water-hit { position:absolute; z-index:3; inset:0; width:100%; height:100%; padding:0; border:0; background:transparent; cursor:grab; touch-action:none; }
+.pt-game .recovery-scene .ripple-water-hit { position:absolute; z-index:3; inset:0; width:100%; height:100%; min-height:0; padding:0; border:0; background:transparent; box-shadow:none; filter:none; clip-path:none; color:transparent; cursor:grab; touch-action:none; }
 .ripple-water-hit:active { cursor:grabbing; }
 .ripple-wave-animation { position:absolute; z-index:4; left:50%; top:44%; width:min(760px,74vw); aspect-ratio:3/4; transform:translate(-50%,-50%); filter:drop-shadow(0 0 8px rgba(255,249,185,.42)); }
 .ripple-lotus-bloom { position:absolute; z-index:5; left:50%; top:43%; width:clamp(300px,38vw,520px); aspect-ratio:3/4; transform:translate(-50%,-50%); filter:drop-shadow(0 12px 14px rgba(8,66,73,.3)); }
