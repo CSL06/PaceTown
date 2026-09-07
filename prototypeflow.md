@@ -1,7 +1,10 @@
 # PaceTown — Prototype Demo Flow
 
 A scripted, repeatable walkthrough that proves the system works end to end.
-One presenter, one browser, ~5 minutes. Every input below is **prefilled in the
+One presenter, one browser, ~7 minutes. Every step below has three parts:
+**Action** (click-by-click, starting exactly where the last step left you),
+**Script** (what to say while doing it), and **Why it works** (the dev-facing
+explanation for the operator). Every input below is **prefilled in the
 app already** (the seeded demo week's schedule and brief) — you only paste if
 you want to show the parser working from raw text; the reflect panel's
 *What changed* note and next action you type live.
@@ -86,10 +89,10 @@ And this assignment brief prefilled:
 Say this up front: *"Nothing here is hardcoded. The schedule is parsed live,
 and every number I show is calculated from it."*
 
-## Act 1 — The week, understood (1 min)
+## Act 1 — The week, understood (Steps 1–2, ~1.5 min)
 
-*Goal: you're a student opening the app for the first time, and within a minute
-you can see your whole week as one honest number.*
+*Goal: you're a student opening the app for the first time, and within two
+steps you can see your whole week as one honest number.*
 
 **How to move around (first-timer basics):** walk with `W` `A` `S` `D` or arrow
 keys — the avatar animates in the direction you walk — press `E` next to a
@@ -98,45 +101,55 @@ a phone, use the on-screen direction pad. Lost? Open the **Town List** — every
 single place in town is listed there, so you never have to find things by
 walking.
 
-1. Press **Enter Campus Grove**. Kai, the keeper of the Clock Tower, greets a
-   new player with the first-run intro: *"You made it. Take a breath before you
-   look at any of it. Your week is already waiting at Town Hall — one
-   plain-language list."* Choose **Show me my week** — the intro deliberately
-   leads new players to Town Hall first, before any numbers.
-   - **What just happened (the logic):** the intro is written for a brand-new
-     save: it points at the plain-language list, not at the math, so you see
-     where the numbers come from before you hear them. The title hook above
-     the button already tells the honest figure — *Thursday is at 103%* —
-     calculated live from the seeded week, never typed in.
-2. Open **Town Hall** (walk there or Town List). The parse preview shows
-   **9 commitments, confidence 1.00, and 3 visible assumptions** (for example,
-   "No deadline given for 'weekly groceries 45 minutes' — treated as flexible
-   this week").
-   - **What just happened:** the app parsed the seeded text into 9 commitments,
-     sorted them into fixed (lectures, commute, shift, club — 570 minutes that
-     consume your day directly) and flexible (everything else), and computed
-     Thursday: 570 fixed minutes plus 356 weighted flexible minutes over 900
-     waking minutes lands at **102.9%**. Over 100% simply means "more planned
-     than fits" — it is schedule guidance, and the app says so on screen. It
-     never calls it stress, and never calls *you* anything. The parsing itself
-     is a small local parser — no AI, no cloud — that splits sentences on
-     commas, recognizes keywords ("lecture" → time/fixed, "groceries" →
-     errands/flexible), reads clock ranges and durations, and guesses
-     deadlines from words like "tomorrow" and "next week". Every guess is
-     listed as an assumption instead of being hidden.
-   - Click **Review as editable list**, change one row (try laundry 30 → 45
-     minutes), then click **Save these commitments**. Notice the numbers
-     downstream would shift with your edit.
-   - **Say it:** *"The parser never invents commitments, every assumption is
-     shown, and what I edited is what got saved — nothing happens silently."*
+### Step 1 — Title → Town Hall
 
-## Act 2 — Make space, with consent (1 min)
+**You are here:** fresh save via `/reset` → `/game` → the title screen, Thursday
+at 103% in the title hook.
+**Action:** Press **Enter Campus Grove**. Read Kai's two intro lines, then
+choose **Show me my week**. You land inside the Town Hall intake panel — this
+is where Step 2 happens, no navigation needed.
+**Script:** *"You made it. Take a breath before you look at any of it. Your
+week is already waiting at Town Hall — one plain-language list."*
+**Why it works (dev notes):** the intro is written for a brand-new save: it
+points at the plain-language list, not at the math, so you see where the
+numbers come from before you hear them. The title hook above the button
+already tells the honest figure — *Thursday is at 103%* — calculated live
+from the seeded week, never typed in.
+**→ Next:** Step 2 continues inside Town Hall.
+
+### Step 2 — Save the parsed week
+
+**You are here:** inside the Town Hall intake panel from Step 1.
+**Action:** Point at the parse preview — **9 commitments, confidence 1.00,
+and 3 visible assumptions** (e.g. "No deadline given for 'weekly groceries
+45 minutes' — treated as flexible this week"). Click **Review as editable
+list**, change one row (laundry 30 → 45 minutes), then click **Save these
+commitments**. Press `Esc` to step back out to the campus map.
+**Script:** *"The parser never invents commitments, every assumption is
+shown, and what I edited is what got saved — nothing happens silently."*
+**Why it works (dev notes):** the app parsed the seeded text into 9
+commitments, sorted them into fixed (lectures, commute, shift, club — 570
+minutes that consume your day directly) and flexible (everything else), and
+computed Thursday: 570 fixed minutes plus 356 weighted flexible minutes over
+900 waking minutes lands at **102.9%**. Over 100% simply means "more planned
+than fits" — schedule guidance, never stress, never about *you*. The parser
+is small and local — no AI, no cloud — splitting sentences on commas,
+recognizing keywords ("lecture" → time/fixed, "groceries" →
+errands/flexible), reading clock ranges and durations, and guessing deadlines
+from words like "tomorrow" and "next week". Every guess is listed as an
+assumption instead of being hidden.
+**→ Next:** Step 3 walks to the Clock Tower from the campus map.
+
+## Act 2 — Make space, with consent (Step 3, ~1 min)
 
 *Goal: you're overloaded, so the town offers to rearrange the week — but you
 stay in charge of every change.*
 
-3. Enter the **Clock Tower** (the Clock Tower room on campus; the quest card
-   also routes you there). Walk to the **Week Board** — or talk to Kai, whose
+### Step 3 — Approve Kai's proposal
+
+**You are here:** on the campus map after Step 2 (commitments saved).
+**Action:** Enter the **Clock Tower** (walk in, or Town List → Clock Tower;
+the quest card also routes you there). Walk to the **Week Board** — or talk to Kai, whose
    speech offers the board directly. The board opens on Kai's consent proposal
    (auto-preview): three Thursday tasks are **softly outlined** — bursary form,
    weekly groceries, laundry — and their ghost blocks already appear on
@@ -146,151 +159,190 @@ stay in charge of every change.*
    Pick a destination day (Friday/Saturday/Sunday appear as options), compare
    the before/after loads, uncheck one move and watch Thursday's after-value
    change live — that's the preview recalculating — then click
-   **Approve 3 moves**.
-   - **What just happened (the logic):** the rebalancing engine ranked your
-     flexible tasks — lowest priority first, most deadline-slack first — and
-     simulated moving them until Thursday drops out of the Overloaded band.
-     The result is a *preview*: your real schedule is untouched until you
-     approve.
-   - **Manual alternative (worth one sentence):** *"or drag a flexible task to
-     another day yourself — same consent rule, fixed tasks never move."* The
-     same board is a drag-and-drop calendar: flexible tasks drag, fixed ones
-     don't, a move past a deadline is refused, and **Undo last move** is
-     always one click.
-   - **Say it:** Thursday **103% → 95% (Heavy)**, Saturday **10% → 18%** and
-     stays Open. *"Nothing moved until I approved it. Dismissing the preview
-     would have left my week exactly as it was."* (103% and 95% are the
-     board's rounded on-screen readings; precisely they are 102.9 → 94.6 —
-     Heavy either way you read it.)
-   - Numbers assume the seeded week, unedited. If you edited anything at Town
-     Hall, expect different figures — that is the parser working live, not the
-     demo breaking.
-   - Optional glance: open the **Backpack** — your load shown as carried items
-     with locked/flexible badges — and notice it got lighter. Workload as
-     luggage you can set down, not a grade.
+   **Approve 3 moves**. Optional glance: open the **Backpack** — your load
+   shown as carried items with locked/flexible badges — and notice it got
+   lighter. Press `Esc` back to the campus map.
+**Script:** *"Thursday 103% → 95% (Heavy), Saturday 10% → 18% and stays Open.
+Nothing moved until I approved it. Dismissing the preview would have left my
+week exactly as it was."* (103% and 95% are the board's rounded on-screen
+readings; precisely they are 102.9 → 94.6 — Heavy either way you read it.)
+Manual alternative in one sentence: *"or drag a flexible task to another day
+yourself — same consent rule, fixed tasks never move."*
+**Why it works (dev notes):** the rebalancing engine ranked your flexible
+tasks — lowest priority first, most deadline-slack first — and simulated
+moving them until Thursday drops out of the Overloaded band. The result is a
+*preview*: your real schedule is untouched until you approve.
+The same board is a drag-and-drop calendar underneath: flexible tasks drag,
+fixed ones never do, a move past a deadline is refused, and **Undo last move**
+is always one click. Numbers assume the seeded week, unedited — if you edited
+anything at Town Hall, expect different figures; that is the parser working
+live, not the demo breaking.
+**→ Next:** Step 4 walks to the Library from the campus map.
 
-## Act 3 — One checkpoint, one session (1.5 min)
+## Act 3 — One checkpoint, one session (Steps 4–7, ~2.5 min)
 
 *Goal: one scary assignment becomes one small step, and you take it with
 company.*
 
-4. Enter the **Library** (the Library room on campus; the quest card also
-   routes you there). Walk to Mira and press `E` — **Talk to Mira** — and her
-   open-work list opens on Thursday: a day switcher (‹ ›) and the day's
-   unfinished commitments, three to a page (*"Showing 1–3 of 6 unfinished
-   commitments"* after Act 2's approval — skip Act 2 and the same page shows
-   9). Pick the **ERD assignment**.
-   - **What just happened (the logic):** the Library is now a room you walk,
-     not a form you fill. Mira always starts from the real commitment list —
-     sorted by day, paged so it never becomes a wall — and the task you left
-     mid-flight wears its own badge: **"You did this before — resume at your
-     desk"**. Your place survives; the list just points at it.
-5. Her summary card makes the task concrete ("a 120-minute mental commitment
-   due tomorrow — the brief names *Identify the entities and their
-   attributes*"), then asks one short question: **What is making it
-   difficult right now?** Choose ***I do not know where to start*** (More
-   choices reveals the rest). Mira proposes **one checkpoint** — *"Start:
-   Identify the entities and their attributes", 15 minutes, done means "a
-   rough attempt exists"* — with two buttons: **Use this step** and
-   **Make it smaller** (halves the minutes, never below five).
-   - **What just happened (the logic):** the proposal comes from the
-     `taskGuidance` module — a local, offline guidance provider that turns
-     the one task plus the blocker into one sensible first step, grounded in
-     the deliverables of your pasted brief, not a canned example. Rough is
-     expected, and the size is always negotiable — but there is exactly one
-     step on the table, never a project plan.
-   - **Say it:** *"One question, one proposal, one finish line. She is not
-     quoting a textbook — she read my brief."*
-6. Click **Use this step** — *"Your place is ready at the study desk"* — and
-   walk to the **study desk**. The session is one checkpoint and nothing
-   else: **Done when** (the finish line), two visible trail fields — **What
-   changed so far** and **Saved next action**, pre-filled from your save and
-   editable live — a timer that follows the
-   checkpoint's shape (count-down here; it emptying never completes work —
-   the checkpoint simply stays open), a **scratchpad** for messy notes, and
-   **Ask Mira** — type the exact stuck point ("Why does a many-to-many
-   relationship need another entity?") and she answers from your task, your
-   checkpoint, and your brief. When you stop, two doors: **I'm finished…**
-   (this checkpoint only, or the whole task) or **Pause or record progress**
-   (made some progress / still stuck / need to stop for now). Either way the
-   reflect panel asks **What changed?** and **What is the easiest next
-   action?** — then **Save and stand up**.
-   - **What just happened (the logic):** partial progress earns 20 XP and
-     the saved next action 15 more, because in this town naming the next
-     action *is* the success condition — completed, partial, blocked, and
-     rescheduled are all valid endings. Watch the HUD quest card flip to
-     *Take a short reset* — its single destination is the Recover view:
-     work is banked, so the system foregrounds exactly one next thing
-     instead of five equal buttons — the map, the dock, and the Council
-     all follow the same shared rule.
-   - **Leave and come back:** the desk greets you with **Welcome back** —
-     the work title you are returning to, what changed last time, your saved
-     next action, minutes so far — each on its own row — and
-     **Keep going**. The HUD resume card carries the same ritual — task,
-     checkpoint, time so far, next action, and *"Last time: …"* in your
-     guardian's voice, with Resume / Edit plan / Something else. Nothing
-     about your place is ever lost.
+### Step 4 — One question, one proposal
 
-## Act 4 — Recover both ways (1 min)
+**You are here:** on the campus map after Step 3 (week rebalanced).
+**Action:** Enter the **Library** (walk in, or Town List → Library; the quest
+card also routes you there). Walk to Mira and press `E` — **Talk to Mira** —
+and her open-work list opens on Thursday: a day switcher (‹ ›) and the day's
+unfinished commitments, three to a page (*"Showing 1–3 of 6 unfinished
+commitments"* after Act 2's approval — skip Act 2 and the same page shows
+9). Pick the **ERD assignment**. Her summary card makes the task concrete,
+then asks one short question — **What is making it difficult right now?**
+Choose ***I do not know where to start*** (More choices reveals the rest).
+Mira proposes **one checkpoint** — *"Start: Identify the entities and their
+attributes", 15 minutes, done means "a rough attempt exists"* — then click
+**Use this step** (*"Your place is ready at the study desk"*).
+**Script:** *"One question, one proposal, one finish line. She is not quoting
+a textbook — she read my brief."*
+**Why it works (dev notes):** the Library is now a room you walk, not a form
+you fill. Mira always starts from the real commitment list — sorted by day,
+paged so it never becomes a wall — and the task you left mid-flight wears
+its own badge: **"You did this before — resume at your desk"**. Your place
+survives; the list just points at it.
+**→ Next:** Step 5 continues inside the Library with the same task selected.
+### Step 5 — Tour the session workspace
+
+**You are here:** the desk hotspot reads "Your place is ready" after Step 4.
+**Action:** Walk to the **study desk** (or press `E` beside it). Tour the
+workspace in 20 seconds: **Done when** (the finish line), two visible trail
+fields — **What changed so far** and **Saved next action**, pre-filled from
+your save and editable live — a timer that follows the checkpoint's shape
+(count-down here; it emptying never completes work — the checkpoint simply
+stays open), a **scratchpad** for messy notes, and **Ask Mira** — type the
+exact stuck point ("Why does a many-to-many relationship need another
+entity?") and she answers from your task, your checkpoint, and your brief.
+Read one answer line aloud, then stay in the session for Step 6.
+**Script:** *"One checkpoint, one timer that never decides anything, one
+scratchpad — and help that reads my actual task, not a canned example."*
+**Why it works (dev notes):** help arrives *inside* the work, from the
+`taskGuidance` answers grounded in your brief; the trail fields write
+straight into the save, so nothing typed here can be lost by navigating
+away.
+**→ Next:** Step 6 stops the session from inside this same workspace.
+
+### Step 6 — Save progress, bank the next action
+
+**You are here:** inside the session from Step 5.
+**Action:** Choose **Pause or record progress** → **Made some progress**.
+The reflect panel asks **What changed?** (type one line, e.g. "Listed the
+core entities") and **What is the easiest next action?** (keep *"Add the
+enrolment junction entity"*). Click **Save and stand up** — watch the HUD
+quest card flip to *Take a short reset*.
+**Script:** *"Partial progress earns 20 XP and the saved next action 15 more,
+because in this town naming the next action* is *the success condition."*
+**Why it works (dev notes):** completed, partial, blocked, and rescheduled
+are all valid endings — stopping honestly is rewarded, never punished. With
+work banked, the system foregrounds exactly one next thing instead of five
+equal buttons — the map, the dock, and the Council all follow the same
+shared rule.
+**→ Next:** Step 7 leaves and re-enters to prove nothing was lost.
+
+### Step 7 — Leave and come back
+
+**You are here:** session saved, quest card showing *Take a short reset*.
+**Action:** Press `Esc` out to the campus map, walk back into the **Library**,
+and open the **study desk** again. The desk greets you with **Welcome back**
+— the work title you are returning to, what changed last time, your saved
+next action, minutes so far, each on its own row — then **Keep going**.
+`Esc` back to the map and point at the HUD resume card: task, checkpoint,
+time so far, next action, and *"Last time: …"* in your guardian's voice,
+with Resume / Edit plan / Something else.
+**Script:** *"Nothing about my place was lost — the note I typed, the next
+action, the minutes. Coming back feels like being handed my own desk."*
+**Why it works (dev notes):** the save holds checkpoint, notes, timer, and
+next action; the desk and the HUD card read the same three recorded items,
+so both surfaces agree.
+**→ Next:** Step 8 walks to the Garden Pavilion from the campus map.
+
+## Act 4 — Recover both ways (Steps 8–9, ~1.5 min)
 
 *Goal: rest is part of the loop, on screen and off it — and pausing never
 costs you your place.*
 
-7. Go to the **Garden Pavilion** (or via **I need a reset** mid-session): tap
-   the pond a few times. Ripples spread, petals drift, a fish swims, flowers
-   bloom as you participate. Toggle the breathing guide (inhale 4, hold 2,
-   exhale 6 — or hide it entirely), then **Done for now → Lighter → Resume
-   checkpoint**.
-   - **What just happened (the logic):** participation — not points, speed, or
-     duration — completed the activity. Your Lighter/Same/Not sure answer is
-     stored as a preference that tunes future suggestions; it is never a health
-     score. Resuming restores your checkpoint, notes, and timer exactly. The
-     **first recovery of a run pays 20 XP; further pauses pay nothing** — rest
-     is rewarded once, not farmed.
-   - **Say it:** *"No score, no failure, and leaving early is also a valid
-     ending."*
-8. Go to the **Park → Pocket of Green**. Pick **open-window observation**
-   (three-step wizard: setting → how to confirm → how it went), **self-confirm**,
-   **Done**.
-   - **What just happened (the logic):** this is the real-world twin of the
-     pond — 5–10 minutes with something green, in four settings (outside,
-     window, indoor plant, image) so nobody is assumed able-bodied, outdoors,
-     or on camera. An optional photo is checked *on your device* for greenery
-     or daylight only — never location, identity, or mood — and an uncertain
-     result just asks you to confirm manually. A denied camera skips straight
-     to self-confirm. As with Ripples, only the first recovery pays.
-   - **Say it:** *"Both paths earn identically — 20 XP on the first recovery,
-     nothing after. The system must never pay more for photographic proof than
-     for your word."*
+### Step 8 — Ripples at the pond
 
-## Act 5 — Memory and evidence (30 sec)
+**You are here:** on the campus map after Step 7 (place intact, HUD card
+showing the resume ritual).
+**Action:** Go to the **Garden Pavilion** (walk in, or via **I need a
+reset** mid-session). Tap the pond a few times — ripples spread, petals
+drift, a fish swims, flowers bloom as you participate. Toggle the breathing
+guide (inhale 4, hold 2, exhale 6 — or hide it entirely), then **Done for
+now → Lighter → Resume checkpoint**.
+**Script:** *"No score, no failure, and leaving early is also a valid
+ending."*
+**Why it works (dev notes):** participation — not points, speed, or duration
+— completed the activity. Your Lighter/Same/Not sure answer is stored as a
+preference that tunes future suggestions; it is never a health score.
+Resuming restores your checkpoint, notes, and timer exactly. The **first
+recovery of a run pays 20 XP; further pauses pay nothing** — rest is
+rewarded once, not farmed.
+**→ Next:** Step 9 walks to the Park from the campus map.
+
+### Step 9 — Pocket of Green
+
+**You are here:** on the campus map after Step 8 (checkpoint resumed).
+**Action:** Go to the **Park → Pocket of Green**. Pick **open-window
+observation** (three-step wizard: setting → how to confirm → how it went),
+**self-confirm**, **Done**.
+**Script:** *"Both paths earn identically — 20 XP on the first recovery,
+nothing after. The system must never pay more for photographic proof than
+for your word."*
+**Why it works (dev notes):** this is the real-world twin of the pond —
+5–10 minutes with something green, in four settings (outside, window,
+indoor plant, image) so nobody is assumed able-bodied, outdoors, or on
+camera. An optional photo is checked *on your device* for greenery/daylight
+only — never location, identity, or mood — and an uncertain result just
+asks you to confirm manually. A denied camera skips straight to
+self-confirm. As with Ripples, only the first recovery pays.
+**→ Next:** Step 10 starts from Pocket's done state.
+
+## Act 5 — Memory and evidence (Steps 10–11, ~1 min)
 
 *Goal: keep a souvenir of the reset, then see the whole story written down.*
 
-9. Click **Turn it into a Keepsake** (from Pocket of Green's done state).
-   Follow the four-step wizard — policy → photo → generate → preview: choose
-   **Create keepsake, discard original**, tick the four privacy confirmations,
-   **Generate**, approve the preview, and place it in the **Recovery Garden**.
-   The step numbers and the `?` dot on every screen are first-timer aids —
-   mention the stepper, not the details.
-   - **What just happened (the logic):** your photo was redrawn into pixels
-     (which strips location data by construction), snapped to the town's color
-     palette by a local filter — or drawn as a symbolic card if you had no
-     photo. Nothing is placed without your preview approval, the original is
-     deleted exactly as you chose, and the photo earned *nothing extra*.
-   - **Say it:** *"A keepsake is a memory, never proof. A failed check would
-     never have blocked it, and a pretty result proves nothing."*
-10. Open the **Journal** (Post Office): it opens on a seven-day strip — pick
-    a day to filter its entries — then read the timeline aloud: the
-    rebalance with before/after values, the partial session with its reward,
-    the recovery choice, the keepsake with its deletion state — and the next
-    action, waiting patiently for next time. Empty days say so plainly;
-    there are no streaks to protect.
-    - Glance up: the HUD shows earned XP, coins, and level; one garden plant
-      has grown; the Library fog has eased.
-    - **Closing line:** *"The town responds to sustainable choices — starting,
-      asking for help, replanning honestly, resting on purpose — never to
-      streaks or hours. That's PaceTown: find your pace, grow your place."*
+### Step 10 — A private keepsake
+
+**You are here:** in Pocket of Green's done state after Step 9.
+**Action:** Click **Turn it into a Keepsake**. Follow the four-step wizard —
+policy → photo → generate → preview: choose **Create keepsake, discard
+original**, tick the four privacy confirmations, **Generate**, approve the
+preview, and place it in the **Recovery Garden**. The step numbers and the
+`?` dot on every screen are first-timer aids — mention the stepper, not the
+details.
+**Script:** *"A keepsake is a memory, never proof. A failed check would
+never have blocked it, and a pretty result proves nothing."*
+**Why it works (dev notes):** your photo was redrawn into pixels (which
+strips location data by construction), snapped to the town's color palette
+by a local filter — or drawn as a symbolic card if you had no photo.
+Nothing is placed without your preview approval, the original is deleted
+exactly as you chose, and the photo earned *nothing extra*.
+**→ Next:** Step 11 walks to the Post Office from the campus map.
+
+### Step 11 — Journal and closing
+
+**You are here:** on the campus map after Step 10 (keepsake placed).
+**Action:** Open the **Journal** (Post Office): the seven-day strip opens
+first — point at it, pick today to filter — then read the timeline aloud:
+the rebalance with before/after values, the partial session with its
+reward, the recovery choice, the keepsake with its deletion state — and the
+next action, waiting patiently for next time. Glance up: the HUD shows
+earned XP, coins, and level; one garden plant has grown; the Library fog
+has eased.
+**Script (closing line):** *"The town responds to sustainable choices —
+starting, asking for help, replanning honestly, resting on purpose — never
+to streaks or hours. That's PaceTown: find your pace, grow your place."*
+**Why it works (dev notes):** the Journal is an automatic private timeline —
+every rebalance, session, recovery, keepsake, and reward is written there
+with no mood scores, no streaks, no missed-day shame. Empty days say so
+plainly. Nothing needs reconstructing on return.
+**→ Next:** end of demo. For another take, open `/reset` and start over at
+Step 1.
 
 ## If the audience asks…
 
