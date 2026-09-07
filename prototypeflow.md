@@ -15,8 +15,9 @@ no scores, no guilt:
 > scary task into one small step → work with a guardian beside you → rest
 > on purpose → everything you did is written down for next time.
 
-1. Open `http://localhost:5173/game` (or press **Enter Campus Grove** from
-   the landing page). Kai greets you and — on a first run — walks you to
+1. Open `http://localhost:5173/game` (or press **Start today's mission** on
+   the landing page — the primary button plays immediately as a guest, no
+   account needed). Kai greets you and — on a first run — walks you to
    **Town Hall**. Your week is already typed there in plain language; press
    **Save these commitments**. The number on the HUD is calculated from it,
    never written in.
@@ -91,7 +92,8 @@ and every number I show is calculated from it."*
 you can see your whole week as one honest number.*
 
 **How to move around (first-timer basics):** walk with `W` `A` `S` `D` or arrow
-keys, press `E` next to a glowing place to enter it, `Esc` to step back out. On
+keys — the avatar animates in the direction you walk — press `E` next to a
+glowing place to enter it, `Esc` to step back out. On
 a phone, use the on-screen direction pad. Lost? Open the **Town List** — every
 single place in town is listed there, so you never have to find things by
 walking.
@@ -201,7 +203,9 @@ company.*
      quoting a textbook — she read my brief."*
 6. Click **Use this step** — *"Your place is ready at the study desk"* — and
    walk to the **study desk**. The session is one checkpoint and nothing
-   else: **Done when** (the finish line), a timer that follows the
+   else: **Done when** (the finish line), two visible trail fields — **What
+   changed so far** and **Saved next action**, pre-filled from your save and
+   editable live — a timer that follows the
    checkpoint's shape (count-down here; it emptying never completes work —
    the checkpoint simply stays open), a **scratchpad** for messy notes, and
    **Ask Mira** — type the exact stuck point ("Why does a many-to-many
@@ -220,7 +224,8 @@ company.*
      instead of five equal buttons — the map, the dock, and the Council
      all follow the same shared rule.
    - **Leave and come back:** the desk greets you with **Welcome back** —
-     what changed last time, your saved next action, minutes so far, and
+     the work title you are returning to, what changed last time, your saved
+     next action, minutes so far — each on its own row — and
      **Keep going**. The HUD resume card carries the same ritual — task,
      checkpoint, time so far, next action, and *"Last time: …"* in your
      guardian's voice, with Resume / Edit plan / Something else. Nothing
@@ -275,10 +280,12 @@ costs you your place.*
      deleted exactly as you chose, and the photo earned *nothing extra*.
    - **Say it:** *"A keepsake is a memory, never proof. A failed check would
      never have blocked it, and a pretty result proves nothing."*
-10. Open the **Journal** (Post Office) and read the timeline aloud: the
+10. Open the **Journal** (Post Office): it opens on a seven-day strip — pick
+    a day to filter its entries — then read the timeline aloud: the
     rebalance with before/after values, the partial session with its reward,
     the recovery choice, the keepsake with its deletion state — and the next
-    action, waiting patiently for next time.
+    action, waiting patiently for next time. Empty days say so plainly;
+    there are no streaks to protect.
     - Glance up: the HUD shows earned XP, coins, and level; one garden plant
       has grown; the Library fog has eased.
     - **Closing line:** *"The town responds to sustainable choices — starting,
@@ -293,7 +300,7 @@ costs you your place.*
 | What if I'm too tired to work? | Say *"watch this"* — Daily Briefing → low energy bends guidance; Council recommends **Recover**; Exit Quest at Home closes the day with the next action kept. |
 | Where is my data? | Settings or Home → **Export save (JSON)** / Delete local data. Local-first; photos optional, private, removable. |
 | Does it work on a phone? | Same flow at 390px: Town List drawer, thumb D-pad, bottom sheet. Reduced-motion and high-contrast in Home and the top bar. |
-| What proves the math? | `npm test` — 319 cases across 35 files pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
+| What proves the math? | `npm test` — 378 cases across 40 files pin the 103% Thursday, the bands, parity, and no-auto-complete rules. |
 
 ## Troubleshooting (live-demo insurance)
 
@@ -353,8 +360,9 @@ minutes, fixed, available, weighted demand, top contributors) and ambient art on
 the map (Library fog = mental load, fast clock = time pressure, parcels =
 errands, café crowd = social, garden shade = physical). Why it exists: pressure
 should be *felt* in the world, not just read in a table — but never as damage;
-the town is never punished. How to show it: open Daily Load, then step back to
-the map and point at the fog and parcels.
+the town is never punished. The town also knows the hour: lamps light from
+dusk onward (Quiet Mode leaves them dark). How to show it: open Daily Load,
+then step back to the map and point at the fog and parcels.
 
 ### Make space — reduce what can be reduced
 
