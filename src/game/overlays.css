@@ -68,7 +68,6 @@
 .dock-face img {
   width: 38px; height: 46px;
   object-fit: cover; object-position: center top;
-  image-rendering: pixelated;
   margin-top: 3px;
 }
 .dock-name {

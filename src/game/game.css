@@ -105,7 +105,7 @@
 .title-cast { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
   list-style: none; margin: 0; padding: 0; }
 .title-cast li { display: grid; justify-items: center; gap: 4px; width: 76px; }
-.title-cast img { width: 56px; height: auto; image-rendering: pixelated;
+.title-cast img { width: 56px; height: auto;
   border: var(--px-border) solid var(--px-ink); background: var(--pt-surface);
   clip-path: var(--px-clip); }
 .title-cast b { font-family: var(--display); font-size: 10px; color: var(--text); font-weight: 400; }
