@@ -244,7 +244,7 @@
 .lp-encounter { position: absolute; left: 65%; bottom: 116px; width: 250px; height: 250px; transform: translateX(-50%); }
 .lp-encounter-player, .lp-encounter-sky { position: absolute; bottom: 0; width: 64px; height: 96px; image-rendering: pixelated;
   filter: drop-shadow(4px 6px 0 rgba(5,9,13,.45)); transform: scale(1.7); transform-origin: bottom center; }
-.lp-encounter-player { left: 38px; background: url('/game/world/player-sheet.webp') 0 0 / 1200% 100% no-repeat; }
+.lp-encounter-player { left: 38px; background: url('/game/world/player-sheet.webp') 0 0 / 1600% 100% no-repeat; }
 .lp-encounter-sky { right: 38px; background: url('/game/world/cast-sheet.webp') 100% 0 / 500% 100% no-repeat; }
 .lp-encounter-name { position: absolute; right: 30px; bottom: 176px; padding: 4px 11px; color: var(--pt-text);
   background: var(--pt-sunk); border: 2px solid var(--px-ink); font: 11px var(--display); }
@@ -305,20 +305,20 @@
 .lt-cast.idle { animation: lt-breathe 3.4s ease-in-out infinite; }
 @keyframes lt-breathe { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-2px) } }
 
-.lt-avatar { position: absolute; top: 0; left: 0; background-size: 1200% 100%;
+.lt-avatar { position: absolute; top: 0; left: 0; background-size: 1600% 100%;
   z-index: 6; will-change: transform; }
 .lt-avatar.f-down { background-position-x: 0% }
-.lt-avatar.f-up { background-position-x: 27.27% }
-.lt-avatar.f-left { background-position-x: 81.81% }
-.lt-avatar.f-right { background-position-x: 54.54% }
-.lt-avatar.walking.f-down { animation: lt-wd .34s steps(2) infinite }
-.lt-avatar.walking.f-up { animation: lt-wu .34s steps(2) infinite }
-.lt-avatar.walking.f-left { animation: lt-wl .34s steps(2) infinite }
-.lt-avatar.walking.f-right { animation: lt-wr .34s steps(2) infinite }
-@keyframes lt-wd { from { background-position-x: 9.09% } to { background-position-x: 27.27% } }
-@keyframes lt-wu { from { background-position-x: 36.36% } to { background-position-x: 54.54% } }
-@keyframes lt-wl { from { background-position-x: 90.9% } to { background-position-x: 109.09% } }
-@keyframes lt-wr { from { background-position-x: 63.63% } to { background-position-x: 81.81% } }
+.lt-avatar.f-up { background-position-x: 26.67% }
+.lt-avatar.f-left { background-position-x: 80% }
+.lt-avatar.f-right { background-position-x: 53.33% }
+.lt-avatar.walking.f-down { animation: lt-wd .34s steps(3) infinite }
+.lt-avatar.walking.f-up { animation: lt-wu .34s steps(3) infinite }
+.lt-avatar.walking.f-left { animation: lt-wl .34s steps(3) infinite }
+.lt-avatar.walking.f-right { animation: lt-wr .34s steps(3) infinite }
+@keyframes lt-wd { from { background-position-x: 6.67% } to { background-position-x: 20% } }
+@keyframes lt-wu { from { background-position-x: 33.33% } to { background-position-x: 46.67% } }
+@keyframes lt-wl { from { background-position-x: 86.67% } to { background-position-x: 100% } }
+@keyframes lt-wr { from { background-position-x: 60% } to { background-position-x: 73.33% } }
 
 .lt-tag { position: absolute; left: 50%; top: -16px; transform: translateX(-50%);
   white-space: nowrap; background: rgba(12, 20, 28, .9); color: #EFE3CC;
