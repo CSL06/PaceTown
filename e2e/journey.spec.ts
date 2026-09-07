@@ -231,6 +231,62 @@ async function walkTo(page: Page, tx: number, ty: number, steps = 60) {
  * invisible to a unit test: pressing E beside someone you walked to must not
  * teleport you to their doorstep.
  */
+/**
+ * Text has to be visible, which is not the same as present.
+ *
+ * The Clock Tower hotspot labels were once rendered in literal white on a
+ * literal dark plate. A later change made the plate light, the two met in a
+ * merge, and the result measured 1.00:1 — white on white. Every test passed:
+ * the elements were in the DOM, had the right text, and were "visible" to
+ * every query Playwright offers. Only a human looking at the screen could
+ * tell, and only if they happened to open that room.
+ *
+ * So this reads the computed colours and does the arithmetic.
+ */
+function contrastIn(page: Page, selector: string) {
+  return page.evaluate((sel) => {
+    const luminance = (colour: string) => {
+      const [r, g, b] = colour.match(/[\d.]+/g)!.slice(0, 3).map(Number)
+      const channel = (v: number) => {
+        const c = v / 255
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+      }
+      return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+    }
+    const ratio = (fg: string, bg: string) => {
+      const a = luminance(fg)
+      const b = luminance(bg)
+      return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+    }
+    return [...document.querySelectorAll(sel)].flatMap((box) => {
+      const bg = getComputedStyle(box as HTMLElement).backgroundColor
+      return [...box.querySelectorAll('span, small, strong, b')].map((text) => ({
+        text: (text.textContent ?? '').trim().slice(0, 30),
+        ratio: ratio(getComputedStyle(text as HTMLElement).color, bg),
+      }))
+    })
+  }, selector)
+}
+
+test.describe('text you can actually read', () => {
+  test('the Clock Tower hotspot labels have real contrast', async ({ page }) => {
+    await enterTownQuietly(page)
+    await page.getByRole('button', { name: /town list/i }).click()
+    await page.getByRole('dialog', { name: 'Town List' }).locator('.tl-row')
+      .filter({ hasText: 'Clock Tower' }).first().click()
+    await expect(page.locator('.clock-hotspot').first()).toBeVisible({ timeout: 15_000 })
+
+    const measured = await contrastIn(page, '.clock-hotspot')
+    expect(measured.length).toBeGreaterThan(2)
+    for (const { text, ratio } of measured) {
+      // 4.5:1 is WCAG AA for body text. The failure this guards against
+      // measured 1.00:1, so the threshold is not the delicate part.
+      expect(ratio, `"${text}" is ${ratio.toFixed(2)}:1 against its own box`)
+        .toBeGreaterThanOrEqual(4.5)
+    }
+  })
+})
+
 test.describe('the demo route', () => {
   test.beforeEach(async ({ page }) => {
     await enterTownQuietly(page)

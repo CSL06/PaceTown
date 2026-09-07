@@ -68,9 +68,14 @@
 .clock-hotspot:hover, .clock-hotspot:focus-visible {
   background: var(--sk-raised); animation-play-state: paused;
   filter: drop-shadow(calc(var(--px-drop) * 2) calc(var(--px-drop) * 2) 0 var(--px-shadow)); }
-.clock-scene .clock-hotspot { color: #FFFFFF; }
-.clock-scene .clock-hotspot span { color: #FFFFFF; font-family: var(--pt-display); font-weight: 400; font-size: 13px; }
-.clock-scene .clock-hotspot small { color: rgba(255,255,255,.78); font-family: var(--pt-prose); font-size: 10px; }
+/* These were literal white, which was correct when the hotspot behind them was
+   a dark plate. The scene-kit conversion made the plate light, and the two
+   changes met in a merge: white on cream measured 1.00:1, so the labels were
+   invisible rather than merely low-contrast. Tokens instead of literals, so
+   the pair moves together and works in both themes. */
+.clock-scene .clock-hotspot { color: var(--sk-ink); }
+.clock-scene .clock-hotspot span { color: var(--sk-ink); font-family: var(--pt-display); font-weight: 400; font-size: 13px; }
+.clock-scene .clock-hotspot small { color: var(--sk-dim); font-family: var(--pt-prose); font-size: 10px; }
 .hotspot-board { left: 50%; top: 31%; }
 .hotspot-kai { left: 76%; top: 67%; padding-top: 5px; }
 .hotspot-door { left: 77%; top: 41%; }
