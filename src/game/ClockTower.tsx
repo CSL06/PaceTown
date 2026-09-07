@@ -389,11 +389,13 @@ export function ClockTower({ state, update, go, toast, onExit }: Props) {
         <span>Open Week Board</span><small>See every commitment clearly</small>
       </button>
 
-      <button className="clock-hotspot hotspot-kai" type="button"
-        onClick={() => visit('kai', () => setKaiOpen((open) => !open))}>
+      <div className="clock-kai-station">
         <span className="clock-kai-sprite" aria-hidden="true" />
-        <span>Talk to Kai</span><small>Ask what can safely move</small>
-      </button>
+        <button className="clock-hotspot hotspot-kai" type="button"
+          onClick={() => visit('kai', () => setKaiOpen((open) => !open))}>
+          <span>Talk to Kai</span><small>Ask what can safely move</small>
+        </button>
+      </div>
 
       <button className="clock-hotspot hotspot-door" type="button"
         onClick={() => visit('door', onExit)}>
