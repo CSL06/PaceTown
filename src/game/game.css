@@ -391,8 +391,11 @@
   width: min(860px, calc(100vw - 28px)); max-height: calc(100vh - 56px); overflow: auto;
   background: var(--panel); border: 1px solid var(--edge-hi); box-shadow: 0 26px 80px rgba(4,9,14,.7) }
 .sheet-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; background: var(--panel); border-bottom: 1px solid var(--edge) }
-.sheet-head h2 { font-size: 16px; margin-right: auto }
+  padding: 12px 16px; background: #18242E; color: #F1E6D2;
+  border-bottom: 1px solid rgba(239, 227, 204, .22) }
+.sheet-head h2 { font-size: 16px; margin-right: auto; color: #FFFFFF }
+.sheet-head .iconbtn { color: #F1E6D2; border-color: rgba(239, 227, 204, .35) }
+.sheet-head .iconbtn:hover { color: #FFFFFF; border-color: rgba(239, 227, 204, .6) }
 .sheet-body { padding: 16px }
 
 .eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint) }
