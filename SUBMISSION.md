@@ -222,7 +222,7 @@ Key screens from the running prototype.
 ![Library study room](assets/readme/library.gif)
 *Talk to Mira, choose from the open work list with resume badges, answer the blocker question, use one checkpoint proposal, then work at the study desk with timer, scratchpad, saved notes, and Ask Mira.*
 
-![Gentle Ripples water](assets/app-runtime-v1/game/recovery/backgrounds/gentle-ripples.png)
+![Gentle Ripples water](assets/readme/pond.gif)
 *Tap the pond to make ripples: petals drift, a fish swims, flowers bloom with participation. No score, no failure, no minimum time; leaving early is valid, and only the first recovery of a run pays.*
 
 ![Warm Cup ritual](assets/app-runtime-v1/game/recovery/backgrounds/warm-cup.png)
