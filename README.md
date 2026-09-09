@@ -63,12 +63,14 @@ Implemented:
 - Library room with Mira's open-work list, day navigation, task paging, blocker guidance, and one-checkpoint proposals
 - Pace Sessions with done definitions, timers, scratchpad, free-text contextual help, outcomes, and progress continuity
 - Welcome-back desk panel, open-work resume badge, and HUD resume ritual
-- Gentle Ripples, Pocket of Green, Firefly Stories, Chime Drift, Warm Cup, and Night Lanterns
+- Full-screen recovery scenes: Gentle Ripples, Pocket of Green, Firefly Stories, Chime Drift, Warm Cup, and Night Lanterns
 - Photo-safe Pocket verification with self-confirmation and manual fallback
 - Private Keepsakes with local pixel filtering or symbolic fallback
 - Journal, Future Mailbox, Backpack, Guardian Council, Recovery Garden, Settings, Shop, Quiet Mode, and High Contrast
-- Versioned local saves, JSON export, `/reset` demo reset, and production-only offline shell registration
-- **319 tests across 35 files**, with typecheck and production build passing
+- Versioned local saves, JSON export, `/reset` demo reset, production-only offline shell registration, and runtime error logging
+- Seven-day Journal strip with neutral empty days and day filtering
+- Dusk-responsive campus lamps and four-direction animated player movement
+- **378 tests across 40 files**, with lint, token checks, typecheck, and production build passing
 
 ## Guardian System
 
@@ -89,9 +91,9 @@ control of every plan and action.
 
 ### How Guardians Participate
 
-- **Before work:** the selected blocker routes the student to a relevant guardian; the student can override that default when another style of support is more useful.
-- **During work:** the active guardian remains available through contextual help modes such as Plan, Explain, Brainstorm, Review, Debug, and What next?
-- **When the student is stuck:** guardian actions perform concrete, reversible support — for example, splitting a checkpoint, shrinking its scope, drafting an outline into the scratchpad, starting a shared timer, or adding a gathering checklist.
+- **Before work:** the selected blocker or task intent routes the student to a relevant guardian and produces one editable checkpoint proposal.
+- **During work:** the active guardian remains available through contextual task guidance and the local help modes Plan, Explain, Brainstorm, Review, Debug, and What next?
+- **When the student is stuck:** the Library proposes one manageable checkpoint; the student can make it smaller, ask a task-specific question, pause, recover, or continue.
 - **When the student returns:** the active guardian summarizes the task, checkpoint, time spent, saved progress, and next action without missed-day messaging, streaks, or guilt.
 - **When pressures compete:** the Guardian Council combines the relevant specialties into one foreground recommendation while preserving alternative choices.
 
@@ -106,14 +108,14 @@ When a student says what is actually in the way, the plan follows the
 blocker to the guardian whose specialty matches it (implementation plan §9).
 The student may keep the routed guardian or switch to any other:
 
-| What Is in the Way | First Response | Guardian Action |
+| What Is in the Way | First Response | Current guardian support |
 | --- | --- | --- |
-| I do not know where to begin | Identify the smallest observable first action | Mira extracts requirements or creates an outline |
-| The task is too large | Reduce the checkpoint until it fits the time available | Kai splits or reschedules the remaining work |
-| I do not understand something | Identify the exact concept or question | Mira explains, quizzes, or builds a learning path |
-| I am missing materials | Produce a short gathering checklist | Goh gathers requirements and tracks missing items |
-| I have low capacity today | Offer a shorter session, low-effort action, or recovery first | Sol protects a break and reduces pressure |
-| I am worried it will not be good enough | Define a deliberately rough first version | Sky starts a low-pressure body-doubling session |
+| I do not know where to begin | Identify the smallest observable first action | Mira proposes a concrete first checkpoint |
+| The task is too large | Reduce the checkpoint until it fits the time available | The proposal can be made smaller before starting |
+| I do not understand something | Identify the exact concept or question | Mira answers inside the task session |
+| I am missing materials | Produce a short collection checklist | Goh's guidance names what to gather |
+| I have low capacity today | Offer a shorter session, low-effort action, or recovery first | Sol's recovery path stays available |
+| I am worried it will not be good enough | Define a deliberately rough first version | The checkpoint definition keeps quality pressure bounded |
 | Something else | Let the student describe it, or plan manually | No interpretation is imposed |
 
 ## Routes
@@ -295,13 +297,13 @@ The main game surfaces live in `src/game/`:
 - No external AI, cloud sync, Google Calendar, or server API is required.
 - Export and delete controls are available from Home/Settings.
 
-## Testing
+## Testing and Quality Checks
 
 ```powershell
 npm test
 ```
 
-The suite currently contains **319 passing tests across 35 files**. It covers
+The suite currently contains **378 passing tests across 40 files**. It covers
 the arithmetic and product rules, including:
 
 - Seeded workload calculations and load-band behavior
@@ -313,7 +315,24 @@ the arithmetic and product rules, including:
 - Local photo verification and Keepsake consent choices
 - Save migration/default behavior and demo reset
 - Clock Tower and Library room interactions
+- Full-screen recovery scenes, including pointer/keyboard activity and response completion
+- Seven-day Journal bucketing and neutral empty-day behavior
+- Landing, theme, error-log, loading, authentication, and UI accessibility behavior
 - Welcome-back continuity, resume cards, and current guardian flow
+
+Run the same checks used by CI:
+
+```powershell
+npm run lint
+npm run check:tokens
+npm run typecheck
+npm test
+npm run build
+```
+
+`npm run test:e2e` runs the Playwright suite when the browser test environment
+is installed. CI runs lint, typecheck, unit/component tests, and the production
+build on pushes and pull requests.
 
 ## Assets
 
