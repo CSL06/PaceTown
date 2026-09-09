@@ -1,6 +1,6 @@
-# **PaceTown** by [Team Name]
+# **PaceTown** by TEAM 1000011
 
-**Team:** [Member 1], [Member 2], [Member 3], [Member 4]
+**Team:** TAN HONG SHENG, HEW ZHI HENG, GOH SHENG KAI, CHUAH SHANG LOONG
 
 **Problem Statement:** Stress & Workload Manager
 
@@ -83,19 +83,55 @@ flowchart TB
 
 **UI Prototype:** [ Public Link. Check that it opens in an incognito window ]
 
-Key screens from the running prototype. *[Replace the artwork captions below with ordered screenshots from your demo run.]*
+Key screens from the running prototype. 
 
-![Campus Grove map](assets/app-runtime-v1/game/world/campus-daylight.webp)
+![Campus Grove map](assets/readme/main.gif)
 *The walkable town. Every place is reachable on foot or from the Town List; load shows as weather, not damage.*
 
-![Clock Tower planning room](assets/app-runtime-v1/game/scenes/clock-tower/interior.webp)
+![Clock Tower planning room](assets/readme/town%20clock.gif)
 *Kai's Week Board opens on a consent preview: softly outlined suggested moves, locked fixed events, before and after loads, and Approve or Dismiss. A manual drag and drop calendar sits underneath.*
 
-![Library study room](assets/app-runtime-v1/game/scenes/library/interior.png)
+![Library study room](assets/readme/library.gif)
 *Talk to Mira, choose from the open work list with resume badges, answer the blocker question, use one checkpoint proposal, then work at the study desk with timer, scratchpad, saved notes, and Ask Mira.*
 
-![Mira, guardian of Understand](assets/app-runtime-v1/game/portraits/mira.webp)
-*Mira (Library, Understand) handles brief interpretation, concept explanation, and checkpoint creation. Four more guardians cover Plan (Kai), Sustain (Sol), Accompany (Sky), and Complete (Goh).*
+## Guardian System
+
+Guardians are functional product guides. Each specializes in a different
+decision; they do not diagnose, judge, or pretend to be an AI homework
+replacement.
+
+<table>
+  <thead>
+    <tr><th>Guardian</th><th>Location</th><th>Role</th><th>What the student gets</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="assets/app-runtime-v1/game/portraits/mira.webp" width="64" alt="Mira" /><br /><strong>Mira</strong></td>
+      <td>Library</td><td>Understand</td>
+      <td>Brief interpretation, concept explanation, research organization, and a clear checkpoint.</td>
+    </tr>
+    <tr>
+      <td><img src="assets/app-runtime-v1/game/portraits/kai.webp" width="64" alt="Kai" /><br /><strong>Kai</strong></td>
+      <td>Clock Tower</td><td>Plan</td>
+      <td>Capacity framing, priority decisions, safe calendar moves, and before/after load previews.</td>
+    </tr>
+    <tr>
+      <td><img src="assets/app-runtime-v1/game/portraits/sol.webp" width="64" alt="Sol" /><br /><strong>Sol</strong></td>
+      <td>Garden / Park</td><td>Sustain</td>
+      <td>Smaller actions, protected breaks, equal recovery choices, and non-clinical capacity support.</td>
+    </tr>
+    <tr>
+      <td><img src="assets/app-runtime-v1/game/portraits/sky.webp" width="64" alt="Sky" /><br /><strong>Sky</strong></td>
+      <td>Café</td><td>Accompany</td>
+      <td>Quiet body-doubling-style presence, gentle check-ins, and low-pressure encouragement.</td>
+    </tr>
+    <tr>
+      <td><img src="assets/app-runtime-v1/game/portraits/goh.webp" width="64" alt="Goh" /><br /><strong>Goh</strong></td>
+      <td>Market</td><td>Complete</td>
+      <td>Material gathering, grouped errands, submission checks, and loose-end closure.</td>
+    </tr>
+  </tbody>
+</table>
 
 ## **4. What Makes It Different**
 
