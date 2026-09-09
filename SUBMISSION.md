@@ -29,6 +29,14 @@ Feature set:
 * Private Keepsakes with local pixel filter or symbolic fallback, Collection, Recovery Garden, Future Mailbox, and a week long Journal
 * Backpack, Daily Briefing, Town List, Settings, Shop, Quiet Mode, High Contrast, versioned saves, JSON export, and a reset demo shortcut
 
+### Who it serves
+
+General university students, especially those balancing classes with part time work, commuting, clubs, and errands, and students with different energy levels, access needs, and recovery preferences. The system never assumes the same capacity, schedule, social needs, or mobility for everyone: every recovery path has an indoor alternative, every place has a Town List equivalent, and every check in can be skipped.
+
+### Before and after this product
+
+Before: Thursday reads 103% and the student sees only a wall of tasks, so the assignment waits another day. After: the same Thursday reads 95% with consent, one checkpoint has a finish line, a guardian sits through the session, the note and next action are saved, and returning feels like being handed back your own desk.
+
 ## **2. Ideation & Process**
 
 ### **2.1 Ideas We Considered**
@@ -156,12 +164,48 @@ catalogue of disconnected features. Every dropped idea remains visible in
 the boards because it explains why the final scope is realistic for a
 hackathon prototype.
 
+#### User flow used during ideation
+
+```mermaid
+flowchart LR
+    A[Land as guest] --> B[See the week as one number]
+    B --> C[Move safe tasks with approval]
+    C --> D[Pick one checkpoint with Mira]
+    D --> E[Work the session]
+    E --> F[Save note plus next action]
+    F --> G[Recover or keep going]
+    G --> H[Return to the same desk]
+```
+
+#### 5 Whys chain behind the core loop
+
+```mermaid
+flowchart TB
+    W1[Why do students stall?] --> W2[The work has no visible first step]
+    W2 --> W3[The whole week looks like one wall]
+    W3 --> W4[No number explains what creates the pressure]
+    W4 --> W5[Planning tools list tasks but never touch fear or capacity]
+    W5 --> S[So: explain the number, shrink to one checkpoint, sit a guardian beside it]
+```
+
+#### Iteration log (from the build history)
+
+| Iteration | What changed | Why |
+| :---- | :---- | :---- |
+| Work panel message boxes became a walkable Library room | Same plan and checkpoints, now a place you enter with Mira, a desk, and a book | A room matches the campus metaphor; the student's place visibly survives |
+| Checkbox rebalance panel became the Clock Tower room plus Week Board | Same consent contract, now with a seven day board, manual drag and drop, and deadline guards | The proposal needed a visible week around it |
+| Fixed greeting counts became live engine counts | Kai's lines now read the actual proposed move count | One honest voice: spoken numbers must equal computed numbers |
+| Seeded demo notes became blank first run state | Notes clear on every new checkpoint | A welcome back moment must never show demo text as the student's own memory |
+| Added help dots, wizard steppers, and the Welcome back panel | First timer aids across every multi step flow | New users stalled without orientation; each addition answered a real stall |
+
 ### **2.3 Mentor Consultation**
 
 | Date | Mentor | Feedback Received | What Was Changed |
 | :---- | :---- | :---- | :---- |
 | [Date] | [Name] | [Feedback] | [Change made, or why it was respectfully declined] |
 | [Date] | [Name] | [Feedback] | [Change made, or why it was respectfully declined] |
+
+Log each session with its date, mentor, concrete feedback, and the resulting change. Feedback the team respectfully declined still counts: record the reason it did not fit the product promise.
 
 ## **3. Design & Prototype**
 
@@ -177,6 +221,12 @@ Key screens from the running prototype.
 
 ![Library study room](assets/readme/library.gif)
 *Talk to Mira, choose from the open work list with resume badges, answer the blocker question, use one checkpoint proposal, then work at the study desk with timer, scratchpad, saved notes, and Ask Mira.*
+
+![Gentle Ripples water](assets/app-runtime-v1/game/recovery/backgrounds/gentle-ripples.png)
+*Tap the pond to make ripples: petals drift, a fish swims, flowers bloom with participation. No score, no failure, no minimum time; leaving early is valid, and only the first recovery of a run pays.*
+
+![Warm Cup ritual](assets/app-runtime-v1/game/recovery/backgrounds/warm-cup.png)
+*Choose a drink, pour, stir, and sit by the window in an unruinable four step ritual with Sky keeping quiet company. Same contract as every recovery scene: no score and no wrong order.*
 
 ## Guardian System
 
@@ -269,3 +319,11 @@ flowchart TB
 Already built in this slice: intake and parsing, Daily Load and Load Weather, the Clock Tower Week Board with consent flow, the Library guided work loop with sessions and outcomes, welcome back continuity, all five recovery scenes, Pocket of Green with local photo checks, the keepsake pipeline, Journal, Mailbox, Backpack, Council, and Garden, settings and shop, accessibility, versioned saves, JSON export, reset, and the offline PWA shell.
 
 Explicitly out of scope: hosted authentication and multi device sync, IndexedDB or server backed repositories, live Google Calendar, cloud AI conversations, deep shop progression and production town upgrades, the full Recovery Garden catalog and long term social features, Android packaging, and production deployment infrastructure.
+
+**Resources and time**
+
+A four person student team built this slice with zero cost tooling: React, TypeScript, Vite, Vitest, Testing Library, Playwright, and static hosting, with all art generated in house or sourced from credited packs. Frontend, domain modeling, pixel art pipeline, and QA verification were covered inside the team. The scope above is deliberately one campus loop because that is what fits a hackathon window honestly; every deferred item has a named seam (storage adapter, guidance provider interface, data driven districts) so a follow up build starts from working code, not from scratch.
+
+**Where it can go next**
+
+The same loop scales without redesign: more student groups with different capacity profiles, additional districts sharing all data and progression, institution onboarding that imports a real week, and installable PWA distribution already in place. Each step reuses the consent, parity, and no shame contracts, so growth never requires weakening the product promise.
