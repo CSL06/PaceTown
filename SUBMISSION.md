@@ -47,30 +47,114 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 
 ### **2.2 Ideation Boards**
 
-*[Attach 1–2 board images here. Exported PNGs from your whiteboard tool are fine. Recommended: one problem tree and one first run user flow.]*
+The team explored the problem from four different perspectives before
+combining the ideas into one vertical slice. These boards intentionally show
+early uncertainty, discarded directions, and the decisions that survived.
 
-![Ideation board 1](ideation-board-1.png)
-*What it shows: [1–2 lines, such as how the team mapped accumulated student demands to town systems].*
+#### Board 1: Member 1, problem framing
 
-![Ideation board 2](ideation-board-2.png)
-*What it shows: [1–2 lines, such as the first run user flow from landing to the resume ritual].*
+**Focus:** Why do existing planners fail to help students start?
 
-The problem tree behind the design:
+```mermaid
+flowchart LR
+    A[Too much to do] --> B[Cannot see what creates pressure]
+    A --> C[Cannot find a first step]
+    A --> D[Loses context after interruption]
+    B --> E[Explainable Daily Load]
+    C --> F[One checkpoint]
+    D --> G[Saved next action]
+    H[Productivity scoreboard] --> X[Dropped: adds pressure]
+    I[Generic chatbot] --> Y[Dropped: ignores capacity]
+```
+
+**Decision:** keep the problem focused on accumulated pressure and lost
+context, not only assignment completion. This became the product loop:
+understand, make space, work, recover, return.
+
+#### Board 2: Member 2, world and interaction
+
+**Focus:** How can planning feel like a place rather than another dashboard?
 
 ```mermaid
 flowchart TB
-    P[Student overwhelm: too much, no starting point]
-    P --> C1[Unclear / oversized work]
-    P --> C2[Invisible total load]
-    P --> C3[No safe way to move things]
-    P --> C4[Lost context after breaks]
-    P --> C5[Rest feels like failure]
-    C1 --> S1[One checkpoint plus guardian]
-    C2 --> S2[Explainable Daily Load]
-    C3 --> S3[Consent previews]
-    C4 --> S4[Saved notes plus resume ritual]
-    C5 --> S5[Rewarded intentional rest]
+    A[Student workload] --> B[Campus world]
+    B --> C[Town Hall]
+    B --> D[Clock Tower]
+    B --> E[Library]
+    B --> F[Garden and Park]
+    G[Large open world] --> X[Dropped: too much walking]
+    H[Map only] --> Y[Dropped: poor accessibility]
+    C --> I[Town List]
+    D --> J[Week Board]
+    E --> K[Study desk]
+    F --> L[Recovery choices]
 ```
+
+**Decision:** keep the walkable pixel campus, but provide a Town List so
+every place has a direct keyboard and screen reader path. Each location was
+given one clear purpose and one understandable next action.
+
+#### Board 3: Member 3, planning and guidance
+
+**Focus:** How can the system give useful help without taking control?
+
+```mermaid
+flowchart LR
+    A[Real task] --> B[Blocker]
+    B --> C[Guardian specialty]
+    C --> D[One checkpoint]
+    D --> E[Definition of done]
+    E --> F[Student decides]
+    G[Automatic calendar changes] --> X[Dropped: no consent]
+    H[AI writes the assignment] --> Y[Dropped: removes agency]
+    I[Five equal recommendations] --> Z[Dropped: overloads choice]
+    F --> J[Save what changed]
+    J --> K[Resume ritual]
+```
+
+**Decision:** use blocker routing and deterministic task guidance to propose
+one editable checkpoint. The student can accept, make it smaller, pause,
+reschedule, or choose another direction. Guardians support decisions rather
+than replacing them.
+
+#### Board 4: Member 4, recovery and privacy
+
+**Focus:** How can recovery help without becoming another score system?
+
+```mermaid
+flowchart TB
+    A[Student needs a pause] --> B[Digital recovery]
+    A --> C[Real world recovery]
+    B --> D[Ripples and four mini games]
+    C --> E[Pocket of Green]
+    D --> F[No score or failure]
+    E --> G[Self confirm or optional photo]
+    G --> H[Same reward as self report]
+    I[Required camera proof] --> X[Dropped: privacy barrier]
+    J[Streaks and missed days] --> Y[Dropped: shame mechanic]
+    K[Photo based ranking] --> Z[Dropped: wrong incentive]
+```
+
+**Decision:** keep digital and real world recovery as equal paths. Photos are
+optional, checked locally for visible nature like greenery or daylight, and
+never used to prove location, identity, duration, mood, or quality.
+
+#### Synthesis: from four boards to one prototype
+
+```mermaid
+flowchart LR
+    A[Understand the week] --> B[Make space with consent]
+    B --> C[Choose one checkpoint]
+    C --> D[Work with a guardian]
+    D --> E[Recover without penalty]
+    E --> F[Return with context]
+    F --> C
+```
+
+The first build therefore prioritised one complete campus loop over a large
+catalogue of disconnected features. Every dropped idea remains visible in
+the boards because it explains why the final scope is realistic for a
+hackathon prototype.
 
 ### **2.3 Mentor Consultation**
 
