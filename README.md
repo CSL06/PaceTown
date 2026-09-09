@@ -22,12 +22,20 @@ happened for next time.
 
 > This repository contains a functional browser prototype. It does not require
 > a cloud backend, AI provider, or Google Calendar connection.
+>
+> Built as a hackathon vertical slice: one campus, one player, one complete
+> loop — designed so the judging story runs in under three minutes on real-task
+> progress.
 
 ## Contents
 
 - [Product Flow](#product-flow)
+- [The Problem](#the-problem)
+- [Product Promise](#product-promise)
 - [What Is Included](#what-is-included)
 - [Guardian System](#guardian-system)
+- [Places of Campus Grove](#places-of-campus-grove)
+- [Principles](#principles)
 - [Routes](#routes)
 - [Run Locally](#run-locally)
 - [Presenter Demo](#presenter-demo)
@@ -36,7 +44,7 @@ happened for next time.
 - [Quality](#quality)
 - [Assets](#assets)
 - [Project Documents](#project-documents)
-- [Scope](#scope)
+- [Platform & Scope](#platform--scope)
 
 ## Product Flow
 
@@ -72,6 +80,44 @@ PaceTown is not a productivity scoreboard. It has no streak pressure, missed-
 day messaging, health score, or automatic academic completion. A partial
 session, a realistic reschedule, a recovery choice, and stopping intentionally
 are all valid outcomes.
+
+## The Problem
+
+University stress is rarely caused by a single assignment. It accumulates
+from classes, deadlines and revision; part-time work, commuting, clubs and
+errands; unclear instructions and work that feels too large to start;
+difficulty estimating how long things take; context switching and competing
+priorities; low energy and insufficient recovery; and losing track of where
+to resume after an interrupted session.
+
+Existing tools each miss a piece: planners show the work but don't help a
+student begin it; focus timers measure time but don't clarify what to do;
+relaxation games provide a break but leave the responsibility untouched;
+general AI assistants can produce content but ignore capacity, scheduling
+pressure, continuity, and the student's need to remain in control. PaceTown
+connects these missing pieces — and is deliberately never pitched as "upload
+an assignment and let AI complete it."
+
+## Product Promise
+
+PaceTown helps students:
+
+1. **See pressure clearly** without turning it into a diagnosis.
+2. **Reduce avoidable pressure** through explainable, consent-based rebalancing.
+3. **Choose one manageable action** instead of facing the entire workload at once.
+4. **Get practical help while working** — planning, explanation, brainstorming, review, debugging, or quiet accompaniment.
+5. **Regulate pressure when needed** through short, non-competitive mini-games.
+6. **Preserve partial progress** and return through a clear next action.
+7. **Build a comforting town** through sustainable choices rather than relentless output.
+
+When recovery is the safest practical next action, PaceTown foregrounds
+recovery while preserving the student's choices to continue, shorten the
+task, reschedule, choose a different response, or decline.
+
+PaceTown is not a medical, therapy, or crisis-assessment product; not a
+leaderboard for wellbeing or output; never an automatic rearranger of a
+student's life; never a streak app; and never a tool that marks academic
+work complete because a timer ended or an answer was generated.
 
 ## What Is Included
 
@@ -128,6 +174,49 @@ Guardian routing follows the selected blocker or task intent. Guidance is
 local, deterministic, editable, and clearly separated from the student's own
 work. The Guardian Council combines relevant specialties into one foreground
 recommendation while preserving student choice.
+
+## Places of Campus Grove
+
+Every place is reachable on foot (walk + `E`) and from the Town List — nothing
+is pointer-only. Each place below names its resident guardian (where one
+resides), the surface it opens, its exact functions, and the product rule it
+demonstrates.
+
+| Place | Guardian | Opens | Function | Key rule |
+| --- | --- | --- | --- | --- |
+| Town Hall | — | Intake sheet panel | Type the week in plain language; paste an assignment brief; review the parse preview with confidence and visible assumptions; edit the commitment list; re-parse; save; extract deliverables | Nothing is saved until approved; nothing is interpreted silently |
+| Clock Tower | Kai | Walkable room + Week Board | Open the seven-day board; Ask Kai to rebalance with before/after preview; approve some, all, or none; pick a destination day; drag tasks manually with deadline guards; undo; talk to Kai | Nothing moves until explicitly approved |
+| Library | Mira | Walkable room scene | Talk to Mira for the open-work list by day; task summary; blocker question; one proposed checkpoint (use / make smaller); study-desk session with timer, scratchpad, and Ask Mira; finish vs outcome flows; welcome-back panel; open-work resume badge | Suggestions are never submitted work; consent at every step |
+| Recovery Pavilion | Sol | Recover sheet panel | All five recovery activities plus step-away-from-screen; Not now; post-recovery Journal/another-recovery; resume a paused session | No score; declining costs nothing; first recovery pays |
+| Recovery Garden | — | Garden sheet panel | Read growth stages fed by sustainable choices; recover again | Nothing wilts; absence removes nothing |
+| Sky's Tea Corner | Sky | Fullscreen Warm Cup | Choose a need and drink; pour; pick an ingredient; stir; take it to the window; close-out response or skip | No recipe can fail; no rush and no wrong order |
+| Market | Goh | Fullscreen Night Lanterns | Name a concern (or none); choose a symbol; light the lantern; place it; set it down with meaning; keep a phrase only by explicit choice | Words are optional and stay private |
+| Home | — | Home sheet panel | Quiet Mode; High contrast; capacity check-in; Exit Quest save-and-stop; export save (JSON); delete local data | No guilt message, no streak, nothing lost by being away |
+| Guardian Council | Rotating voices | Council sheet panel | Three pressure-based interpretations; one foregrounded recommendation; vote: work, rebalance, recover, gather, or choose-for-self | Proposes only; the bell never applies a schedule change |
+| Future Mailbox | — | Mailbox sheet panel | Write a next action or kind note; put it in the mailbox; read the waiting list | The same note twice is one note: history recorded, paid once |
+| Post Office | — | Journal sheet panel | Seven-day strip with per-day filtering; automatic timeline of rebalances, sessions, recoveries, keepsakes, rewards; empty-state link to Town Hall | No mood score, no streak, no missed-day messaging |
+| Backpack point | — | Backpack sheet panel | Locked/flexible table with minutes and weighted demand; bring an item into a session; move one through rebalancing | Carried, not self; the load never bursts |
+| Calm Corner | — | Calm sheet panel | All five recovery activities with zero prerequisites; muted audio; leaving early always valid | Rest needs no permission |
+| Park | — | Pocket sheet panel | Four settings (outside, window, indoor plant, image); self or photo confirm with camera fallback; done / partly / stop; recorded: keepsake, resume, schedule, recover-longer, return to town | Parity across all paths and confirmations |
+
+## Principles
+
+Merged from the vision and the implementation plan — every feature must satisfy all of these:
+
+1. **Support, never punish.** Missed quests remove no progress, break no streaks, damage no town.
+2. **Explain every score.** Students can see exactly which commitments created an overload warning.
+3. **Propose, never take control.** Rebalancing and keepsake placement require explicit approval.
+4. **Respect different capacities.** Onboarding creates personalized defaults that remain editable; energy bends guidance without hiding raw numbers.
+5. **Keep wellbeing private.** No public comparisons, leaderboards, mandatory proof, or photo advantage.
+6. **Make recovery flexible.** Quests can be replaced without penalty; rest needs no prerequisites.
+7. **Remain useful without AI.** Every assisted feature has a deterministic local fallback.
+8. **Remain accessible outside the map.** Every spatial interaction is mirrored in the Town List with keyboard, focus, contrast, and reduced-motion support.
+9. **Help with the work itself.** Every pressure insight leads to a practical next action, guided work, or a deliberate recovery choice.
+10. **Reward sustainable progress.** Starting, checkpoints, asking for help, realistic replanning, and intentional stopping — not raw hours or constant output.
+11. **Preserve academic agency.** The student sees, edits, and owns every plan and submitted artifact. Timers, recovery activities, and guardian suggestions never complete academic work.
+12. **Foreground recovery when capacity is low.** Recovery becomes the primary recommendation while continue, shorten, reschedule, and decline stay available.
+13. **Keep recovery paths equal.** Self-confirmation, optional photos, digital activities, and IRL activities never create reward advantages.
+14. **Preserve continuity.** Task, checkpoint, scratchpad, progress note, next action, and timer context survive return.
 
 ## Routes
 
@@ -200,6 +289,29 @@ Short version:
 6. Welcome Back → resume with task, note, next action, and elapsed time intact.
 7. Gentle Ripples or Pocket of Green → Keepsake → seven-day Journal.
 
+### Judging story
+
+The hackathon success loop, end to end on a real task in under three minutes:
+
+```text
+Student adds commitments across mental, time, physical, social, errand demands
+        ↓
+PaceTown calculates and explains daily load
+        ↓
+PaceTown foregrounds the safest practical response
+        ↓
+Make space by rebalancing / handle one task in a guided session / recover first
+        ↓
+The student explicitly chooses, edits, or declines the recommendation
+        ↓
+Partial progress and the next starting point are saved
+        ↓
+XP, coins, garden growth, and a calmer town reflect sustainable progress
+```
+
+The story must show progress on a real task — not only a changed schedule or
+a completed relaxation activity.
+
 ## Architecture
 
 ```mermaid
@@ -239,16 +351,6 @@ Important domain modules:
 | `regulation.ts` | Recovery catalogue and preference policy |
 | `photo.ts` / `keepsake.ts` | Local photo checks and privacy-aware memory creation |
 | `rewards.ts` | XP, coins, levels, and reward parity |
-
-## Product Guarantees
-
-- **Explainable numbers:** every load percentage has a deterministic formula.
-- **Explicit consent:** rebalance previews never mutate the schedule until approved.
-- **No automatic academic completion:** timers, recovery activities, and guardian suggestions never complete academic work.
-- **Equal recovery paths:** self-confirmation, optional photos, digital activities, and IRL activities do not create reward advantages.
-- **No shame mechanics:** no streaks, missed-day warnings, mood scores, or diagnosis.
-- **Continuity:** task, checkpoint, scratchpad, progress note, next action, and timer context survive return.
-- **Privacy by construction:** photos are optional, locally inspected, and never treated as proof of identity, location, duration, or mood.
 
 ## Data and Privacy
 
@@ -310,7 +412,18 @@ for source links, intended use, and license instructions.
 - [`DESIGN.md`](DESIGN.md) — visual and interaction design system
 - [`assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md`](assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md) — asset status and validation
 
-## Scope
+## Platform & Scope
+
+Responsive browser application, installable as a Progressive Web App, running
+fully testable locally before any deployment work. Built with React,
+TypeScript, and Vite; the town is a layered DOM/CSS scene rather than a full
+game engine. First implementation targets desktop and phone viewports with
+keyboard, touch, focus, contrast, and reduced-motion support throughout.
+
+Campus Grove is the only environment in the hackathon vertical slice;
+Coastal Commons and Night Market remain post-core progression goals. Seeded
+calendar data stands in for live integration; no cloud service is required
+for the local demonstration.
 
 The prototype intentionally leaves these production adapters out:
 
