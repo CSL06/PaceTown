@@ -1,19 +1,26 @@
 # PaceTown — Presentation Video Flow (record the live site)
 
-A scripted, repeatable guide for recording a **presentation video with the live
-website as your visual**. One presenter, one browser, one continuous take of
-roughly **4–5 minutes**. Every scene is written the same way: what you **do** on
-screen, what you **say** while doing it, and the little beat that hands the
-viewer smoothly into the next scene.
+A scripted guide for a **presentation video with the live website as your
+visual**. One presenter, one browser, one continuous take of roughly **5–6
+minutes**.
 
-The narration is deliberately warm and plain — it should sound like a friend
-showing you something, not a spec sheet. Its job is to make a brand-new viewer
-want to open the site and press the button themselves.
+This version is built for **two-phase recording**:
+
+- **Phase 1 — Screen.** Record the browser silently, following the numbered
+  **ACTIONS** in each scene. No talking. Just clean, slow clicks.
+- **Phase 2 — Voice.** Record the **VOICEOVER** separately, in your own voice.
+  It is written to sound like a person, not a spec sheet.
+- **Phase 3 — Edit.** Lay the voice track over the screen take. The numbered
+  actions are your edit points; each voiceover paragraph lines up with the
+  action group above it.
+
+The narration is deliberately warm and plain. Its job is to make a brand-new
+viewer want to open the site and press the button themselves.
 
 **Story spine of the whole video** (keep this in your head while you record):
 
 > *Your week is already overbooked before it starts → PaceTown turns it into one
-> honest number → moves what can safely move (only with your yes) → turns the
+> honest number → moves what can safely move, only with your yes → turns the
 > scariest task into one small step → lets you work with a guardian beside you →
 > lets you rest without losing your place → writes it all down so tomorrow is
 > easier. No streaks. No shame. Just a calmer way through the week.*
@@ -70,10 +77,10 @@ The whole demo relies on the **seeded example week** being fresh. Two ways:
 | Setting | Suggestion |
 |---|---|
 | Screen capture | 1080p (1920×1080), the browser window only, no taskbar clutter |
-| Window size | Keep the game stage tall; the pixel town looks best near-fullscreen. Do **not** capture at a tiny window — text gets unreadable |
+| Window size | Keep the game stage tall; the pixel town looks best near-fullscreen. Do **not** capture at a tiny window, text gets unreadable |
 | Mouse | Big or obvious cursor; move it slowly; hover before you click |
-| Audio | One clear mic; record narration in a second pass if your voice shakes live |
-| Pace | This is the #1 tip: **talk slower than feels natural**, pause after each click so viewers can follow |
+| Audio | **Two-phase:** record the screen silently first, then record the narration as a clean second pass. Editing the two together sounds far better than talking live |
+| Pace | Talk slower than feels natural, and pause after each click so viewers can follow |
 | Read the numbers | Say the percentage you *actually see* (this script uses ≈ for that reason). Do a practice run first, then re-record clean |
 | Captions | Adding burned-in captions later helps a lot; keep scenes short so captions are easy |
 | URL | If viewers should find you later, say the URL once in the opening and once at the end |
@@ -95,211 +102,200 @@ The whole demo relies on the **seeded example week** being fresh. Two ways:
 
 ## The take, scene by scene
 
-Format reminder: **ACTION** is what you do on screen, **SAY** is your narration
-(read it in your own voice, not word-for-word stiff), **BEAT** is the quiet
-moment/handoff into the next scene. Say and do in order; when in doubt, do the
-action first and *then* talk about it.
+Every scene has two parts:
+
+- **PART A — SCREEN (record silently).** Numbered actions, in order. Record
+  these once, with no narration.
+- **PART B — VOICEOVER (record separately).** Read it naturally, in your own
+  voice. Each paragraph lines up with the matching group of actions and becomes
+  your edit points.
 
 ---
 
 ### Scene 0 — Open on the living town · [0:00 → ~0:20]
 
-> **Narrator goal:** hook in the first ten seconds. No "hi my name is", no menus —
-> straight into the surprising idea: *your week already has a number.*
+> **Narrator goal:** hook in the first ten seconds. No "hi my name is", no menus.
+> Straight into the surprising idea: *your week already has a number.*
 
-**On screen:** the landing page at `/`. The little town is already moving on its
-own — the camera drifting, lamps and life flickering.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Let the landing page play for a few seconds untouched.
-- **SAY**
-  *"Thursday is already 103% full… and it's not even Thursday yet. Sound familiar?
-  That number up there is your whole week, turned into one honest reading — and
-  the tiny town in front of you was built to do something about it."*
-- **ACTION** Slowly move the cursor to the amber button **Start today's mission**
-  (hover, pause), then click.
-- **SAY**
-  *"This is PaceTown — a cozy pixel campus that helps you see what's really on your
-  plate, make room where you safely can, and get through the scary stuff one small
-  step at a time. And watch this — no account, no form, no onboarding maze. One
-  click and we're in."*
-- **BEAT** Let the town scene load and land before you talk again. This is the
-  "wow, it just played" moment — give it a half-second of silence.
+1. Start on the landing page at `/`. Let the little town move on its own for a
+   few seconds.
+2. Slowly move the cursor to the amber button **Start today's mission**. Hover,
+   pause, then click.
+3. Let the loading settle into the town title card.
+4. Stop. Hold on the title card.
+
+**PART B — VOICEOVER**
+
+> "Okay, this feeling you probably know. Your week is already full, and it's
+> only Monday. Up here, PaceTown reads it as one number. Thursday is sitting at
+> a hundred and three percent. Not a grade. Not a judgement. Just the math of
+> everything you already have planned.
+>
+> And this little town was built to help you do something about it. No sign-up,
+> no forms. I'll just press this button, and we're in."
 
 ---
 
 ### Scene 1 — Meet the town and Kai · [~0:20 → ~0:45]
 
 > **Narrator goal:** introduce the space as a *place* with helpers, not a
-> dashboard. Set up the idea that a real week is waiting for you.
+> dashboard. Set up the idea that a real week is already waiting.
 
-**On screen:** the in-game title card — PaceTown, the tagline, "Thursday is at
-103%", and the five guardians standing in a row.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Let the title card show. Point at the five guardian portraits.
-- **SAY**
-  *"Every one of these five is here to help with a different kind of problem — one
-  understands your work, one plans your time, one helps you rest, one keeps you
-  company, one closes loose ends. They're not pets and they're not judges — they're
-  guides. Your week is already in here, waiting."*
-- **ACTION** Click **Enter Campus Grove**.
-- **SAY** *"And there's Kai — he keeps the Clock Tower, and he watches the numbers
-  so you don't have to. On a first visit he doesn't hand you a dashboard — he walks
-  you to Town Hall first, so you can see the week itself before you see any math."*
-- **ACTION** Read Kai's lines as they appear; when the choice comes up, click
-  **Show me my week**.
-- **BEAT** The Town Hall intake opens. Do not talk over the transition — let the
-  viewer land in the room with you.
+1. On the title card, move the cursor along the five guardian portraits slowly.
+2. Click **Enter Campus Grove**.
+3. Let Kai's first-run dialogue appear. Read it on screen, then click
+   **Show me my week**.
+4. Let Town Hall open. Stop.
+
+**PART B — VOICEOVER**
+
+> "Meet the five of them. One helps you understand the work, one plans your
+> time, one gets you to rest, one keeps you company, and one ties up the loose
+> ends. They're not pets, and they're definitely not judges. They're guides.
+>
+> And there's the number again. Thursday, a hundred and three percent. Kai keeps
+> the Clock Tower. And on a first visit, he doesn't dump a dashboard on you. He
+> walks you to Town Hall first, so you actually see your week before you see any
+> math."
 
 ---
 
 ### Scene 2 — Town Hall: the week in plain words · [~0:45 → ~1:35]
 
-> **Narrator goal:** prove nothing is hardcoded and nothing happens in secret. The
-> schedule is typed in plain language, parsed live, and every guess is shown.
+> **Narrator goal:** prove nothing is hardcoded and nothing happens in secret.
+> The schedule is typed in plain language, parsed live, and every guess is shown.
 
-**On screen:** Town Hall intake — the week textarea already filled, the parse
-summary ("9 commitments · confidence 1.00"), the three visible assumptions.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Point at the text box; hover and read a phrase or two aloud as you
-  scan (Database lecture 9 to 12, ERD assignment due tomorrow 120 minutes…).
-- **SAY**
-  *"Here's the thing — I never filled in a spreadsheet. This whole week is one
-  sentence I typed. 'Database lecture from nine to twelve, ERD assignment due
-  tomorrow, ninety-minute commute, film club at five…' A parser reads it and turns
-  it into real commitments."*
-- **ACTION** Point at the bottom: *9 commitments, confidence 1.00*, then the
-  *Assumptions kept visible* list.
-- **SAY**
-  *"Nine commitments, full confidence. And look down here — three assumptions it
-  had to make, sitting right out in the open. Nothing in PaceTown happens quietly.
-  If the machine guesses, you see the guess."*
-- **ACTION** Click **Review as editable list**. Hover over a row.
-- **SAY**
-  *"And every single thing is now a row I own. I can change the time, the day,
-  the type, even remove things — you're the editor of your own week, PaceTown just
-  does the bookkeeping. I'll leave the numbers alone, because I want you to see
-  exactly where they come from."*
-- **ACTION** Click **Save these commitments**. The Understand panel opens:
-  **"Thursday is at 102.9%"** with the formula and the contributor table.
-- **SAY**
-  *"Saved. And now the honest part — here is exactly why Thursday is at 102.9%.
-  Fixed things like your lecture count once, at their real length. Flexible tasks
-  add a weighted demand — priority, effort, urgency. See the ERD assignment? 120
-  minutes, times 1.25 for priority, 1.2 for effort, 1.15 because it's due
-  tomorrow — that's roughly 207 weighted minutes. It's not a vibe and it's not a
-  judgement. It's arithmetic. Every number in this town is arithmetic you can read."*
-- **ACTION** Press `Esc` to step back onto the campus map.
-- **BEAT** Pause on the map. If Load Weather is visible, let it sit for a second —
-  it is your cue for the next line.
+1. Point at the week textarea; hover and scan a phrase or two.
+2. Point at the summary: *9 commitments, confidence 1.00*.
+3. Point at the *Assumptions kept visible* list.
+4. Click **Review as editable list**. Hover a row.
+5. Click **Save these commitments**. Let the Understand panel appear with
+   **"Thursday is at 102.9%"**.
+6. Slow the cursor along the formula row for the ERD assignment.
+7. Press `Esc` back to the map. Stop on the map.
+
+**PART B — VOICEOVER**
+
+> "So here's my whole week. I typed it as one sentence. 'Database lecture nine
+> to twelve, ERD assignment due tomorrow, ninety minute commute, film club at
+> five.' That's it. PaceTown read it and turned it into real commitments. Nine
+> of them. And see this? It had to assume three things, so it's telling me.
+> Those assumptions are right here, out in the open. Nothing gets hidden.
+>
+> And every line is editable. If I want to change a time, or move a day, I just
+> do. It's my week.
+>
+> Now I'll save it. And here's the part I actually care about. Thursday is at a
+> hundred and two point nine percent. Why? Fixed things like my lecture count
+> once, at their real length. Flexible stuff gets weighted by priority, effort,
+> and how soon it's due. My ERD assignment? A hundred and twenty minutes, times
+> one point two five, times one point two, times one point one five. Around two
+> hundred and seven weighted minutes. This isn't a vibe. It's arithmetic you can
+> read."
 
 ---
 
 ### Scene 3 — Make space, with your permission · [~1:35 → ~2:25]
 
-> **Narrator goal:** show that an overbooked week can get lighter — and that
+> **Narrator goal:** show that an overbooked week can get lighter, and that
 > nothing ever moves behind your back. This is the product's most distinctive idea.
 
-**On screen:** the campus map. Buildings glow; the HUD quest card points you to the
-Clock Tower.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Walk your character toward the **Clock Tower** (`W`/`A`/`S`/`D`, `E`
-  to enter — or use **☰ Town List → Clock Tower** and say "or the Town List, same
-  destination, nothing is pointer-only").
-- **SAY**
-  *"That's the Clock Tower — Kai's place. And it's where an impossible week starts
-  to breathe. The board is already waiting with a suggestion for us."*
-- **ACTION** Enter and reach the **Week Board**. Let Kai's proposal appear — three
-  tasks softly outlined as previews. Point at them: the bursary form, weekly
-  groceries, laundry — with their ghosted copies already sitting on Saturday.
-- **SAY**
-  *"Look at what Kai found. Three things on Thursday that can safely move — the
-  bursary form, groceries, the laundry. They're outlined as previews, not moved.
-  And the things you actually have to keep — your lecture, your café shift, the
-  film club — are locked, visibly, with a badge. Even the assignment? It's due
-  tomorrow, so Kai won't even offer it. Nothing gets guessed, nothing gets forced."*
-- **ACTION** Hover the destination picker (Saturday), pause over the
-  before/after numbers, then click **Approve 3 moves**.
-- **SAY**
-  *"Here's the moment of trust: Thursday goes from 103 percent down to about 95 —
-  we gave it back a real slice of its day. Saturday picks up a little and still
-  has room. And nothing — nothing — moved until I pressed approve. That's consent,
-  built into the software. You stay the boss of your own week."*
-- **ACTION** Optional quick glance: open the **Backpack** (it got lighter) then
-  `Esc` back to the map.
-- **BEAT** Let the map show again. The HUD now points toward the Library — your
-  cue. Walk toward it as you speak your next line.
+1. Walk the character to the **Clock Tower** (`W`/`A`/`S`/`D`, `E` to enter), or
+   use **☰ Town List → Clock Tower**.
+2. Reach the **Week Board**. Let Kai's proposal appear: three tasks softly
+   outlined as previews.
+3. Move the cursor across the three outlined tasks, then across the locked items.
+4. Hover the destination picker (Saturday), then pause over the before/after
+   numbers.
+5. Click **Approve 3 moves**. Let the new numbers land.
+6. Optional: open the **Backpack** briefly, then `Esc` back to the map. Stop.
+
+**PART B — VOICEOVER**
+
+> "This is the Clock Tower, and this is the idea I really want you to remember.
+> Kai has already found three things that can move. The bursary form, groceries,
+> the laundry. They're outlined, like a preview. Not moved.
+>
+> And everything you actually have to keep? Locked. The lecture, the shift, the
+> club. Even the assignment, because it's due tomorrow. Kai won't even offer it.
+>
+> Now watch. Thursday drops from a hundred and three down to about ninety five.
+> Saturday picks some up, and still has room. But nothing moved until I pressed
+> approve. That's consent, built into the software. You stay in charge of your
+> own week."
 
 ---
 
 ### Scene 4 — One question, one checkpoint · [~2:25 → ~3:05]
 
-> **Narrator goal:** turn the scariest task into something you can actually start.
-> This is where viewers recognize their own avoided assignment.
+> **Narrator goal:** turn the scariest task into something you can actually
+> start. This is where viewers recognize their own avoided assignment.
 
-**On screen:** the campus walk to the Library, then the Library's inner room and
-Mira.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Walk to the **Library** (or Town List → Library), approach **Mira**,
-  and press `E` / click **Talk to Mira**. Her open-work list opens on Thursday.
-- **SAY**
-  *"This is Mira — she keeps the Library, and she's brilliant at the thing most
-  planners ignore: actually starting. Here's my open work for Thursday. And there
-  it is — the assignment I've been avoiding all week. The ERD coursework. Let's
-  make it boring, in the best possible way."*
-- **ACTION** Pick the **ERD assignment**. On the summary card choose
-  **Something is getting in the way**, then choose the blocker **I do not know
-  where to start** (reveal more choices if needed).
-- **SAY**
-  *"One question. Not 'tell me your whole life' — just: what's actually in the way?
-  'I don't know where to start.' That's allowed. That's honest. And watch what she
-  does with it."*
-- **ACTION** Let Mira's proposal appear. Point at the checkpoint: *Identify the
-  entities and their attributes — 15 minutes, done means a rough attempt exists.*
-  Hover **Make it smaller** without clicking (mention it), then click
-  **Use this step**.
-- **SAY**
-  *"One checkpoint. Not the whole assignment — one step: identify the entities.
-  Fifteen minutes, and 'done' means a rough attempt exists. Not perfect. Not
-  submitted. A rough attempt. And if that still feels big, there's always 'make it
-  smaller' — it halves the minutes. Big scary work starts the same way every time:
-  you shrink the first step until you can't say no to it."*
-- **ACTION** Follow the prompt to your **study desk** ("Your place is ready").
-- **BEAT** Stop at the desk before clicking anything — the workspace reveal is
-  next.
+1. Walk to the **Library** (or Town List → Library). Approach **Mira** and press
+   `E` / click **Talk to Mira**.
+2. Pick the **ERD assignment** from the open-work list.
+3. On the summary card, choose **Something is getting in the way**.
+4. Choose the blocker **I do not know where to start**.
+5. Let Mira's proposal appear. Point at the checkpoint: *Identify the entities
+   and their attributes, 15 minutes, done means a rough attempt exists.*
+6. Hover **Make it smaller** without clicking, then click **Use this step**.
+7. Follow the prompt to the **study desk**. Stop at the desk.
+
+**PART B — VOICEOVER**
+
+> "Okay. The assignment I've been avoiding all week. Let's make it boring, in
+> the best possible way.
+>
+> This is Mira, and her whole job is getting you started. She doesn't ask for my
+> life story, just one question. What's actually in the way? For me, it's 'I
+> don't know where to start.' That's allowed.
+>
+> And look what she comes back with. One step. Identify the entities. Fifteen
+> minutes. And 'done' means a rough attempt exists. Not perfect. Not submitted. A
+> rough attempt. And if even that feels like too much, there's a button that
+> makes it smaller. Because that's how big scary work actually starts. You shrink
+> the first step until you can't say no to it."
 
 ---
 
-### Scene 5 — The study desk: work with a guardian beside you · [~3:05 → ~3:45]
+### Scene 5 — The study desk: a guardian beside you · [~3:05 → ~3:45]
 
-> **Narrator goal:** show the focused workspace and the help that arrives *inside*
-> the work — not in a separate app.
+> **Narrator goal:** show the focused workspace and the help that arrives
+> *inside* the work, not in a separate app.
 
-**On screen:** the study desk — the checkpoint with **Done when**, two trail
-fields, a timer, a scratchpad, and **Ask Mira**.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Press `E` at the desk / open the session. Tour the workspace slowly.
-- **SAY**
-  *"This is the whole game in one desk. Right here is my finish line — 'Done when: a
-  rough attempt exists.' Next to it, two fields that write themselves as I go:
-  what's changed so far, and the easiest next action. They save on every keystroke —
-  nothing I type here can get lost. There's a timer if I want one, a scratchpad for
-  thinking out loud… and that button, Ask Mira, for the exact moment I get stuck."*
-- **ACTION** Click **Ask Mira**, type a real stuck question:
-  *"Why does a many-to-many relationship need a junction entity?"* — then send it.
-  Read one or two lines of her answer aloud.
-- **SAY**
-  *"Stuck? I can just ask, in my own words. 'Why does a many-to-many relationship
-  need a junction entity?' And she answers from my task, my checkpoint, my brief —
-  not a canned tutorial. It's help that arrives inside the work, exactly where
-  you're stuck."*
-- **ACTION** Hover the **timer** and the **Pause or record progress** button but
-  do not click yet.
-- **SAY**
-  *"And here's my favorite part of the whole design: when the timer runs out, it
-  never marks anything done. Only I decide when something's done. A tool that
-  respects you like that — you don't find it every day."*
-- **BEAT** Small pause. Then move to stop the session — the next beat proves that
-  stopping honestly is a win, not a failure.
+1. Press `E` at the desk to open the session. Slowly move the cursor across:
+   **Done when**, the two trail fields, the timer, the scratchpad.
+2. Click **Ask Mira**. Type the question:
+   *"Why does a many-to-many relationship need a junction entity?"* Send it.
+3. Let her answer appear. Hold on it for a moment.
+4. Hover the **timer** and the **Pause or record progress** button, without
+   clicking. Stop.
+
+**PART B — VOICEOVER**
+
+> "Honestly, this one desk is the whole game. Right here is my finish line, in
+> plain words. Next to it, two little fields that save themselves as I type.
+> What's changed so far, and the easiest next action. Nothing I write here can
+> get lost. There's a timer too, if I want one.
+>
+> And here's the button I love. Ask Mira. Watch. 'Why does a many-to-many
+> relationship need a junction entity?' She answers from my task, my checkpoint,
+> my brief. Not a canned tutorial. Help that shows up right where you're stuck.
+>
+> And one more thing. When that timer runs out, it never marks anything done.
+> Only I can do that. A tool that trusts you like that is rare."
 
 ---
 
@@ -308,101 +304,105 @@ fields, a timer, a scratchpad, and **Ask Mira**.
 > **Narrator goal:** partial progress is a valid, rewarded ending. The viewer
 > learns they never have to finish to win.
 
-**On screen:** inside the session at the study desk.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Click **Pause or record progress**, then choose **Made some progress**.
-- **SAY** *"I haven't finished — and that's fine. Watch."*
-- **ACTION** In the reflect panel, type under **What changed?**:
-  *"Listed the core entities."* For the easiest next action, keep/draft
-  *"Draft the enrolment junction entity."*
-- **SAY**
-  *"This is what I actually got done, and — more importantly — the exact next
-  action, so future-me never has to figure out where to restart. Knowing what to do
-  next is the whole success condition."*
-- **ACTION** Click **Save and stand up**. Let the reward toast appear, then pause
-  and watch the HUD quest card flip to *Take a short reset*.
-- **SAY**
-  *"A reward for showing up and naming the next step — and look at the card: it
-  already knows the smartest thing to do next is a short reset. Not another task.
-  A reset. The game is telling me to rest on purpose."*
-- **BEAT** Let the card flip register on camera. This is a lovely "the system is
-  looking out for me" moment.
+1. Click **Pause or record progress**, then choose **Made some progress**.
+2. In the reflect panel, type under **What changed?**:
+   *"Listed the core entities."*
+3. In the next-action field, type: *"Draft the enrolment junction entity."*
+4. Click **Save and stand up**. Let the reward toast appear.
+5. Hold on the HUD quest card as it flips to *Take a short reset*. Stop.
+
+**PART B — VOICEOVER**
+
+> "So I haven't finished. And that's the point. I'll pick 'made some progress,'
+> and write down what actually changed, plus the one thing to do next. That's
+> the whole win condition here. Knowing what to do next.
+>
+> Save it. And look at the card. It doesn't shove another task at me. It says
+> the smartest next move is a short reset. The game is telling me to rest on
+> purpose."
 
 ---
 
 ### Scene 7 — Leave, come back, nothing is lost · [~4:15 → ~4:40]
 
-> **Narrator goal:** continuity. Walk away, return, and everything is exactly where
-> you left it — in the guardian's voice.
+> **Narrator goal:** continuity. Walk away, return, and everything is exactly
+> where you left it, in the guardian's voice.
 
-**On screen:** the campus, then the Library again.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Press `Esc` to the map, walk back into the **Library**, and return to
-  the **study desk**. The **Welcome back** panel appears.
-- **SAY**
-  *"Now the real test — close it, walk away, come back. There it is: my task, what
-  I changed last time, my saved next action, even my minutes. It's like my desk kept
-  my seat warm. I never have to rebuild anything."*
-- **ACTION** Click **Keep going** briefly, then `Esc` back to the map. Point at the
-  HUD resume card showing the same summary with *Last time: …* and Resume / Edit
-  plan / Something else.
-- **SAY**
-  *"And even before I walk in, the card on the map already tells me where I left
-  off — in Mira's voice. That's what a calm week feels like: you always know exactly
-  where you are."*
-- **BEAT** A beat of quiet. The HUD card offers recovery — that is your cue to
-  walk toward the garden.
+1. Press `Esc` to the map, walk back into the **Library**, and return to the
+   **study desk**. Let the **Welcome back** panel appear.
+2. Slowly move the cursor across: the work title, what changed, the next action,
+   the minutes.
+3. Click **Keep going** briefly, then `Esc` back to the map.
+4. Point at the HUD resume card, showing the same summary with *Last time: …*
+   and Resume / Edit plan / Something else. Stop.
+
+**PART B — VOICEOVER**
+
+> "Now the real test. I'll walk away. Close the whole thing. And come back.
+>
+> There it is. My task, what I changed last time, my next action, even my
+> minutes. It's like my desk kept my seat warm. I never have to rebuild
+> anything. And even before I open it, the card on the map tells me where I left
+> off, in Mira's voice. That's what I mean by a calmer week. You always know
+> exactly where you are."
 
 ---
 
 ### Scene 8 — Rest on purpose: Gentle Ripples · [~4:40 → ~5:05]
 
-> **Narrator goal:** rest is legitimate, never earned, never scored. One beautiful
-> in-app pause, then a clean return to the work.
+> **Narrator goal:** rest is legitimate, never earned, never scored. One
+> beautiful in-app pause, then a clean return to the work.
 
-**On screen:** the walk to the Garden Pavilion, then the pond.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Walk to the **Garden Pavilion** (or use the recovery prompt on the HUD
-  card). Open **Gentle Ripples**. Tap the pond a few times — ripples, petals, a
-  fish. Toggle the breathing guide (inhale 4 / hold 2 / exhale 6) and back.
-- **SAY**
-  *"Sometimes the smartest thing you can do is absolutely nothing. No score, no
-  combo meter, no failing — just ripples, petals, and a minute that's yours. Even
-  your breath gets a gentle circle if you want it. And if you'd rather skip straight
-  to resting, the Calm Corner keeps all five of these activities in one place — no
-  prerequisites, because you should never have to earn a break."*
-- **ACTION** Finish: choose **Done for now → Lighter → Resume checkpoint**.
-- **SAY**
-  *"And when you're ready — one tap, and I'm back at my checkpoint exactly as I left
-  it, notes and all. Rest here never costs you your place."*
-- **BEAT** Pause. Now step outside — the next scene happens in the real world, and
-  that contrast is the point.
+1. Walk to the **Garden Pavilion**, or use the recovery prompt on the HUD card.
+2. Open **Gentle Ripples**. Tap the pond a few times: ripples, petals, a fish.
+3. Toggle the breathing guide (inhale 4 / hold 2 / exhale 6) and back.
+4. Finish: choose **Done for now → Lighter → Resume checkpoint**.
+5. Let the session reappear, notes intact. Stop.
+
+**PART B — VOICEOVER**
+
+> "Sometimes the smartest thing you can do is nothing at all. No score. No
+> combo meter. Nothing to fail. Just ripples, petals, and a fish. Even your
+> breath gets a little circle, if you want it. And if five options feels better
+> than one, the Calm Corner keeps all of them together. No prerequisites. You
+> should never have to earn a break.
+>
+> And when I'm ready, one tap puts me right back at my checkpoint. Notes and all.
+> Resting here never costs you your place."
 
 ---
 
 ### Scene 9 — Rest in the real world: Pocket of Green · [~5:05 → ~5:30]
 
-> **Narrator goal:** recovery can happen away from the screen, and the app trusts
-> you. No photo is ever worth more than your word.
+> **Narrator goal:** recovery can happen away from the screen, and the app
+> trusts you. No photo is ever worth more than your word.
 
-**On screen:** the Park, then Pocket of Green's wizard.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Walk to the **Park**. Pick an open-window setting,
-  then choose **self-confirm** (your word, no photo), then **Done**.
-- **SAY**
-  *"Not every reset needs a screen. This is Pocket of Green — five minutes with
-  something actually green. Out the window, a plant, a quick walk — your choice.
-  And notice: it asks me to confirm on my word. No photo required, no proof, no
-  points for filming a leaf. Your honesty is worth exactly as much as anyone's
-  photo — that's not a policy, it's a promise."*
-- **ACTION** Briefly hover the optional photo step (but don't take one) so the
-  viewer sees it exists.
-- **SAY**
-  *"If you do want a photo, it's checked on your own device for 'is it green, is it
-  daylight' — nothing leaves your browser. And if you'd like a souvenir, there's
-  even a private pixel keepsake you can grow into your town."*
-- **BEAT** This scene ends gently — you can let the completed quest sit for a
-  second before the closing.
+1. Walk to the **Park**. Open **Pocket of Green**.
+2. Pick the **open-window** setting, then choose **self-confirm** (your word, no
+   photo), then **Done**.
+3. Briefly hover the optional photo step, without taking one.
+4. Stop on the completed quest.
+
+**PART B — VOICEOVER**
+
+> "Not every reset needs a screen. This is Pocket of Green. Five minutes with
+> something actually green. Out the window, a plant, a quick walk. Your call.
+>
+> And notice, it just takes my word for it. No photo required. No proof. Your
+> honesty is worth exactly as much as anyone's photo. That's not a policy. It's
+> a promise.
+>
+> And if you do want a photo, it's checked right here on your device. Nothing
+> leaves your browser. You can even turn it into a little pixel keepsake for
+> your town."
 
 ---
 
@@ -411,30 +411,29 @@ fields, a timer, a scratchpad, and **Ask Mira**.
 > **Narrator goal:** end on the record of the day and the promise of the product.
 > Land the tagline. Tell people where to try it.
 
-**On screen:** the Post Office / **Journal**.
+**PART A — SCREEN (silent)**
 
-- **ACTION** Open the **Journal** (Post Office). Let the seven-day strip show, then
-  read today's entries down the timeline: the rebalance with its before/after
-  values, the partial session and its reward, the recovery, the saved next action.
-- **SAY**
-  *"And at the end of the day, the whole story is written down for me — not a
-  scoreboard, a record. The rebalance, the progress, the rest, the next action
-  waiting for next time. No streaks, no missed-day guilt, no 'you should have done
-  more.' Just what happened, honestly."*
-- **ACTION** Glance up at the HUD: XP, coins, level — and if there's time, the
-  sprout in the Recovery Garden.
-- **SAY**
-  *"See that? The garden grew because I chose well today — because I made space,
-  started something real, and rested on purpose. That's the whole idea of
-  PaceTown: a town that grows when you take care of yourself — not when you push
-  past your limit."*
-- **ACTION** Pause, look into the camera (or hold on the town), and deliver the
-  closing line slowly.
-- **SAY**
-  *"If your week ever feels 103 percent full… this is the place to make some room.
-  No account, no card, no catch — your data stays in your browser, and it even
-  works offline. Find your pace. Grow your place. Try PaceTown today."*
-- **BEAT** Hold the final shot for 2–3 seconds before you stop recording.
+1. Open the **Journal** (Post Office). Let the seven-day strip show.
+2. Move the cursor down today's timeline: the rebalance with before/after
+   values, the partial session and its reward, the recovery, the saved next
+   action.
+3. Glance up at the HUD: XP, coins, level. If there's time, show the sprout in
+   the Recovery Garden.
+4. Settle on a calm final shot of the town. Hold for 2–3 seconds, then stop.
+
+**PART B — VOICEOVER**
+
+> "And at the end of the day, the whole thing is written down. Not a scoreboard.
+> A record. The rebalance, the progress, the rest, the next action waiting for
+> me. No streaks, no missed-day guilt. Just what actually happened.
+>
+> And the garden grew, because I chose well today. I made space. I started
+> something real. I rested.
+>
+> That's PaceTown. A town that grows when you take care of yourself. Not when
+> you push past your limit. So if your week ever feels a hundred and three
+> percent full, this is the place to make some room. Find your pace. Grow your
+> place."
 
 ---
 
@@ -447,7 +446,7 @@ Cut these in anywhere; each is a 10–15 second clip with its own voice-over.
   parse into commitments live. Say: *"You can try the parser right on the website
   before you even sign up."*
 - **Guardian cast beat.** Scroll the landing's guardian section and name all five.
-  Says the "no shame" promise out loud.
+  Say the "no shame" promise out loud.
 - **Offline dare.** Run `npm run build; npm run preview`, then disconnect Wi-Fi
   mid-town and reload — the app keeps working. Say: *"Installed like an app, runs
   with the Wi-Fi off — your week stays yours."*
@@ -466,57 +465,57 @@ Cut these in anywhere; each is a 10–15 second clip with its own voice-over.
 
 ### The pitch, in one breath
 
-*"Your week is too heavy → one honest number → move what can move (with your yes) →
-one small step → work with a guardian → rest without losing your place → it's all
-written down. No streaks, no shame, no guilt."*
+*"Your week is too heavy → one honest number → move what can move, with your yes
+→ one small step → work with a guardian → rest without losing your place → it's
+all written down. No streaks, no shame, no guilt."*
 
 ### The five guardians (only say what's true on screen)
 
 | Guardian | Place | One-liner for the video |
 |---|---|---|
 | Mira | Library | turns a scary task into one checkpoint you can start |
-| Kai | Clock Tower | finds what can safely move — and never moves it without your yes |
+| Kai | Clock Tower | finds what can safely move, and never moves it without your yes |
 | Sol | Garden & Park | makes rest legitimate and keeps scope human |
 | Sky | Café | quiet company while you work |
 | Goh | Market | closes the loose ends, errands, and final checks |
 
 ### Feature coverage checklist (tick these off as you record)
 
-| Scene | Feature shown | Referenced in |
-|---|---|---|
-| 0 | Live landing town, seeded mission, one-click play | `README.md` Routes & "the first button plays"; `src/landing/Landing.tsx` |
-| 1 | Guest entry, title hook, guardian cast | `README.md` (Routes); `src/game/Game.tsx` title |
-| 2 | Plain-language intake, assumptions, editable list, Daily Load formula | `README.md` "How Load Is Calculated"; `src/domain/parse.ts`, `workload.ts` |
-| 3 | Consent-first rebalance, locked items, week board | `README.md` (Clock Tower); `src/domain/rebalance.ts` |
-| 4 | Blocker routing → one checkpoint + done-when | `README.md` "Blocker Routing"; `src/domain/taskGuidance.ts` |
-| 5 | Pace Session: Done-when, autosave trail, Ask Mira, timer never completes | `README.md` "How a Pace Session Works"; `src/domain/guidance.ts` |
-| 6 | Partial progress is a valid, rewarded outcome | `README.md` principles "Rest is legitimate work" |
-| 7 | Welcome-back continuity and resume card | `README.md` demo flow step 8 |
-| 8 | Gentle Ripples + Calm Corner (no prerequisites) | `README.md` places; `src/domain/regulation.ts` |
-| 9 | Pocket of Green, self-confirm parity, private keepsake seed | `README.md` data/privacy; `src/domain/photo.ts` |
-| 10 | Journal, HUD progression, Recovery Garden | `README.md` places (Post Office, Recovery Garden) |
+| Scene | Feature shown |
+|---|---|
+| 0 | Live landing town, seeded mission, one-click play |
+| 1 | Guest entry, title hook, guardian cast |
+| 2 | Plain-language intake, assumptions, editable list, Daily Load formula |
+| 3 | Consent-first rebalance, locked items, week board |
+| 4 | Blocker routing to one checkpoint with a definition of done |
+| 5 | Pace Session: Done-when, autosaving trail, Ask Mira, timer never completes |
+| 6 | Partial progress is a valid, rewarded outcome |
+| 7 | Welcome-back continuity and the resume card |
+| 8 | Gentle Ripples and Calm Corner (no prerequisites) |
+| 9 | Pocket of Green, self-confirm parity, private keepsake seed |
+| 10 | Journal, HUD progression, Recovery Garden |
 
 ### Troubleshooting (live-recording insurance)
 
 - **Numbers look off (not ≈103)?** The save isn't fresh. Visit `/reset` and start
   the scene again, or use **Settings → Start the example week again**.
-- **Missed a click / misspoke?** Don't restart the whole video — scenes are short;
-  re-record just that scene and cut it in. The reset note above makes every scene
-  independently re-shootable.
-- **Camera/photo awkward on stage?** Use self-confirm — that *is* the point (equal
-  rewards), and say so.
+- **Missed a click or flubbed the voice?** Two-phase recording makes this easy:
+  re-shoot just the screen take for that scene, or re-read just that paragraph.
+  Every scene is independently re-shootable.
+- **Camera or photo awkward to demo?** Use self-confirm. That *is* the point
+  (equal rewards), and say so.
 - **Where does data live?** In the browser (`pacetown.game`), exportable as JSON
   from Home/Settings. Photos never leave the device.
 - **Question: "is it AI?"** Ask Mira answers from local templates grounded in your
-  task and brief — clearly labelled, deterministic, no cloud provider. Say that.
+  task and brief, clearly labelled, deterministic, no cloud provider. Say that.
 - **Question: "does it work offline?"** Yes, in the production build (`npm run
   build; npm run preview`), thanks to the cached offline shell. The dev server
   always serves fresh code and never registers the worker.
 - **Prove the math holds up?** The suite pins every number and promise:
-  `npm test` — hundreds of cases across the domain and game tests.
+  `npm test`, hundreds of cases across the domain and game tests.
 
 ---
 
 *This script pairs with `README.md` (product loop, routes, places) and
-`CAMPUS_GROVE.md` (play guide) for anything you want to explain deeper. Keep the
-recording natural, keep the pauses, and let the town do the charming.*
+`CAMPUS_GROVE.md` (play guide) for anything you want to explain deeper. Record the
+screen once, record the voice separately, and let the town do the charming.*
