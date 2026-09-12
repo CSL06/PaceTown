@@ -55,7 +55,7 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 
 ### **2.2 Ideation Boards**
 
-> 🎨 **Interactive Visual Ideation Board:** [Open Interactive HTML Board (`ideation-board.html`)](./ideation-board.html)  
+> 🎨 **Interactive Visual Ideation Board:** [Open Interactive Board (Live Webpage)](https://htmlpreview.github.io/?https://github.com/CSL06/PaceTown/blob/main/ideation-board.html)  
 > *(Click the interactive link to explore the live corkboard with animated gameplay anchors, guardian portraits, and full study citations)*
 
 ![PaceTown Living Ideation Board](docs/ideation-board.png)
