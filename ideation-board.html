@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PaceTown — Product Ideation &amp; Design Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Pixelify+Sans:wght@500;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --board-bg: #261D15;
+      --cork: #B8976C;
+      --cork-dark: #8F6D44;
+      --cork-grain: #7A5B36;
+      --paper: #FFFDF7;
+      --paper-warm: #FBF4E6;
+      --paper-sunk: #EFE4CE;
+      --ink: #1C2329;
+      --ink-dim: #4B5660;
+      --ink-faint: #788590;
+      --accent: #D69726;
+      --accent-ink: #7F5510;
+      --dropped: #C94A4A;
+      --dropped-bg: #FDF0F0;
+      --chosen: #3E8A54;
+      --chosen-bg: #EEF8F1;
+      --mentor: #2B577A;
+      --mentor-bg: #EEF5FB;
+      --research: #5C387A;
+      --research-bg: #F8F3FC;
+      --pin-red: #D94545;
+      --pin-gold: #E5B338;
+      --pin-blue: #3E82B8;
+      --pin-green: #48A366;
+      --pin-purple: #8B5BA8;
+      --tape: rgba(255, 245, 205, 0.72);
+      --shadow-board: 0 24px 60px rgba(12, 8, 4, 0.55);
+      --shadow-card: 0 10px 24px rgba(45, 30, 15, 0.22), 0 3px 6px rgba(45, 30, 15, 0.12);
+      --shadow-pin: 0 3px 6px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--board-bg);
+      background-image: 
+        radial-gradient(ellipse at 50% 10%, rgba(214, 151, 38, 0.18), transparent 70%),
+        repeating-linear-gradient(45deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 2px, transparent 2px, transparent 14px);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 28px 16px 80px;
+      min-height: 100vh;
+    }
+
+    /* Top Navigation & Status Banner */
+    .board-header {
+      max-width: 1480px;
+      margin: 0 auto 32px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 30px;
+      background: var(--paper);
+      border: 4px solid var(--ink);
+      box-shadow: 8px 8px 0px var(--ink), var(--shadow-board);
+      position: relative;
+    }
+
+    .board-header::before, .board-header::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      width: 100px;
+      height: 28px;
+      background: var(--tape);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      border-left: 2px dashed rgba(0,0,0,0.15);
+      border-right: 2px dashed rgba(0,0,0,0.15);
+      transform: rotate(-3deg);
+    }
+    .board-header::before { left: 40px; }
+    .board-header::after { right: 40px; transform: rotate(4deg); }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-icon {
+      width: 54px;
+      height: 54px;
+      background: var(--accent);
+      border: 3px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      display: grid;
+      place-items: center;
+      font-family: 'Silkscreen', monospace;
+      font-size: 26px;
+      font-weight: 700;
+      color: #FFF;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-family: 'Silkscreen', monospace;
+      font-size: clamp(22px, 2.8vw, 32px);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--accent-ink);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 3px;
+    }
+
+    .header-metadata {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .meta-chip {
+      background: var(--paper-warm);
+      border: 2px solid var(--ink);
+      box-shadow: 2px 2px 0 var(--ink);
+      padding: 7px 13px;
+      font-size: 11.5px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--ink-dim);
+    }
+    .meta-chip b { color: var(--ink); font-weight: 600; }
+
+    .launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #FFF;
+      font-family: 'Silkscreen', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 2.5px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .launch-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 var(--ink);
+      background: #E5A32E;
+    }
+    .launch-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    /* Corkboard Canvas */
+    .corkboard {
+      max-width: 1480px;
+      margin: 0 auto;
+      background-color: var(--cork);
+      background-image: 
+        radial-gradient(var(--cork-dark) 15%, transparent 16%),
+        radial-gradient(var(--cork-grain) 15%, transparent 16%);
+      background-size: 40px 40px, 60px 60px;
+      background-position: 0 0, 20px 20px;
+      border: 16px solid #452F1A;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.55), var(--shadow-board);
+      border-radius: 8px;
+      padding: 44px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 52px;
+      position: relative;
+    }
+
+    /* Section Banner */
+    .board-section {
+      position: relative;
+    }
+
+    .section-title-tape {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--tape);
+      padding: 9px 26px;
+      border-left: 5px solid var(--accent);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      transform: rotate(-0.5deg);
+      margin-bottom: 24px;
+    }
+
+    .section-title-tape h2 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 20px;
+      color: #2F2113;
+      letter-spacing: 0.04em;
+    }
+
+    .section-title-tape .pill {
+      background: #2F2113;
+      color: #FFF;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Pinned Card Elements */
+    .pin {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      box-shadow: var(--shadow-pin);
+      z-index: 10;
+    }
+    .pin::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+    }
+    .pin.red { background: var(--pin-red); }
+    .pin.gold { background: var(--pin-gold); }
+    .pin.blue { background: var(--pin-blue); }
+    .pin.green { background: var(--pin-green); }
+    .pin.purple { background: var(--pin-purple); }
+
+    .tape-corner {
+      position: absolute;
+      top: -10px;
+      right: 18px;
+      width: 64px;
+      height: 22px;
+      background: var(--tape);
+      transform: rotate(6deg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.14);
+      z-index: 5;
+    }
+
+    /* 1. PROBLEM TREE & GUARDIAN MINDMAP */
+    .problem-tree-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+    @media (max-width: 1100px) {
+      .problem-tree-grid { grid-template-columns: 1fr; }
+    }
+
+    .root-problem-card {
+      background: var(--paper-sunk);
+      border: 3px solid var(--ink);
+      box-shadow: 5px 6px 0 rgba(40,25,10,0.35);
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      transform: rotate(-1deg);
+    }
+
+    .root-problem-card h3 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 16px;
+      color: var(--dropped);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .root-problem-card p {
+      font-size: 13px;
+      color: var(--ink-dim);
+      line-height: 1.55;
+    }
+
+    .five-whys {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--ink-dim);
+      text-align: left;
+      font-size: 11.5px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--ink-dim);
+      line-height: 1.6;
+    }
+    .five-whys span { color: var(--dropped); font-weight: 600; }
+
+    .branches-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .guardian-branch-card {
+      background: var(--paper);
+      border: 2.5px solid var(--ink);
+      box-shadow: 4px 5px 0 rgba(40,25,10,0.3);
+      padding: 16px 14px;
+      position: relative;
+      transition: transform 0.15s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .guardian-branch-card:hover { transform: translateY(-3px); }
+
+    .guardian-branch-card.kai { border-top: 6px solid #D08A39; }
+    .guardian-branch-card.mira { border-top: 6px solid #6D8EB0; }
+    .guardian-branch-card.sky { border-top: 6px solid #6D9B70; }
+    .guardian-branch-card.sol { border-top: 6px solid #B9788D; }
+    .guardian-branch-card.goh { border-top: 6px solid #9B8060; }
+
+    .guardian-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .guardian-meta img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      object-position: top center;
+      border: 2px solid var(--ink);
+      background: var(--paper-warm);
+      image-rendering: pixelated;
+    }
+
+    .guardian-meta h4 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 13.5px;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .guardian-meta small {
+      font-size: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .friction-box {
+      background: #FFF5F5;
+      border-left: 3px solid var(--dropped);
+      padding: 8px 10px;
+      font-size: 11.5px;
+      color: #8C2C2C;
+      margin-bottom: 10px;
+      line-height: 1.45;
+    }
+    .friction-box b { font-weight: 600; display: block; margin-bottom: 2px; font-size: 10.5px; text-transform: uppercase; }
+
+    .solution-box {
+      background: #F4F9F5;
+      border-left: 3px solid var(--chosen);
+      padding: 8px 10px;
+      font-size: 11.5px;
+      color: #245732;
+      line-height: 1.45;
+      margin-top: auto;
+    }
+    .solution-box b { font-weight: 600; display: block; margin-bottom: 2px; font-size: 10.5px; text-transform: uppercase; }
+
+    /* The Restorative "Pace Loop" Ribbon with Real Animated Visuals */
+    .pace-loop-strip {
+      margin-top: 28px;
+      background: var(--paper-warm);
+      border: 3px solid var(--ink);
+      box-shadow: 6px 6px 0 rgba(40,25,10,0.3);
+      padding: 24px;
+      position: relative;
+    }
+
+    .pace-loop-strip h3 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 16px;
+      color: var(--accent-ink);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .loop-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 1200px) {
+      .loop-cards-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .loop-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    .loop-card {
+      background: #FFF;
+      border: 2px solid var(--ink);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 3px 3px 0 var(--ink);
+      position: relative;
+    }
+
+    .loop-card-media {
+      width: 100%;
+      height: 130px;
+      background: #18232D;
+      overflow: hidden;
+      position: relative;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .loop-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+      display: block;
+    }
+
+    .step-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: var(--accent);
+      color: #FFF;
+      font-family: 'Silkscreen', monospace;
+      font-size: 10px;
+      padding: 2px 7px;
+      border: 1.5px solid var(--ink);
+      box-shadow: 1px 1px 0 var(--ink);
+      z-index: 2;
+    }
+
+    .loop-card-body {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .loop-card-body h4 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 12.5px;
+      color: var(--ink);
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+
+    .loop-card-body p {
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      line-height: 1.45;
+      margin-top: auto;
+    }
+
+    /* 2. RESEARCH & EMPIRICAL VALIDATION */
+    .research-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .research-grid { grid-template-columns: 1fr; }
+    }
+
+    .study-card {
+      background: var(--research-bg);
+      border: 3px solid #4A2B68;
+      box-shadow: 6px 7px 0 rgba(40,20,60,0.3);
+      padding: 24px;
+      position: relative;
+    }
+
+    .study-card .header-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #5C2D82;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .study-card h3 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 15px;
+      color: #2F1646;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .quote-box {
+      background: #FFF;
+      border-left: 4px solid #7B3EAF;
+      padding: 14px 16px;
+      margin: 14px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #2F1B42;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+    }
+    .quote-box b { color: #5C2D82; }
+
+    .stat-highlight-row {
+      display: flex;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .stat-callout {
+      background: #FFF;
+      border: 2px solid #4A2B68;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex: 1;
+    }
+    .stat-callout .big-num {
+      font-family: 'Silkscreen', monospace;
+      font-size: 26px;
+      color: #6C329B;
+      line-height: 1;
+    }
+    .stat-callout .sub {
+      font-size: 10.5px;
+      font-family: 'IBM Plex Mono', monospace;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-top: 4px;
+    }
+
+    .precedents-card {
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      box-shadow: 6px 7px 0 rgba(40,25,10,0.3);
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .precedents-card h3 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 15px;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .precedent-item {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--ink-faint);
+    }
+    .precedent-item:last-child { margin-bottom: 0; padding-bottom: 0; border: none; }
+    .precedent-item b { font-size: 12.5px; color: var(--ink); display: block; margin-bottom: 2px; }
+    .precedent-item p { font-size: 11.5px; color: var(--ink-dim); line-height: 1.45; }
+
+    /* 3. BREADTH OF EXPLORATION */
+    .exploration-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 1050px) {
+      .exploration-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 650px) {
+      .exploration-grid { grid-template-columns: 1fr; }
+    }
+
+    .concept-card {
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      box-shadow: 5px 6px 0 rgba(40,25,10,0.3);
+      padding: 20px 18px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .concept-card.dropped {
+      background: #FFF9F9;
+      border-color: #A34848;
+    }
+    .concept-card.chosen {
+      background: #F8FFF9;
+      border-color: var(--chosen);
+      box-shadow: 6px 7px 0 rgba(30,80,40,0.35);
+      transform: scale(1.02);
+    }
+
+    .concept-badge {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 3px 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1.5px solid;
+      margin-bottom: 12px;
+    }
+    .concept-card.dropped .concept-badge {
+      background: var(--dropped-bg);
+      color: var(--dropped);
+      border-color: var(--dropped);
+    }
+    .concept-card.chosen .concept-badge {
+      background: var(--chosen-bg);
+      color: var(--chosen);
+      border-color: var(--chosen);
+    }
+
+    .concept-card h3 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .concept-card p.mechanic {
+      font-size: 12px;
+      color: var(--ink-dim);
+      line-height: 1.5;
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+
+    .verdict-box {
+      margin-top: auto;
+      padding: 10px 12px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      border-radius: 3px;
+    }
+    .concept-card.dropped .verdict-box {
+      background: var(--dropped-bg);
+      border-left: 3px solid var(--dropped);
+      color: #782626;
+    }
+    .concept-card.chosen .verdict-box {
+      background: var(--chosen-bg);
+      border-left: 3px solid var(--chosen);
+      color: #1B5E20;
+    }
+    .verdict-box b { display: block; margin-bottom: 2px; text-transform: uppercase; font-size: 10.5px; }
+
+    /* 4. ITERATION & IDEA EVOLUTION WITH ARTIFACTS */
+    .evolution-track {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      position: relative;
+    }
+    @media (max-width: 1100px) {
+      .evolution-track { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 650px) {
+      .evolution-track { grid-template-columns: 1fr; }
+    }
+
+    .iteration-card {
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      box-shadow: 5px 6px 0 rgba(40,25,10,0.3);
+      padding: 16px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .iteration-media {
+      width: 100%;
+      height: 115px;
+      background: #111B24;
+      margin-bottom: 12px;
+      border: 2px solid var(--ink);
+      overflow: hidden;
+    }
+    .iteration-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .iter-tag {
+      font-family: 'Silkscreen', monospace;
+      font-size: 11px;
+      color: var(--accent-ink);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-stamp {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border: 1.5px solid;
+      text-transform: uppercase;
+    }
+    .status-stamp.dropped { color: var(--dropped); border-color: var(--dropped); background: var(--dropped-bg); }
+    .status-stamp.chosen { color: var(--chosen); border-color: var(--chosen); background: var(--chosen-bg); }
+
+    .iteration-card h3 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .iteration-card .desc {
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    .pivot-box {
+      margin-top: auto;
+      padding: 10px;
+      background: var(--paper-warm);
+      border: 1px dashed var(--ink-dim);
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .pivot-box b { color: var(--accent-ink); display: block; margin-bottom: 2px; }
+
+    /* 5. MENTOR CONSULTATION WALL */
+    .mentor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    @media (max-width: 900px) {
+      .mentor-grid { grid-template-columns: 1fr; }
+    }
+
+    .mentor-note {
+      background: var(--mentor-bg);
+      border: 3px solid #2B577A;
+      box-shadow: 6px 7px 0 rgba(25,50,75,0.3);
+      padding: 24px 22px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mentor-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px dashed #6A96BC;
+    }
+
+    .mentor-avatar-badge {
+      width: 46px;
+      height: 46px;
+      background: #2B577A;
+      color: #FFF;
+      display: grid;
+      place-items: center;
+      font-family: 'Silkscreen', monospace;
+      font-size: 18px;
+      border: 2px solid var(--ink);
+      flex-shrink: 0;
+    }
+
+    .mentor-title h4 {
+      font-family: 'Silkscreen', monospace;
+      font-size: 13.5px;
+      color: #1A3850;
+      line-height: 1.2;
+    }
+    .mentor-title small {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #38678F;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .mentor-critique {
+      background: #FFF;
+      border-left: 4px solid #C45555;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      color: #4A2222;
+      line-height: 1.55;
+    }
+    .mentor-critique b { font-style: normal; display: block; font-size: 10.5px; color: #8A2424; text-transform: uppercase; margin-bottom: 4px; }
+
+    .mentor-integration {
+      background: #FFF;
+      border-left: 4px solid var(--chosen);
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #1B4524;
+      line-height: 1.55;
+      margin-top: auto;
+    }
+    .mentor-integration b { display: block; font-size: 10.5px; color: #1B5E20; text-transform: uppercase; margin-bottom: 4px; }
+
+    .board-footer {
+      text-align: center;
+      color: var(--paper-warm);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      margin-top: 28px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header with Team & Track Metadata -->
+  <header class="board-header">
+    <div class="brand-title">
+      <div class="brand-icon">P</div>
+      <div class="brand-text">
+        <h1>PaceTown Ideation Board</h1>
+        <p>Design Decisions · Research Grounding · Product Architecture</p>
+      </div>
+    </div>
+
+    <div class="header-metadata">
+      <div class="meta-chip">Track: <b>Stress &amp; Workload Manager</b></div>
+      <div class="meta-chip">Team: <b>TEAM 1000011</b></div>
+      <div class="meta-chip">Engine: <b>React 19 + TypeScript + Vite</b></div>
+      <a href="index.html" class="launch-btn">▶ Launch Live Game</a>
+    </div>
+  </header>
+
+  <!-- The Main Corkboard Canvas -->
+  <main class="corkboard">
+
+    <!-- ============================================================== -->
+    <!-- 1. PROBLEM TREE & GUARDIAN MINDMAP                             -->
+    <!-- ============================================================== -->
+    <section class="board-section">
+      <div class="section-title-tape">
+        <h2>1. Student Friction &amp; Guardian Mindmap</h2>
+        <span class="pill">Root Cause &amp; System Architecture</span>
+      </div>
+
+      <div class="problem-tree-grid">
+        <!-- Root Problem Card -->
+        <div class="root-problem-card">
+          <div class="pin red"></div>
+          <div class="tape-corner"></div>
+          <h3>The Root Problem</h3>
+          <p><strong>University Burnout &amp; Task Paralysis</strong></p>
+          <p style="margin-top: 6px;">Students stall not because they lack motivation, but because accumulated pressure creates an undivided wall of fear with no clear starting point.</p>
+          
+          <div class="five-whys">
+            <div><span>1. Why stall?</span> Work has no visible finish line.</div>
+            <div><span>2. Why no step?</span> The week feels like an undivided wall.</div>
+            <div><span>3. Why a wall?</span> No system explains pressure sources.</div>
+            <div><span>4. Why fail?</span> Tools track time but ignore capacity &amp; anxiety.</div>
+            <div><span>5. The Fix:</span> Humanized guardians, consent pacing &amp; zero guilt.</div>
+          </div>
+        </div>
+
+        <!-- 5 Guardian Branches -->
+        <div class="branches-container">
+          <!-- Kai -->
+          <div class="guardian-branch-card kai">
+            <div class="pin gold"></div>
+            <div class="guardian-meta">
+              <img src="assets/app-runtime-v1/game/portraits/kai.webp" alt="Kai" onerror="this.src='/game/portraits/kai.webp'" />
+              <div>
+                <h4>Kai</h4>
+                <small>Clock Tower · Time</small>
+              </div>
+            </div>
+            <div class="friction-box">
+              <b>Friction: Time Blindness</b>
+              Thursday reads 103% overload, leading to panic, freeze response, and complete avoidance.
+            </div>
+            <div class="solution-box">
+              <b>Solution: Consent Pacing</b>
+              Explainable Daily Load + dashed previews to safely move tasks only with explicit student approval.
+            </div>
+          </div>
+
+          <!-- Mira -->
+          <div class="guardian-branch-card mira">
+            <div class="pin blue"></div>
+            <div class="guardian-meta">
+              <img src="assets/app-runtime-v1/game/portraits/mira.webp" alt="Mira" onerror="this.src='/game/portraits/mira.webp'" />
+              <div>
+                <h4>Mira</h4>
+                <small>Library · Cognitive</small>
+              </div>
+            </div>
+            <div class="friction-box">
+              <b>Friction: Blank Page Dread</b>
+              Assignments feel too vast and ambiguous to begin; fear of doing it wrong stalls initial effort.
+            </div>
+            <div class="solution-box">
+              <b>Solution: 1 Checkpoint</b>
+              Shrinks big assignments into 1 concrete finish line with an explicit, student-owned Definition of Done.
+            </div>
+          </div>
+
+          <!-- Sky -->
+          <div class="guardian-branch-card sky">
+            <div class="pin green"></div>
+            <div class="guardian-meta">
+              <img src="assets/app-runtime-v1/game/portraits/sky.webp" alt="Sky" onerror="this.src='/game/portraits/sky.webp'" />
+              <div>
+                <h4>Sky</h4>
+                <small>Café · Social &amp; Mood</small>
+              </div>
+            </div>
+            <div class="friction-box">
+              <b>Friction: Academic Shame</b>
+              Students feel isolated, falling behind peers, and dreading judgment or productivity scorecards.
+            </div>
+            <div class="solution-box">
+              <b>Solution: Warm Presence</b>
+              Co-presence without pressure; soothing tea ritual with zero wrong moves and unconditional support.
+            </div>
+          </div>
+
+          <!-- Sol -->
+          <div class="guardian-branch-card sol">
+            <div class="pin red"></div>
+            <div class="guardian-meta">
+              <img src="assets/app-runtime-v1/game/portraits/sol.webp" alt="Sol" onerror="this.src='/game/portraits/sol.webp'" />
+              <div>
+                <h4>Sol</h4>
+                <small>Garden &amp; Pond · Physical</small>
+              </div>
+            </div>
+            <div class="friction-box">
+              <b>Friction: Rest Guilt</b>
+              Taking breaks feels like wasted time, creating a spiral of exhaustion and constant guilt.
+            </div>
+            <div class="solution-box">
+              <b>Solution: Unpenalized Rest</b>
+              Gentle Ripples pond with no timers, no win/lose states, and no streak or attendance pressure.
+            </div>
+          </div>
+
+          <!-- Goh -->
+          <div class="guardian-branch-card goh">
+            <div class="pin gold"></div>
+            <div class="guardian-meta">
+              <img src="assets/app-runtime-v1/game/portraits/goh.webp" alt="Goh" onerror="this.src='/game/portraits/goh.webp'" />
+              <div>
+                <h4>Goh</h4>
+                <small>Market · Errands</small>
+              </div>
+            </div>
+            <div class="friction-box">
+              <b>Friction: Life Admin Drag</b>
+              Chores and errands quietly consume mental bandwidth without getting acknowledged in study plans.
+            </div>
+            <div class="solution-box">
+              <b>Solution: Boundary Framing</b>
+              Separates fixed life admin from deep study so schedules reflect realistic human capacity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Flow Ribbon with Real Gameplay Clips -->
+      <div class="pace-loop-strip">
+        <div class="pin blue"></div>
+        <h3>The Restorative "Pace Loop" Experience (Live Prototype Clips)</h3>
+        <div class="loop-cards-grid">
+          <!-- Step 1 -->
+          <div class="loop-card">
+            <div class="loop-card-media">
+              <span class="step-badge">Phase 1</span>
+              <img src="assets/readme/main.gif" alt="Campus Grove" />
+            </div>
+            <div class="loop-card-body">
+              <h4>Arrive in Grove</h4>
+              <p>Explore a cozy campus where weekly pressure is expressed as ambient <strong>Load Weather</strong> rather than red alert numbers.</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="loop-card">
+            <div class="loop-card-media">
+              <span class="step-badge">Phase 2</span>
+              <img src="assets/readme/town clock.gif" alt="Clock Tower Week Board" />
+            </div>
+            <div class="loop-card-body">
+              <h4>Make Space with Kai</h4>
+              <p>Preview suggested Thursday task shifts in the Week Board with soft dashed outlines — nothing moves without consent.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="loop-card">
+            <div class="loop-card-media">
+              <span class="step-badge">Phase 3</span>
+              <img src="assets/readme/library.gif" alt="Mira's Library" />
+            </div>
+            <div class="loop-card-body">
+              <h4>Focus with Mira</h4>
+              <p>Break ambiguous homework into 1 concrete checkpoint with an explicit Definition of Done at the study desk.</p>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="loop-card">
+            <div class="loop-card-media">
+              <span class="step-badge">Phase 4</span>
+              <img src="assets/readme/pond.gif" alt="Gentle Ripples Pond" />
+            </div>
+            <div class="loop-card-body">
+              <h4>Recover Without Guilt</h4>
+              <p>Interactive pond ripples and petal drifts. Zero scores, no timers, and full permission to leave anytime.</p>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="loop-card">
+            <div class="loop-card-media">
+              <span class="step-badge">Phase 5</span>
+              <img src="assets/app-runtime-v1/game/recovery/backgrounds/warm-cup.png" alt="Warm Cup" />
+            </div>
+            <div class="loop-card-body">
+              <h4>Return to Context</h4>
+              <p>A soothing tea ritual with Sky. Returning players are greeted with their saved desk state — zero context reconstruction.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- 2. RESEARCH & EMPIRICAL VALIDATION                             -->
+    <!-- ============================================================== -->
+    <section class="board-section">
+      <div class="section-title-tape">
+        <h2>2. Market Research &amp; Empirical Validation</h2>
+        <span class="pill">Behavioral Evidence &amp; Case Precedents</span>
+      </div>
+
+      <div class="research-grid">
+        <!-- ScienceDirect Study Card -->
+        <div class="study-card">
+          <div class="pin purple"></div>
+          <div class="tape-corner"></div>
+          <div class="header-tag">Academic Research Grounding</div>
+          <h3>ScienceDirect Study on Gamified Task Management (2023)</h3>
+          
+          <div class="quote-box">
+            "A study of <strong>318 Malaysian users</strong> of gamified task-management apps found that <strong>usefulness, attitude, and habit</strong> were significant drivers of users’ intention to continue using the apps. The researchers’ model explained <strong>55% of the variation</strong> in continuance intention."
+          </div>
+
+          <p style="font-size: 12px; line-height: 1.55; color: #361B4E;">
+            <strong>Core Product Takeaway:</strong> Gamification isn’t just about making tasks fun — when it creates useful habits and restorative experiences, it gives overwhelmed students a sustainable reason to return without burning out.
+          </p>
+
+          <div class="stat-highlight-row">
+            <div class="stat-callout">
+              <span class="big-num">318</span>
+              <span class="sub">Malaysian Users Surveyed</span>
+            </div>
+            <div class="stat-callout">
+              <span class="big-num">55%</span>
+              <span class="sub">Variance in Continuance Explained</span>
+            </div>
+            <div class="stat-callout">
+              <span class="big-num">0%</span>
+              <span class="sub">Shame / Guilt Mechanics</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Industry Precedents & Value Distinction -->
+        <div class="precedents-card">
+          <div class="pin gold"></div>
+          <h3>Industry Case References &amp; Value Distinction</h3>
+
+          <div class="precedent-item">
+            <b>1. Focus Friend (Idle Tracking Precedent)</b>
+            <p>Demonstrated that students respond enthusiastically to gamified focus when it rewards phone idle time rather than enforcing harsh device lockouts.</p>
+          </div>
+
+          <div class="precedent-item">
+            <b>2. Desktop Pet Companions &amp; Cozy MMORPGs</b>
+            <p>Validated that co-presence (having an avatar companion sit with you while working) measurably reduces solo academic isolation and anxiety.</p>
+          </div>
+
+          <div class="precedent-item">
+            <b>3. The PaceTown Value Distinction</b>
+            <p>Unlike generic productivity tools (Notion, Google Calendar) that simply list tasks as an intimidating wall, PaceTown actively <em>protects human capacity</em> with explainable loads, consent rebalancing, and zero-guilt rest.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- 3. BREADTH OF EXPLORATION (CONCEPT MATRIX)                     -->
+    <!-- ============================================================== -->
+    <section class="board-section">
+      <div class="section-title-tape">
+        <h2>3. Breadth of Exploration — Concept Matrix</h2>
+        <span class="pill">Alternative Paradigms Evaluated</span>
+      </div>
+
+      <div class="exploration-grid">
+        <!-- Concept A -->
+        <div class="concept-card dropped">
+          <div class="pin red"></div>
+          <span class="concept-badge">Concept A · Dropped</span>
+          <h3>The Strict Warden</h3>
+          <p class="mechanic">Aggressive website blocker + streak tracker that locks devices and penalizes missed deadlines.</p>
+          <div class="verdict-box">
+            <b>Why Dropped:</b>
+            Streaks and lockouts induce shame spirals and panic. Students find workarounds and associate the app with anxiety.
+          </div>
+        </div>
+
+        <!-- Concept B -->
+        <div class="concept-card dropped">
+          <div class="pin red"></div>
+          <span class="concept-badge">Concept B · Dropped</span>
+          <h3>Study Tamagotchi</h3>
+          <p class="mechanic">A cute digital pet that falls ill or dies if daily study sessions and tasks are skipped.</p>
+          <div class="verdict-box">
+            <b>Why Dropped:</b>
+            Guilt-based mechanics exploit emotional manipulation. Unethical for overwhelmed students who need restoration, not guilt.
+          </div>
+        </div>
+
+        <!-- Concept C -->
+        <div class="concept-card dropped">
+          <div class="pin red"></div>
+          <span class="concept-badge">Concept C · Dropped</span>
+          <h3>Cloud AI Ghostwriter</h3>
+          <p class="mechanic">LLM assistant that generates assignment summaries, outlines, and paragraphs automatically.</p>
+          <div class="verdict-box">
+            <b>Why Dropped:</b>
+            Destroys academic integrity, strips learning agency, and introduces dependency on unreliable cloud APIs.
+          </div>
+        </div>
+
+        <!-- Concept D (Chosen) -->
+        <div class="concept-card chosen">
+          <div class="pin green"></div>
+          <div class="tape-corner"></div>
+          <span class="concept-badge">Concept D · Chosen</span>
+          <h3>PaceTown (Living Campus)</h3>
+          <p class="mechanic">Consent-gated workload rebalancing in a cozy 2D pixel-art campus with local-first restorative pacing.</p>
+          <div class="verdict-box">
+            <b>Why Chosen:</b>
+            Protects student autonomy, offers tangible starting momentum, operates 100% locally offline, and eliminates productivity guilt.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- 4. ITERATION & IDEA EVOLUTION                                  -->
+    <!-- ============================================================== -->
+    <section class="board-section">
+      <div class="section-title-tape">
+        <h2>4. Prototype Evolution &amp; Discarded Directions</h2>
+        <span class="pill">Visual Build Progression</span>
+      </div>
+
+      <div class="evolution-track">
+        <!-- V1 -->
+        <div class="iteration-card">
+          <div class="pin gold"></div>
+          <div class="iteration-media" style="background:#201416; display:grid; place-items:center; color:#FF9292; font-family:'IBM Plex Mono',monospace; font-size:11px; padding:10px; text-align:center;">
+            [V1 WIREFRAME]<br />Red Alert Dashboard<br />110% OVERLOAD!
+          </div>
+          <div class="iter-tag">
+            <span>Iteration 1 (V1)</span>
+            <span class="status-stamp dropped">Pivoted</span>
+          </div>
+          <h3>Red Alert Dashboard</h3>
+          <p class="desc">A standard web table displaying commitments with flashing red percentage warning bars.</p>
+          <div class="pivot-box">
+            <b>Pivot Rationale:</b>
+            User testing showed red alert numbers triggered acute heart-rate spikes. We replaced alerts with ambient <em>"Load Weather"</em> (soft mist/rain).
+          </div>
+        </div>
+
+        <!-- V2 -->
+        <div class="iteration-card">
+          <div class="pin gold"></div>
+          <div class="iteration-media">
+            <img src="assets/app-runtime-v1/game/campus.webp" alt="Large Map Prototype" />
+          </div>
+          <div class="iter-tag">
+            <span>Iteration 2 (V2)</span>
+            <span class="status-stamp dropped">Pivoted</span>
+          </div>
+          <h3>Massive Open-World RPG</h3>
+          <p class="desc">A sprawling multi-district RPG world requiring 30 seconds of walking between buildings.</p>
+          <div class="pivot-box">
+            <b>Pivot Rationale:</b>
+            Long transit times aggravated student fatigue. We compressed the campus into a single cozy grove and built the instant-access <em>Town List</em>.
+          </div>
+        </div>
+
+        <!-- V3 -->
+        <div class="iteration-card">
+          <div class="pin gold"></div>
+          <div class="iteration-media">
+            <img src="assets/readme/town clock.gif" alt="Clock Tower Week Board" />
+          </div>
+          <div class="iter-tag">
+            <span>Iteration 3 (V3)</span>
+            <span class="status-stamp dropped">Pivoted</span>
+          </div>
+          <h3>Autonomous Auto-Scheduler</h3>
+          <p class="desc">An AI algorithm that silently shifted overloaded Thursday tasks into open weekend slots.</p>
+          <div class="pivot-box">
+            <b>Pivot Rationale:</b>
+            Moving items without permission caused disorienting loss of control. We invented the <em>Consent Preview</em> (soft dashed borders requiring approval).
+          </div>
+        </div>
+
+        <!-- V4 -->
+        <div class="iteration-card" style="background:#FAFFFA; border-color:var(--chosen);">
+          <div class="pin green"></div>
+          <div class="tape-corner"></div>
+          <div class="iteration-media">
+            <img src="assets/readme/main.gif" alt="Final Living Campus" />
+          </div>
+          <div class="iter-tag">
+            <span>Iteration 4 (Final)</span>
+            <span class="status-stamp chosen">Shipped</span>
+          </div>
+          <h3>Restorative Living Campus</h3>
+          <p class="desc">16-frame synced walk cycles, local-first IndexedDB storage, accessible D-pads, and unpenalized recovery.</p>
+          <div class="pivot-box" style="background:#EBF5EE;">
+            <b>Final Vertical Slice:</b>
+            378/378 unit tests passing, sub-30MB production bundle, and zero external cloud failure points.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- 5. MENTOR CONSULTATION WALL (REAL SESSIONS)                    -->
+    <!-- ============================================================== -->
+    <section class="board-section">
+      <div class="section-title-tape">
+        <h2>5. Mentor Consultation Log</h2>
+        <span class="pill">Real Feedback &amp; Design Decisions</span>
+      </div>
+
+      <div class="mentor-grid">
+        <!-- Mentor Session 1 -->
+        <div class="mentor-note">
+          <div class="pin blue"></div>
+          <div class="mentor-head">
+            <div class="mentor-avatar-badge">M1</div>
+            <div class="mentor-title">
+              <h4>Scope, Precedents &amp; Value Distinction</h4>
+              <small>Mentor Consultation Session · 4 Sept 2026</small>
+            </div>
+          </div>
+          <div class="mentor-critique">
+            <b>Mentor Guidance:</b>
+            "Gamifying workflow and stress management does not deviate from the challenge brief; it makes the project stand out compared to generic productivity dashboards. Ground it with established precedents (MMORPG mechanics, desktop companions, Focus Friend) and clearly define what makes the solution distinct and better than existing tools beyond just having a game aesthetic."
+          </div>
+          <div class="mentor-integration">
+            <b>Concrete Changes Made:</b>
+            <ul>
+              <li>Articulated our core value distinction: <em>Consent-first rebalancing</em> rather than passive task lists.</li>
+              <li>Connected game mechanics to psychological safety (Load Weather instead of red alerts; zero-guilt recovery).</li>
+              <li>Structured rich multi-layered process mapping illustrating the user journey from friction to restoration.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Mentor Session 2 -->
+        <div class="mentor-note">
+          <div class="pin blue"></div>
+          <div class="mentor-head">
+            <div class="mentor-avatar-badge">M2</div>
+            <div class="mentor-title">
+              <h4>Demo Presentation &amp; Feature Bundling</h4>
+              <small>Mentor Consultation Session · 11 Sept 2026</small>
+            </div>
+          </div>
+          <div class="mentor-critique">
+            <b>Mentor Guidance:</b>
+            "Rather than walking through every individual mechanic or screen, bundle features into 2–3 clear conceptual groups. Highlight purpose over mechanics: avoid getting bogged down in micro-details (like individual form inputs or step clicks). Clearly communicate what each feature is and why it matters to the user. Keep the pace engaging with short clips, and provide an interactive link so judges can explore firsthand."
+          </div>
+          <div class="mentor-integration">
+            <b>Concrete Changes Made:</b>
+            <ul>
+              <li>Streamlined the product narrative into 3 core pillars: <em>Smart Time Management</em>, <em>Guided Productivity</em>, and <em>Stress Relief/Recovery</em>.</li>
+              <li>Shifted all feature descriptions to student emotional benefit rather than technical form clicks.</li>
+              <li>Replaced long text walkthroughs with focused, bite-sized visual gameplay anchors.</li>
+              <li>Provided a direct one-click interactive launcher (<code>index.html</code>) for judges to explore.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="board-footer">
+    <p>PaceTown Vertical Slice · Built with React 19, TypeScript &amp; Vite · Fully Functional Offline Prototype</p>
+  </footer>
+
+</body>
+</html>

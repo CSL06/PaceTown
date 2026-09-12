@@ -55,8 +55,24 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 
 ### **2.2 Ideation Boards**
 
-The team explored the problem from four different perspectives before
-combining the ideas into one vertical slice. These boards intentionally show
+> 🎨 **Interactive Visual Ideation Board:** [Open Interactive HTML Board (`ideation-board.html`)](./ideation-board.html)  
+> *(Click the interactive link to explore the live corkboard with animated gameplay anchors, guardian portraits, and full study citations)*
+
+![PaceTown Living Ideation Board](docs/ideation-board.png)
+
+*The PaceTown Ideation Board maps our entire design process from root problem to working vertical slice:*
+* **1. Multi-Layer Problem Tree & Guardian Mindmap:** Deconstructs the 5 whys of student burnout (time blindness, cognitive dread, shame, rest guilt, life admin) and branches each to a specialized guardian (Kai, Mira, Sky, Sol, Goh) with its mechanical solution.
+* **2. The Restorative Pace Loop:** Traces the 5-phase student journey across live prototype environments (Campus Grove ➔ Clock Tower ➔ Library ➔ Pond ➔ Café) demonstrating how context is preserved without stress.
+* **3. Market Research & Behavioral Grounding:** Grounds our gamification in a 2023 ScienceDirect study of 318 Malaysian users (55% continuance variance explained by usefulness and habit) and precedents like *Focus Friend* and cozy MMORPG co-presence.
+* **4. Concept Matrix (Breadth of Exploration):** Contrasts PaceTown against 3 dropped alternative paradigms (*The Strict Warden*, *Study Tamagotchi*, *Cloud AI Ghostwriter*), detailing why punitive and auto-completion models were rejected.
+* **5. Prototype Evolution Track:** Details our visual and mechanical pivots across 4 iterations (V1 red alert wireframe ➔ V2 sprawling map ➔ V3 autonomous scheduler ➔ V4 consent-gated restorative slice).
+
+---
+
+#### Contributor Ideation Perspectives (Early Brainstorming)
+
+The team explored the problem from four distinct contributor angles before
+synthesizing the ideas into one cohesive vertical slice. These sketches show
 early uncertainty, discarded directions, and the decisions that survived.
 
 #### Board 1: Member 1, problem framing
@@ -202,8 +218,8 @@ flowchart TB
 
 | Date | Mentor | Feedback Received | What Was Changed |
 | :---- | :---- | :---- | :---- |
-| [Date] | [Name] | [Feedback] | [Change made, or why it was respectfully declined] |
-| [Date] | [Name] | [Feedback] | [Change made, or why it was respectfully declined] |
+| 4 Sept 2026 | Scope, Precedents &amp; Value Distinction Mentor | *"Gamifying workflow and stress management is fully in-scope and differentiates the project. Ground the approach with established precedents (MMORPG mechanics, desktop companions, Focus Friend) and clearly define what makes the solution distinct and better beyond having a game aesthetic."* | Articulated our core value distinction: active capacity protection with consent-gated rebalancing and zero-guilt recovery (rather than passive task tracking). Grounded the gamified loop in behavioral research (ScienceDirect 2023 study). |
+| 11 Sept 2026 | Demo Presentation &amp; Time Management Mentor | *"Bundle features into 2–3 clear conceptual groups (Smart Time Management, Guided Productivity, Stress Relief/Recovery). Highlight purpose over mechanics: communicate why features matter to an exhausted student, not micro form clicks. Use short engaging clips and provide an interactive link for judges."* | Streamlined product narrative into 3 core pillars; reframed all documentation around student emotional impact; embedded focused visual prototype clips; provided direct one-click interactive links to the live prototype and standalone ideation board. |
 
 Log each session with its date, mentor, concrete feedback, and the resulting change. Feedback the team respectfully declined still counts: record the reason it did not fit the product promise.
 
