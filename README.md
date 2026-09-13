@@ -4,9 +4,9 @@
 
 **Problem Statement:** Stress & Workload Manager
 
-**Video Presentation:** [Unlisted Youtube Link]
+**Video Presentation:** [YouTube Link](https://youtu.be/7Gk2cX9xEKY)
 
-**Presentation Slides:** [Public Link]
+**Presentation Slides:** [Presentation Slides](https://canva.link/kg5wftr8nse7uik)
 
 ## **1. Project Overview**
 
@@ -45,13 +45,10 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 
 | Idea | Why it was dropped / kept |
 | :---- | :---- |
-| A (Chosen) — One campus (Campus Grove), one player, one complete understand, make space, work, recover, return loop | Kept: the smallest slice that still demonstrates the full product promise end to end |
-| B (Chosen) — Deterministic browser only rules for everything (parsing, load, rebalance, guidance, photo checks) | Kept: runs with no cloud or AI; every assisted feature has a local fallback, so the demo cannot break on connectivity |
-| C (Chosen) — Guardians as functional companions with distinct actions, plus consent gated changes | Kept: differentiates the product from dashboards and mascot apps; every change needs explicit approval |
-| D — Coastal Commons and Night Market as extra environments | Dropped for the slice; documented as post core progression goals that share all data and progression |
-| E — Full game engine (Phaser) for the town renderer | Dropped: a layered DOM and CSS town keeps the build light and testable; Phaser atlases are reused as build time frame data only |
-| F — Live Google Calendar integration | Deferred: seeded calendar data stands in; the adapter seam is kept for later |
-| G — Cloud AI conversations for guardian help | Deferred: deterministic local guidance ships instead; a remote provider can be swapped in behind the same interface |
+| A (DROP) — The Strict Warden, Aggressive website blocker + streak tracker that locks devices and penalizes missed deadlines. | Drop: Streaks and lockouts induce shame spirals and panic. Students find workarounds and associate the app with anxiety. |
+| B (DROP) — Study Tamagotchi, A cute digital pet that falls ill or dies if daily study sessions and tasks are skipped. | Drop: Guilt-based mechanics exploit emotional manipulation. Unethical for overwhelmed students who need restoration, not guilt. |
+| C (DROP) — Cloud AI Ghostwriter, LLM assistant that generates assignment summaries, outlines, and paragraphs automatically. | Drop: Destroys academic integrity, strips learning agency, and introduces dependency on unreliable cloud APIs. |
+| D (CHOOSEN) — PaceTown (Living Campus), Consent-gated workload rebalancing in a cozy 2D pixel-art campus with local-first restorative pacing. | Kept: Protects student autonomy, offers tangible starting momentum, operates 100% locally offline, and eliminates productivity guilt. |
 
 ### **2.2 Ideation Boards**
 
@@ -73,8 +70,8 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 
 | Date | Mentor | Feedback Received | What Was Changed |
 | :---- | :---- | :---- | :---- |
-| 4 Sept 2026 | Scope, Precedents &amp; Value Distinction Mentor | *"Gamifying workflow and stress management is fully in-scope and differentiates the project. Ground the approach with established precedents (MMORPG mechanics, desktop companions, Focus Friend) and clearly define what makes the solution distinct and better beyond having a game aesthetic."* | Articulated our core value distinction: active capacity protection with consent-gated rebalancing and zero-guilt recovery (rather than passive task tracking). Grounded the gamified loop in behavioral research (ScienceDirect 2023 study). |
-| 11 Sept 2026 | Demo Presentation &amp; Time Management Mentor | *"Bundle features into 2–3 clear conceptual groups (Smart Time Management, Guided Productivity, Stress Relief/Recovery). Highlight purpose over mechanics: communicate why features matter to an exhausted student, not micro form clicks. Use short engaging clips and provide an interactive link for judges."* | Streamlined product narrative into 3 core pillars; reframed all documentation around student emotional impact; embedded focused visual prototype clips; provided direct one-click interactive links to the live prototype and standalone ideation board. |
+| 4 Sept 2026 | Mr. Sim Hong Bing | *"Gamifying workflow and stress management does not deviate from the challenge brief; it makes the project stand out compared to generic productivity dashboards. Ground it with established precedents (MMORPG mechanics, desktop companions, Focus Friend) and clearly define what makes the solution distinct and better than existing tools beyond just having a game aesthetic."* | <ul><li>Articulated our core value distinction: Consent-first rebalancing rather than passive task lists.</ul></li> <ul><li>Connected game mechanics to psychological safety (Load Weather instead of red alerts; zero-guilt recovery).</ul></li> <ul><li>Structured rich multi-layered process mapping illustrating the user journey from friction to restoration. </ul></li>|
+| 11 Sept 2026 | Mr. Sim Hong Bing | *"Rather than walking through every individual mechanic or screen, bundle features into 2–3 clear conceptual groups. Highlight purpose over mechanics: avoid getting bogged down in micro-details (like individual form inputs or step clicks). Clearly communicate what each feature is and why it matters to the user. Keep the pace engaging with short clips, and provide an interactive link so judges can explore firsthand."* | <ul><li>Streamlined the product narrative into 3 core pillars: Smart Time Management, Guided Productivity, and Stress Relief/Recovery.</ul></li> <ul><li>Shifted all feature descriptions to student emotional benefit rather than technical form clicks.</ul></li> <ul><li>Replaced long text walkthroughs with focused, bite-sized visual gameplay anchors.</ul></li> <ul><li>Provided a direct one-click interactive launcher (index.html) for judges to explore. </ul></li>|
 
 Log each session with its date, mentor, concrete feedback, and the resulting change. Feedback the team respectfully declined still counts: record the reason it did not fit the product promise.
 
@@ -159,7 +156,7 @@ Comparison against the named existing solutions:
 
 ## **5. Technical Architecture & Feasibility**
 
-**Tech stack**
+**Tech stack (current slice)**
 
 | Layer | Choice | Why we chose it | Constraints expected |
 | --- | --- | --- | --- |
@@ -171,30 +168,106 @@ Comparison against the named existing solutions:
 | Quality gates | ESLint, token checks, TypeScript build, Vitest, and Vite build in CI | Catches drift before merge; all green on main | CI needs Node 24; offline PWA shell registers in production builds only |
 | Hosting | Static build (dist, git ignored) served by any static host; npm run preview locally | No server code exists, so any static host works | No backend, so nothing to scale; deployment infrastructure is outside the slice |
 
+**Tech stack (planned for future phases)**
+
+None of the following is needed for the current slice to run (since it was a prototype for current slice), each one plugs into a seam the code already leaves open, so adding it later means extending the build, not rewriting it.
+
+| Layer | Planned choice | Why it's next | Constraint to expect |
+| --- | --- | --- | --- |
+| Persistence | IndexedDB, or a small hosted database (e.g. Postgres), behind the same storage adapter | A save needs to follow a student across devices, not just survive a refresh | Introduces a real backend with its own uptime and cost to manage |
+| Auth | Hosted auth provider (e.g. Supabase Auth) | Multi-device sync needs a way to recognise "the same student" across sessions | Adds an account system that has to be operated and secured |
+| Calendar | Live Google Calendar / Outlook integration behind a calendar adapter | Replaces seeded demo data with a student's real week | Needs OAuth, rate limits, and a graceful fallback if the API is unreachable |
+| Guardian guidance | An optional cloud LLM behind the existing guidance provider interface | Covers open-ended questions the deterministic rules can't anticipate | Adds latency, cost, and a network dependency the offline demo doesn't have today |
+| Distribution | Android packaging (e.g. Capacitor) wrapping the existing PWA | Reaches students who default to an app store instead of a browser | Doubles the release surface that has to be tested and maintained |
+| Hosting | A small serverless API in front of the hosted database | The only new backend surface needed once sync and auth exist | A genuinely new moving part, so it's deferred until sync is actually required |
+
 **System architecture diagram**
 
 ```mermaid
 flowchart TB
-  UI[src/game and src/landing<br/>React scenes and panels]
-  STATE[GameState + localStorage adapter<br/>versioned browser save]
-  DOMAIN[src/domain<br/>pure deterministic rules]
-  ASSETS[assets/app-runtime-v1<br/>runtime art and audio]
-  UI --> STATE
+  subgraph UI["UI layer — src/game, src/landing"]
+    SCENES["Walkable scenes<br/>Grove, Clock Tower, Library, Recovery rooms"]
+    PANELS["Panels<br/>Week Board, Daily Briefing, Backpack, Shop, Settings"]
+    HUD["Guardian HUD<br/>spoken lines, resume ritual, badges"]
+    SCENES --> PANELS --> HUD
+  end
+
+  subgraph DOMAIN["Domain layer — src/domain (pure, deterministic, no side effects)"]
+    LOAD["Daily Load & Load Weather engine"]
+    REBALANCE["Week Board consent / rebalance engine"]
+    GUIDE["Guardian guidance & checkpoint rules"]
+    PHOTO["Local photo-check rules"]
+  end
+
+  subgraph STATE["State & persistence"]
+    GAMESTATE["GameState store"]
+    ADAPTER["Storage adapter interface"]
+    LOCALSTORE[("localStorage: pacetown.game<br/>versioned + migrated")]
+    GAMESTATE --> ADAPTER --> LOCALSTORE
+  end
+
+  subgraph ASSETS["Assets — assets/app-runtime-v1"]
+    ART["Pixel art & portraits"]
+    AUDIO["Ambient audio & SFX"]
+  end
+
+  subgraph QUALITY["Quality gates"]
+    VITEST["Vitest + Testing Library<br/>378 tests, 40 files"]
+    PLAYWRIGHT["Playwright E2E"]
+    CI["ESLint, TS build, token checks<br/>CI on main"]
+  end
+
+  subgraph DELIVERY["Delivery"]
+    SHELL["Offline PWA shell / service worker"]
+    STATIC["Static build, served by any static host"]
+    SHELL --> STATIC
+  end
+
+  subgraph FUTURE["Planned seams — not shipped yet"]
+    CALADAPTER["Calendar adapter interface"]
+    CLOUDGUIDE["Guidance provider interface"]
+    HOSTEDDB[("Hosted DB / IndexedDB")]
+    AUTHPROV["Hosted auth provider"]
+  end
+
   UI --> DOMAIN
+  UI --> STATE
   UI --> ASSETS
-  STATE --> DOMAIN
+  DOMAIN --> STATE
+  QUALITY --> UI
+  QUALITY --> DOMAIN
+  DELIVERY --> UI
+
+  ADAPTER -.->|future swap| HOSTEDDB
+  REBALANCE -.->|future swap| CALADAPTER
+  GUIDE -.->|future swap| CLOUDGUIDE
+  STATE -.->|future addition| AUTHPROV
 ```
 
 **Build plan & scope**
 
-Already built in this slice: intake and parsing, Daily Load and Load Weather, the Clock Tower Week Board with consent flow, the Library guided work loop with sessions and outcomes, welcome back continuity, all five recovery scenes, Pocket of Green with local photo checks, the keepsake pipeline, Journal, Mailbox, Backpack, Council, and Garden, settings and shop, accessibility, versioned saves, JSON export, reset, and the offline PWA shell.
+Already built in this slice, grouped the way we pitch it: three pillars, not a feature dump:
 
-Explicitly out of scope: hosted authentication and multi device sync, IndexedDB or server backed repositories, live Google Calendar, cloud AI conversations, deep shop progression and production town upgrades, the full Recovery Garden catalog and long term social features, Android packaging, and production deployment infrastructure.
+* **Smart Time Management:** plain-language week intake and parsing, the explainable Daily Load and Load Weather system, and the Clock Tower Week Board with its consent previews, drag-and-drop, deadline guards, and undo.
+* **Guided Productivity:** the Library's guided work loop (blocker routing, single-checkpoint proposals, definitions of done), Guided Pace Sessions with timers and saved progress notes, and welcome-back continuity so returning never means reconstructing.
+* **Stress Relief & Recovery:** all five recovery scenes, the Pocket of Green real-world quest with local photo checks, the keepsake pipeline, Journal, Future Mailbox, and the Recovery Garden.
+
+Underneath all three: the Guardian picker and Council, Backpack, Settings, Shop, accessibility (Quiet Mode, High Contrast, Town List), versioned saves, JSON export, a reset demo shortcut, and the offline PWA shell.
+
+Explicitly out of scope for this slice and will implement for future phase:
+
+* Hosted authentication and multi-device sync
+* IndexedDB or a server-backed repository
+* Live Google Calendar integration
+* Cloud AI conversations for guardian help
+* Deep shop progression and production town upgrades
+* The full Recovery Garden catalog and long-term social features
+* Production deployment infrastructure
 
 **Resources and time**
 
-A four person student team built this slice with zero cost tooling: React, TypeScript, Vite, Vitest, Testing Library, Playwright, and static hosting, with all art generated in house or sourced from credited packs. Frontend, domain modeling, pixel art pipeline, and QA verification were covered inside the team. The scope above is deliberately one campus loop because that is what fits a hackathon window honestly; every deferred item has a named seam (storage adapter, guidance provider interface, data driven districts) so a follow up build starts from working code, not from scratch.
+A four-person student team built this slice with zero-cost tooling which are React, TypeScript, Vite, Vitest, Testing Library, and Playwright, then hosted for free as a static site, with all art either made in-house or sourced from credited packs. Frontend, domain modeling, the pixel art pipeline, and QA all stayed inside the team, with no outside contractors or paid services involved. The scope was deliberately narrowed to one campus loop because that's what honestly fits a hackathon window; every feature we deferred already has a named seam waiting for it, a storage adapter, a guidance provider interface, a data-driven districts system, so a follow-up build starts from working code, not a blank page.
 
 **Where it can go next**
 
-The same loop scales without redesign: more student groups with different capacity profiles, additional districts sharing all data and progression, institution onboarding that imports a real week, and installable PWA distribution already in place. Each step reuses the consent, parity, and no shame contracts, so growth never requires weakening the product promise.
+The core loop is built to scale without a redesign. The nearest additions are more student groups with different capacity profiles, the Coastal Commons and Night Market districts already mapped out during ideation (sharing the same data and progression as Campus Grove), and institution onboarding that imports a student's real week instead of a seeded one. Because the app already installs as a Progressive Web App (PWA), distribution can grow before any backend does. And because every one of these steps reuses the same consent, parity, and no-shame contracts the current build already honors, growing PaceTown never means quietly weakening what it promises students today.
