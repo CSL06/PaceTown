@@ -14,14 +14,14 @@
 
 Similar apps exist, and each falls short in a specific way: traditional planners (such as Notion or Google Calendar) show the work but do not help a student begin it; focus timers (such as Forest or Pomodoro apps) measure time but do not clarify what to do; relaxation games provide a break but leave the underlying responsibility untouched; and general AI assistants can produce content but ignore capacity, scheduling pressure, continuity, and the student's need to remain in control. PaceTown connects these missing pieces and is deliberately never pitched as an upload and complete tool.
 
-**Our Solution.** PaceTown is a cozy, browser only pixel art game where a student's real week becomes a readable campus town. It calculates an explainable Daily Load, proposes safe calendar moves that need explicit approval, turns one scary task into one checkpoint with a guardian beside you, rewards honest stopping and intentional rest, and writes everything down so returning never means reconstructing. No cloud, no AI provider, and no streaks required.
+**Our Solution.** PaceTown is a cozy, pixel art game where a student's real week becomes a readable campus town. It calculates an explainable Daily Load, proposes safe calendar moves that need explicit approval, turns one scary task into one checkpoint with a guardian beside you, rewards honest stopping and intentional rest, and writes everything down so returning never means reconstructing.
 
 Feature set:
 
 * Plain language week intake with visible parser assumptions and editable commitments
 * Explainable Daily Load: weighted demand, load bands, and Load Weather on the map
-* Walkable Clock Tower with a week long Week Board: consent previews, destination comparison, drag and drop, deadline guards, and undo
-* Walkable Library: Mira's open work list, blocker routing, single checkpoint proposals, and definitions of done
+* Clock Tower with a week long Week Board: consent previews, destination comparison, drag and drop, deadline guards, and undo
+* Library: Mira's open work list, blocker routing, single checkpoint proposals, and definitions of done
 * Guided Pace Sessions: timers, scratchpad, saved progress notes, contextual help, and completed, partial, blocked, or rescheduled outcomes
 * Welcome back desk summary, open work resume badge, and guardian spoken HUD resume ritual
 * Guardian picker with routed defaults, one real action button per guardian, and a Guardian Council that proposes without ever applying changes
@@ -48,7 +48,7 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 | A (DROP) — The Strict Warden, Aggressive website blocker + streak tracker that locks devices and penalizes missed deadlines. | Drop: Streaks and lockouts induce shame spirals and panic. Students find workarounds and associate the app with anxiety. |
 | B (DROP) — Study Tamagotchi, A cute digital pet that falls ill or dies if daily study sessions and tasks are skipped. | Drop: Guilt-based mechanics exploit emotional manipulation. Unethical for overwhelmed students who need restoration, not guilt. |
 | C (DROP) — Cloud AI Ghostwriter, LLM assistant that generates assignment summaries, outlines, and paragraphs automatically. | Drop: Destroys academic integrity, strips learning agency, and introduces dependency on unreliable cloud APIs. |
-| D (CHOOSEN) — PaceTown (Living Campus), Consent-gated workload rebalancing in a cozy 2D pixel-art campus with local-first restorative pacing. | Kept: Protects student autonomy, offers tangible starting momentum, operates 100% locally offline, and eliminates productivity guilt. |
+| D (CHOOSEN) — PaceTown (Living Campus), Consent-gated workload rebalancing in a cozy 2D pixel-art campus with local restorative pacing. | Kept: Protects student autonomy, offers tangible starting momentum, can operates locally offline/optional online mode with AI, and eliminates productivity guilt. |
 
 ### **2.2 Ideation Boards**
 
@@ -73,7 +73,7 @@ Major alternatives weighed during the project, in decision order. Chosen ideas a
 | 4 Sept 2026 | Mr. Sim Hong Bing | *"Gamifying workflow and stress management does not deviate from the challenge brief; it makes the project stand out compared to generic productivity dashboards. Ground it with established precedents (MMORPG mechanics, desktop companions, Focus Friend) and clearly define what makes the solution distinct and better than existing tools beyond just having a game aesthetic."* | <ul><li>Articulated our core value distinction: Consent-first rebalancing rather than passive task lists.</ul></li> <ul><li>Connected game mechanics to psychological safety (Load Weather instead of red alerts; zero-guilt recovery).</ul></li> <ul><li>Structured rich multi-layered process mapping illustrating the user journey from friction to restoration. </ul></li>|
 | 11 Sept 2026 | Mr. Sim Hong Bing | *"Rather than walking through every individual mechanic or screen, bundle features into 2–3 clear conceptual groups. Highlight purpose over mechanics: avoid getting bogged down in micro-details (like individual form inputs or step clicks). Clearly communicate what each feature is and why it matters to the user. Keep the pace engaging with short clips, and provide an interactive link so judges can explore firsthand."* | <ul><li>Streamlined the product narrative into 3 core pillars: Smart Time Management, Guided Productivity, and Stress Relief/Recovery.</ul></li> <ul><li>Shifted all feature descriptions to student emotional benefit rather than technical form clicks.</ul></li> <ul><li>Replaced long text walkthroughs with focused, bite-sized visual gameplay anchors.</ul></li> <ul><li>Provided a direct one-click interactive launcher (index.html) for judges to explore. </ul></li>|
 
-Log each session with its date, mentor, concrete feedback, and the resulting change. Feedback the team respectfully declined still counts: record the reason it did not fit the product promise.
+
 
 ## **3. Design & Prototype**
 
@@ -91,10 +91,10 @@ Key screens from the running prototype.
 *Talk to Mira, choose from the open work list with resume badges, answer the blocker question, use one checkpoint proposal, then work at the study desk with timer, scratchpad, saved notes, and Ask Mira.*
 
 ![Gentle Ripples water](assets/readme/pond.gif)
-*Tap the pond to make ripples: petals drift, a fish swims, flowers bloom with participation. No score, no failure, no minimum time; leaving early is valid, and only the first recovery of a run pays.*
+*Gentle Ripples: Tap the pond to make ripples: petals drift, a fish swims, flowers bloom with participation; Watch and relax your mind. No score, no failure, no minimum time; leaving early is valid, and only the first recovery of a run pays.*
 
 ![Warm Cup ritual](assets/app-runtime-v1/game/recovery/backgrounds/warm-cup.png)
-*Choose a drink, pour, stir, and sit by the window in an unruinable four step ritual with Sky keeping quiet company. Same contract as every recovery scene: no score and no wrong order.*
+*Warm Cup: Choose a drink, pour, stir, and sit by the window in an unruinable four step ritual with Sky keeping quiet company. Same contract as every recovery scene: no score and no wrong order.*
 
 ## Guardian System
 
@@ -141,10 +141,12 @@ replacement.
 * **One checkpoint, not a project plan.** Mira proposes exactly one small step with a visible definition of done; Make it smaller is always one click.
 * **Return is a designed moment.** Welcome back desk summary, open work resume badge, and a guardian spoken HUD card (task, checkpoint, time, last note, next action). No other student tool treats resuming as a first class feature.
 * **Honest stopping is rewarded.** Partial, blocked, and rescheduled are valid, paid outcomes; the first recovery pays once and can never be farmed.
-* **Photo parity.** Self confirmation and photo confirmation earn identically; keepsakes never prove a quest happened.
-* **Deterministic and offline.** Every number is explainable and every AI style feature has a local fallback, so the demo cannot break on connectivity.
+* **IRL Minigame Recovery.** Provides the user the option to actually step outside, away from their work physically, and go out to see the world. Take a memorable photo as an checkpoint, and turns it into an in-game collection. Self confirmation and photo confirmation earn identically.
+* **Deterministic and offline.** Every number is explainable and every AI style feature has a local fallback, so it cannot break on connectivity.
 
-Comparison against the named existing solutions:
+
+
+ ### **Comparison against the named existing solutions:**
 
 |  | PaceTown | Planners / timers | Relaxation games | General AI assistants |
 | --- | --- | --- | --- | --- |
@@ -156,7 +158,7 @@ Comparison against the named existing solutions:
 
 ## **5. Technical Architecture & Feasibility**
 
-**Tech stack (current slice)**
+### **Tech stack (current demo prototype)**
 
 | Layer | Choice | Why we chose it | Constraints expected |
 | --- | --- | --- | --- |
@@ -168,16 +170,16 @@ Comparison against the named existing solutions:
 | Quality gates | ESLint, token checks, TypeScript build, Vitest, and Vite build in CI | Catches drift before merge; all green on main | CI needs Node 24; offline PWA shell registers in production builds only |
 | Hosting | Static build (dist, git ignored) served by any static host; npm run preview locally | No server code exists, so any static host works | No backend, so nothing to scale; deployment infrastructure is outside the slice |
 
-**Tech stack (planned for future phases)**
+### **Tech stack (planned for future phases)**
 
-None of the following is needed for the current slice to run (since it was a prototype for current slice), each one plugs into a seam the code already leaves open, so adding it later means extending the build, not rewriting it.
+None of the following is needed for the current slice to run (since it was a prototype for current slice), each one plugs into a seam the code already leaves open, so adding it later means **extending the build, not rewriting it**.
 
 | Layer | Planned choice | Why it's next | Constraint to expect |
 | --- | --- | --- | --- |
 | Persistence | IndexedDB, or a small hosted database (e.g. Postgres), behind the same storage adapter | A save needs to follow a student across devices, not just survive a refresh | Introduces a real backend with its own uptime and cost to manage |
 | Auth | Hosted auth provider (e.g. Supabase Auth) | Multi-device sync needs a way to recognise "the same student" across sessions | Adds an account system that has to be operated and secured |
 | Calendar | Live Google Calendar / Outlook integration behind a calendar adapter | Replaces seeded demo data with a student's real week | Needs OAuth, rate limits, and a graceful fallback if the API is unreachable |
-| Guardian guidance | An optional cloud LLM behind the existing guidance provider interface | Covers open-ended questions the deterministic rules can't anticipate | Adds latency, cost, and a network dependency the offline demo doesn't have today |
+| Guardian guidance | An cloud LLM behind the existing guidance provider interface | Covers open-ended questions the deterministic rules can't anticipate | Adds latency, cost, and a network dependency the offline demo doesn't have today |
 | Distribution | Android packaging (e.g. Capacitor) wrapping the existing PWA | Reaches students who default to an app store instead of a browser | Doubles the release surface that has to be tested and maintained |
 | Hosting | A small serverless API in front of the hosted database | The only new backend surface needed once sync and auth exist | A genuinely new moving part, so it's deferred until sync is actually required |
 
