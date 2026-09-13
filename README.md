@@ -93,6 +93,8 @@ Key screens from the running prototype.
 ![Gentle Ripples water](assets/readme/pond.gif)
 *Gentle Ripples: Tap the pond to make ripples: petals drift, a fish swims, flowers bloom with participation; Watch and relax your mind. No score, no failure, no minimum time; leaving early is valid, and only the first recovery of a run pays.*
 
+*Memory Charm: Turn an IRL photo into a tiny pixel keepsake you can carry into the game; preserve a person, place, pet, or passing moment as something small and yours. No score, no failure, no need to make it perfect; the charm is simply a way to keep a little piece of the world with you.*
+
 ![Warm Cup ritual](assets/app-runtime-v1/game/recovery/backgrounds/warm-cup.png)
 *Warm Cup: Choose a drink, pour, stir, and sit by the window in an unruinable four step ritual with Sky keeping quiet company. Same contract as every recovery scene: no score and no wrong order.*
 
