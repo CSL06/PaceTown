@@ -1,135 +1,103 @@
-# PaceTown
+# **PaceTown** by TEAM 1000011
 
-![PaceTown runtime artwork](assets/app-runtime-v1/og-card.jpg)
+**Team:** TAN HONG SHENG, HEW ZHI HENG, GOH SHENG KAI, CHUAH SHANG LOONG
 
-<p align="center">
-  <strong>A calm, local-first guided-work and recovery game for university students.</strong><br />
-  Make the week understandable. Make one task startable. Return without losing your place.
-</p>
+**Problem Statement:** Stress & Workload Manager
 
-<p align="center">
-  <a href="https://github.com/CSL06/PaceTown/actions"><img src="https://img.shields.io/github/actions/workflow/status/CSL06/PaceTown/ci.yml?branch=main&label=CI" alt="CI status" /></a>
-  <img src="https://img.shields.io/badge/tests-378%20passing-2f7f89" alt="378 tests passing" />
-  <img src="https://img.shields.io/badge/Node.js-24%2B-5d7a3e" alt="Node.js 24 or newer" />
-  <img src="https://img.shields.io/badge/local--first-no%20cloud-d9a234" alt="Local first" />
-</p>
+**Video Presentation:** [Unlisted Youtube Link]
 
-PaceTown turns a student's real commitments into a readable campus world:
-schedule pressure becomes weather and load, flexible work can be moved with
-consent, difficult work becomes one checkpoint, guardians provide contextual
-support, recovery stays equal and optional, and the Journal preserves what
-happened for next time.
+**Presentation Slides:** [Public Link]
 
-> This repository contains a functional browser prototype. It does not require
-> a cloud backend, AI provider, or Google Calendar connection.
->
-> Built as a hackathon vertical slice: one campus, one player, one complete
-> loop — designed so the judging story runs in under three minutes on real-task
-> progress.
+## **1. Project Overview**
 
-## Contents
+**The Problem.** University stress is rarely caused by a single assignment. It accumulates from classes, deadlines and revision; part time work, commuting, clubs and errands; unclear instructions and work that feels too large to start; difficulty estimating how long things take; context switching and competing priorities; low energy and insufficient recovery; and losing track of where to resume after an interrupted session. The stakeholders are general university students balancing coursework, part time work, social commitments, errands, and their physical and mental wellbeing at the same time.
 
-- [Product Flow](#product-flow)
-- [The Problem](#the-problem)
-- [Product Promise](#product-promise)
-- [What Is Included](#what-is-included)
-- [Guardian System](#guardian-system)
-- [Places of Campus Grove](#places-of-campus-grove)
-- [Principles](#principles)
-- [Routes](#routes)
-- [Run Locally](#run-locally)
-- [Presenter Demo](#presenter-demo)
-- [Architecture](#architecture)
-- [Privacy and Data](#privacy-and-data)
-- [Quality](#quality)
-- [Assets](#assets)
-- [Project Documents](#project-documents)
-- [Platform & Scope](#platform--scope)
+Similar apps exist, and each falls short in a specific way: traditional planners (such as Notion or Google Calendar) show the work but do not help a student begin it; focus timers (such as Forest or Pomodoro apps) measure time but do not clarify what to do; relaxation games provide a break but leave the underlying responsibility untouched; and general AI assistants can produce content but ignore capacity, scheduling pressure, continuity, and the student's need to remain in control. PaceTown connects these missing pieces and is deliberately never pitched as an upload and complete tool.
 
-## Product Flow
+**Our Solution.** PaceTown is a cozy, browser only pixel art game where a student's real week becomes a readable campus town. It calculates an explainable Daily Load, proposes safe calendar moves that need explicit approval, turns one scary task into one checkpoint with a guardian beside you, rewards honest stopping and intentional rest, and writes everything down so returning never means reconstructing. No cloud, no AI provider, and no streaks required.
 
-```mermaid
-flowchart LR
-  A[Landing /game] --> B[Town Hall<br/>understand the week]
-  B --> C[Daily Load<br/>explain the number]
-  C --> D[Clock Tower<br/>preview safe moves]
-  D --> E{Student approves?}
-  E -->|Approve or dismiss| F[Library room]
-  E -->|Drag manually| D
-  F --> G[Mira proposes<br/>one checkpoint]
-  G --> H[Pace Session<br/>work with context]
-  H --> I[Save what changed<br/>and next action]
-  I --> J[Recover or continue]
-  J --> K[Journal / Keepsake / Garden]
-  K --> F
-```
+Feature set:
 
-The core loop is intentionally small:
+* Plain language week intake with visible parser assumptions and editable commitments
+* Explainable Daily Load: weighted demand, load bands, and Load Weather on the map
+* Walkable Clock Tower with a week long Week Board: consent previews, destination comparison, drag and drop, deadline guards, and undo
+* Walkable Library: Mira's open work list, blocker routing, single checkpoint proposals, and definitions of done
+* Guided Pace Sessions: timers, scratchpad, saved progress notes, contextual help, and completed, partial, blocked, or rescheduled outcomes
+* Welcome back desk summary, open work resume badge, and guardian spoken HUD resume ritual
+* Guardian picker with routed defaults, one real action button per guardian, and a Guardian Council that proposes without ever applying changes
+* Fullscreen recovery scenes (Gentle Ripples, Chime Drift, Warm Cup, Firefly Stories, Night Lanterns) plus the Pocket of Green real world quest with local photo checks
+* Private Keepsakes with local pixel filter or symbolic fallback, Collection, Recovery Garden, Future Mailbox, and a week long Journal
+* Backpack, Daily Briefing, Town List, Settings, Shop, Quiet Mode, High Contrast, versioned saves, JSON export, and a reset demo shortcut
 
-```text
-Understand the week
-    → move what can safely move
-    → choose one real task
-    → make one checkpoint
-    → work with a guardian
-    → recover intentionally
-    → return with the next action intact
-```
+### Who it serves
 
-PaceTown is not a productivity scoreboard. It has no streak pressure, missed-
-day messaging, health score, or automatic academic completion. A partial
-session, a realistic reschedule, a recovery choice, and stopping intentionally
-are all valid outcomes.
+General university students, especially those balancing classes with part time work, commuting, clubs, and errands, and students with different energy levels, access needs, and recovery preferences. The system never assumes the same capacity, schedule, social needs, or mobility for everyone: every recovery path has an indoor alternative, every place has a Town List equivalent, and every check in can be skipped.
 
-## The Problem
+### Before and after this product
 
-University stress is rarely caused by a single assignment. It accumulates
-from classes, deadlines and revision; part-time work, commuting, clubs and
-errands; unclear instructions and work that feels too large to start;
-difficulty estimating how long things take; context switching and competing
-priorities; low energy and insufficient recovery; and losing track of where
-to resume after an interrupted session.
+Before: Thursday reads 103% and the student sees only a wall of tasks, so the assignment waits another day. After: the same Thursday reads 95% with consent, one checkpoint has a finish line, a guardian sits through the session, the note and next action are saved, and returning feels like being handed back your own desk.
 
-Existing tools each miss a piece: planners show the work but don't help a
-student begin it; focus timers measure time but don't clarify what to do;
-relaxation games provide a break but leave the responsibility untouched;
-general AI assistants can produce content but ignore capacity, scheduling
-pressure, continuity, and the student's need to remain in control. PaceTown
-connects these missing pieces — and is deliberately never pitched as "upload
-an assignment and let AI complete it."
+## **2. Ideation & Process**
 
-## Product Promise
+### **2.1 Ideas We Considered**
 
-PaceTown helps students:
+Major alternatives weighed during the project, in decision order. Chosen ideas are listed first.
 
-1. **See pressure clearly** without turning it into a diagnosis.
-2. **Reduce avoidable pressure** through explainable, consent-based rebalancing.
-3. **Choose one manageable action** instead of facing the entire workload at once.
-4. **Get practical help while working** — planning, explanation, brainstorming, review, debugging, or quiet accompaniment.
-5. **Regulate pressure when needed** through short, non-competitive mini-games.
-6. **Preserve partial progress** and return through a clear next action.
-7. **Build a comforting town** through sustainable choices rather than relentless output.
+| Idea | Why it was dropped / kept |
+| :---- | :---- |
+| A (Chosen) — One campus (Campus Grove), one player, one complete understand, make space, work, recover, return loop | Kept: the smallest slice that still demonstrates the full product promise end to end |
+| B (Chosen) — Deterministic browser only rules for everything (parsing, load, rebalance, guidance, photo checks) | Kept: runs with no cloud or AI; every assisted feature has a local fallback, so the demo cannot break on connectivity |
+| C (Chosen) — Guardians as functional companions with distinct actions, plus consent gated changes | Kept: differentiates the product from dashboards and mascot apps; every change needs explicit approval |
+| D — Coastal Commons and Night Market as extra environments | Dropped for the slice; documented as post core progression goals that share all data and progression |
+| E — Full game engine (Phaser) for the town renderer | Dropped: a layered DOM and CSS town keeps the build light and testable; Phaser atlases are reused as build time frame data only |
+| F — Live Google Calendar integration | Deferred: seeded calendar data stands in; the adapter seam is kept for later |
+| G — Cloud AI conversations for guardian help | Deferred: deterministic local guidance ships instead; a remote provider can be swapped in behind the same interface |
 
-When recovery is the safest practical next action, PaceTown foregrounds
-recovery while preserving the student's choices to continue, shorten the
-task, reschedule, choose a different response, or decline.
+### **2.2 Ideation Boards**
 
-PaceTown is not a medical, therapy, or crisis-assessment product; not a
-leaderboard for wellbeing or output; never an automatic rearranger of a
-student's life; never a streak app; and never a tool that marks academic
-work complete because a timer ended or an answer was generated.
+> 🎨 **Interactive Visual Ideation Board:** [Open Interactive Board (Live Webpage)](https://htmlpreview.github.io/?https://github.com/CSL06/PaceTown/blob/main/ideation-board.html)  
+> *(Click the interactive link to explore the live corkboard with animated gameplay anchors, guardian portraits, and full study citations)*
 
-## What Is Included
+![PaceTown Living Ideation Board](docs/ideation-board.png)
 
-| Area | Current capability |
-| --- | --- |
-| **Understand** | Natural-language intake, visible parser assumptions, editable commitments, Daily Load arithmetic, bands, and Load Weather |
-| **Make space** | Walkable Clock Tower, seven-day Week Board, Kai's consent preview, destination comparison, drag/drop, deadline guards, and undo |
-| **Do the work** | Walkable Library, Mira's open-work list, task guidance, blocker routing, one checkpoint, definition of done, timer, scratchpad, and contextual help |
-| **Return** | Welcome-back desk summary, open-work resume badge, HUD resume card, saved notes, next action, and Journal timeline |
-| **Recover** | Full-screen Gentle Ripples, Chime Drift, Warm Cup, Firefly Stories, Night Lanterns, plus Pocket of Green IRL recovery |
-| **Remember** | Local photo heuristics, privacy-aware Keepsakes, pixel filter/symbolic fallback, Collection, Recovery Garden, and Future Mailbox |
-| **Operate** | Town List, Guardian Council, Daily Briefing, Backpack, Settings, Shop, Quiet Mode, High Contrast, export, and `/reset` |
+*The PaceTown Ideation Board maps our entire design process from root problem to working vertical slice:*
+* **1. Multi-Layer Problem Tree & Guardian Mindmap:** Deconstructs the 5 whys of student burnout (time blindness, cognitive dread, shame, rest guilt, life admin) and branches each to a specialized guardian (Kai, Mira, Sky, Sol, Goh) with its mechanical solution.
+* **2. The Restorative Pace Loop:** Traces the 5-phase student journey across live prototype environments (Campus Grove ➔ Clock Tower ➔ Library ➔ Pond ➔ Café) demonstrating how context is preserved without stress.
+* **3. Market Research & Behavioral Grounding:** Grounds our gamification in a 2023 ScienceDirect study of 318 Malaysian users (55% continuance variance explained by usefulness and habit) and precedents like *Focus Friend* and cozy MMORPG co-presence.
+* **4. Concept Matrix (Breadth of Exploration):** Contrasts PaceTown against 3 dropped alternative paradigms (*The Strict Warden*, *Study Tamagotchi*, *Cloud AI Ghostwriter*), detailing why punitive and auto-completion models were rejected.
+* **5. Prototype Evolution Track:** Details our visual and mechanical pivots across 4 iterations (V1 red alert wireframe ➔ V2 sprawling map ➔ V3 autonomous scheduler ➔ V4 consent-gated restorative slice).
+
+---
+
+### **2.3 Mentor Consultation**
+
+| Date | Mentor | Feedback Received | What Was Changed |
+| :---- | :---- | :---- | :---- |
+| 4 Sept 2026 | Scope, Precedents &amp; Value Distinction Mentor | *"Gamifying workflow and stress management is fully in-scope and differentiates the project. Ground the approach with established precedents (MMORPG mechanics, desktop companions, Focus Friend) and clearly define what makes the solution distinct and better beyond having a game aesthetic."* | Articulated our core value distinction: active capacity protection with consent-gated rebalancing and zero-guilt recovery (rather than passive task tracking). Grounded the gamified loop in behavioral research (ScienceDirect 2023 study). |
+| 11 Sept 2026 | Demo Presentation &amp; Time Management Mentor | *"Bundle features into 2–3 clear conceptual groups (Smart Time Management, Guided Productivity, Stress Relief/Recovery). Highlight purpose over mechanics: communicate why features matter to an exhausted student, not micro form clicks. Use short engaging clips and provide an interactive link for judges."* | Streamlined product narrative into 3 core pillars; reframed all documentation around student emotional impact; embedded focused visual prototype clips; provided direct one-click interactive links to the live prototype and standalone ideation board. |
+
+Log each session with its date, mentor, concrete feedback, and the resulting change. Feedback the team respectfully declined still counts: record the reason it did not fit the product promise.
+
+## **3. Design & Prototype**
+
+**UI Prototype:** [Open UI Prototype](https://pacetown.vercel.app/)
+
+Key screens from the running prototype. 
+
+![Campus Grove map](assets/readme/main.gif)
+*The walkable town. Every place is reachable on foot or from the Town List; load shows as weather, not damage.*
+
+![Clock Tower planning room](assets/readme/town%20clock.gif)
+*Kai's Week Board opens on a consent preview: softly outlined suggested moves, locked fixed events, before and after loads, and Approve or Dismiss. A manual drag and drop calendar sits underneath.*
+
+![Library study room](assets/readme/library.gif)
+*Talk to Mira, choose from the open work list with resume badges, answer the blocker question, use one checkpoint proposal, then work at the study desk with timer, scratchpad, saved notes, and Ask Mira.*
+
+![Gentle Ripples water](assets/readme/pond.gif)
+*Tap the pond to make ripples: petals drift, a fish swims, flowers bloom with participation. No score, no failure, no minimum time; leaving early is valid, and only the first recovery of a run pays.*
+
+![Warm Cup ritual](assets/app-runtime-v1/game/recovery/backgrounds/warm-cup.png)
+*Choose a drink, pour, stir, and sit by the window in an unruinable four step ritual with Sky keeping quiet company. Same contract as every recovery scene: no score and no wrong order.*
 
 ## Guardian System
 
@@ -170,149 +138,40 @@ replacement.
   </tbody>
 </table>
 
-Guardian routing follows the selected blocker or task intent. Guidance is
-local, deterministic, editable, and clearly separated from the student's own
-work. The Guardian Council combines relevant specialties into one foreground
-recommendation while preserving student choice.
+## **4. What Makes It Different**
 
-## Places of Campus Grove
+* **Consent previews, not auto scheduling.** The engine simulates moves and shows before and after values; nothing mutates until the student approves. Most planners either do nothing or rearrange silently.
+* **One checkpoint, not a project plan.** Mira proposes exactly one small step with a visible definition of done; Make it smaller is always one click.
+* **Return is a designed moment.** Welcome back desk summary, open work resume badge, and a guardian spoken HUD card (task, checkpoint, time, last note, next action). No other student tool treats resuming as a first class feature.
+* **Honest stopping is rewarded.** Partial, blocked, and rescheduled are valid, paid outcomes; the first recovery pays once and can never be farmed.
+* **Photo parity.** Self confirmation and photo confirmation earn identically; keepsakes never prove a quest happened.
+* **Deterministic and offline.** Every number is explainable and every AI style feature has a local fallback, so the demo cannot break on connectivity.
 
-Every place is reachable on foot (walk + `E`) and from the Town List — nothing
-is pointer-only. Each place below names its resident guardian (where one
-resides), the surface it opens, its exact functions, and the product rule it
-demonstrates.
+Comparison against the named existing solutions:
 
-| Place | Guardian | Opens | Function | Key rule |
+|  | PaceTown | Planners / timers | Relaxation games | General AI assistants |
 | --- | --- | --- | --- | --- |
-| Town Hall | — | Intake sheet panel | Type the week in plain language; paste an assignment brief; review the parse preview with confidence and visible assumptions; edit the commitment list; re-parse; save; extract deliverables | Nothing is saved until approved; nothing is interpreted silently |
-| Clock Tower | Kai | Walkable room + Week Board | Open the seven-day board; Ask Kai to rebalance with before/after preview; approve some, all, or none; pick a destination day; drag tasks manually with deadline guards; undo; talk to Kai | Nothing moves until explicitly approved |
-| Library | Mira | Walkable room scene | Talk to Mira for the open-work list by day; task summary; blocker question; one proposed checkpoint (use / make smaller); study-desk session with timer, scratchpad, and Ask Mira; finish vs outcome flows; welcome-back panel; open-work resume badge | Suggestions are never submitted work; consent at every step |
-| Recovery Pavilion | Sol | Recover sheet panel | All five recovery activities plus step-away-from-screen; Not now; post-recovery Journal/another-recovery; resume a paused session | No score; declining costs nothing; first recovery pays |
-| Recovery Garden | — | Garden sheet panel | Read growth stages fed by sustainable choices; recover again | Nothing wilts; absence removes nothing |
-| Sky's Tea Corner | Sky | Fullscreen Warm Cup | Choose a need and drink; pour; pick an ingredient; stir; take it to the window; close-out response or skip | No recipe can fail; no rush and no wrong order |
-| Market | Goh | Fullscreen Night Lanterns | Name a concern (or none); choose a symbol; light the lantern; place it; set it down with meaning; keep a phrase only by explicit choice | Words are optional and stay private |
-| Home | — | Home sheet panel | Quiet Mode; High contrast; capacity check-in; Exit Quest save-and-stop; export save (JSON); delete local data | No guilt message, no streak, nothing lost by being away |
-| Guardian Council | Rotating voices | Council sheet panel | Three pressure-based interpretations; one foregrounded recommendation; vote: work, rebalance, recover, gather, or choose-for-self | Proposes only; the bell never applies a schedule change |
-| Future Mailbox | — | Mailbox sheet panel | Write a next action or kind note; put it in the mailbox; read the waiting list | The same note twice is one note: history recorded, paid once |
-| Post Office | — | Journal sheet panel | Seven-day strip with per-day filtering; automatic timeline of rebalances, sessions, recoveries, keepsakes, rewards; empty-state link to Town Hall | No mood score, no streak, no missed-day messaging |
-| Backpack point | — | Backpack sheet panel | Locked/flexible table with minutes and weighted demand; bring an item into a session; move one through rebalancing | Carried, not self; the load never bursts |
-| Calm Corner | — | Calm sheet panel | All five recovery activities with zero prerequisites; muted audio; leaving early always valid | Rest needs no permission |
-| Park | — | Pocket sheet panel | Four settings (outside, window, indoor plant, image); self or photo confirm with camera fallback; done / partly / stop; recorded: keepsake, resume, schedule, recover-longer, return to town | Parity across all paths and confirmations |
+| Shows total load | Yes, explained | Partially | No | No |
+| Helps begin work | Yes, one checkpoint | Rarely | No | Sometimes, no capacity awareness |
+| Safe rescheduling | Yes, consent previews | Manual only | N/A | No |
+| Preserves context | Yes, resume ritual | Rarely | No | No |
+| Rest without guilt | Yes, rewarded once | No | Yes, but responsibility untouched | No |
 
-## Principles
+## **5. Technical Architecture & Feasibility**
 
-Merged from the vision and the implementation plan — every feature must satisfy all of these:
+**Tech stack**
 
-1. **Support, never punish.** Missed quests remove no progress, break no streaks, damage no town.
-2. **Explain every score.** Students can see exactly which commitments created an overload warning.
-3. **Propose, never take control.** Rebalancing and keepsake placement require explicit approval.
-4. **Respect different capacities.** Onboarding creates personalized defaults that remain editable; energy bends guidance without hiding raw numbers.
-5. **Keep wellbeing private.** No public comparisons, leaderboards, mandatory proof, or photo advantage.
-6. **Make recovery flexible.** Quests can be replaced without penalty; rest needs no prerequisites.
-7. **Remain useful without AI.** Every assisted feature has a deterministic local fallback.
-8. **Remain accessible outside the map.** Every spatial interaction is mirrored in the Town List with keyboard, focus, contrast, and reduced-motion support.
-9. **Help with the work itself.** Every pressure insight leads to a practical next action, guided work, or a deliberate recovery choice.
-10. **Reward sustainable progress.** Starting, checkpoints, asking for help, realistic replanning, and intentional stopping — not raw hours or constant output.
-11. **Preserve academic agency.** The student sees, edits, and owns every plan and submitted artifact. Timers, recovery activities, and guardian suggestions never complete academic work.
-12. **Foreground recovery when capacity is low.** Recovery becomes the primary recommendation while continue, shorten, reschedule, and decline stay available.
-13. **Keep recovery paths equal.** Self-confirmation, optional photos, digital activities, and IRL activities never create reward advantages.
-14. **Preserve continuity.** Task, checkpoint, scratchpad, progress note, next action, and timer context survive return.
+| Layer | Choice | Why we chose it | Constraints expected |
+| --- | --- | --- | --- |
+| Frontend | React + TypeScript + Vite | Component model fits panels and scenes; strict types catch state shape drift; fast dev loop for a demo | Bundle size grows with scenes; code splitting used on heavy routes |
+| Town rendering | Layered DOM and CSS pixel art, no game engine | Keeps the build light, testable with Testing Library, and accessible (keyboard, focus, screen reader) | Not a full engine; complex physics or map work would need a rework |
+| Persistence | localStorage behind a storage adapter (pacetown.game, versioned and migrated) | Zero backend for the slice; single device demo works offline | Single device only; IndexedDB or a server is an explicit later swap |
+| Auth | Browser only local accounts and guest demo path | No hosted auth to operate; guest path opens the demo in one click | Clearly not production authentication; a hosted provider is a later adapter |
+| Tests | Vitest, jsdom, and Testing Library (378 tests, 40 files); Playwright E2E | jsdom covers panels and scenes fast; Playwright covers real browser flows | Playwright browsers must be installed locally for E2E |
+| Quality gates | ESLint, token checks, TypeScript build, Vitest, and Vite build in CI | Catches drift before merge; all green on main | CI needs Node 24; offline PWA shell registers in production builds only |
+| Hosting | Static build (dist, git ignored) served by any static host; npm run preview locally | No server code exists, so any static host works | No backend, so nothing to scale; deployment infrastructure is outside the slice |
 
-## Routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Landing page, live town, product introduction, and primary guest entry |
-| `/signup` | Browser-only account creation and guest-to-account upgrade |
-| `/login` | Browser-only sign-in and simulated Google profile flow |
-| `/welcome` | Skippable four-step onboarding: capacity, day intake, recovery preferences, accessibility |
-| `/town` | Authenticated Campus Grove experience |
-| `/game` | Presenter front door; creates a guest session and opens the seeded week |
-| `/demo` | Narrow legacy mentor demo with Sky and guided breathing |
-| `/reset` | Developer/presenter shortcut; clears the game save and session, then opens `/game` |
-
-## Run Locally
-
-### Requirements
-
-- Node.js 24 or newer
-- npm 10 or newer
-
-### Setup
-
-```powershell
-git clone https://github.com/CSL06/PaceTown.git
-cd PaceTown
-npm install
-npm run dev
-```
-
-Open the URL printed by Vite. The usual address is
-`http://localhost:5173/`.
-
-### Commands
-
-```powershell
-npm run dev          # development server
-npm run lint         # ESLint
-npm run check:tokens # design-token validation
-npm run typecheck    # TypeScript build check
-npm test             # Vitest suite
-npm run test:watch   # Vitest watch mode
-npm run build        # production typecheck + Vite build
-npm run preview      # serve dist locally
-npm run test:e2e     # Playwright browser suite, when browsers are installed
-```
-
-For a clean presenter run:
-
-```text
-http://localhost:5173/reset
-```
-
-`/reset` clears the game save and active session, then redirects to `/game`.
-Home and Settings provide the user-facing export and delete/reset controls.
-
-## Presenter Demo
-
-The canonical recording guide is [`prototypeflow.md`](prototypeflow.md). It is
-organized as eleven connected recording takes with explicit `ACTION`, `SAY`,
-developer notes, and handoffs to the next take.
-
-Short version:
-
-1. `/reset` → `/game` → Kai's first-run introduction → Town Hall.
-2. Save commitments and explain the live Daily Load calculation.
-3. Clock Tower → Kai's consent preview → compare → approve or dismiss.
-4. Library → Mira → open work → blocker → one checkpoint → study desk.
-5. Pace Session → task-specific question → progress note → next action.
-6. Welcome Back → resume with task, note, next action, and elapsed time intact.
-7. Gentle Ripples or Pocket of Green → Keepsake → seven-day Journal.
-
-### Judging story
-
-The hackathon success loop, end to end on a real task in under three minutes:
-
-```text
-Student adds commitments across mental, time, physical, social, errand demands
-        ↓
-PaceTown calculates and explains daily load
-        ↓
-PaceTown foregrounds the safest practical response
-        ↓
-Make space by rebalancing / handle one task in a guided session / recover first
-        ↓
-The student explicitly chooses, edits, or declines the recommendation
-        ↓
-Partial progress and the next starting point are saved
-        ↓
-XP, coins, garden growth, and a calmer town reflect sustainable progress
-```
-
-The story must show progress on a real task — not only a changed schedule or
-a completed relaxation activity.
-
-## Architecture
+**System architecture diagram**
 
 ```mermaid
 flowchart TB
@@ -326,111 +185,16 @@ flowchart TB
   STATE --> DOMAIN
 ```
 
-The project uses a one-way boundary:
+**Build plan & scope**
 
-- `src/domain/` owns calculations, policies, guidance, parsing, workload,
-  calendar, rebalance, rewards, recovery, photo, and Keepsake rules.
-- `src/game/` owns React scenes, panels, navigation, persistence, movement,
-  accessibility, and presentation.
-- `src/landing/` owns the public product introduction and live campus preview.
-- `src/auth/` owns the local browser-only account/session seam.
-- `src/theme/` owns light/dark theme tokens and pixel typography.
+Already built in this slice: intake and parsing, Daily Load and Load Weather, the Clock Tower Week Board with consent flow, the Library guided work loop with sessions and outcomes, welcome back continuity, all five recovery scenes, Pocket of Green with local photo checks, the keepsake pipeline, Journal, Mailbox, Backpack, Council, and Garden, settings and shop, accessibility, versioned saves, JSON export, reset, and the offline PWA shell.
 
-Important domain modules:
+Explicitly out of scope: hosted authentication and multi device sync, IndexedDB or server backed repositories, live Google Calendar, cloud AI conversations, deep shop progression and production town upgrades, the full Recovery Garden catalog and long term social features, Android packaging, and production deployment infrastructure.
 
-| Module | Responsibility |
-| --- | --- |
-| `workload.ts` | Capacity, weighted demand, percentages, bands, and energy guidance |
-| `parse.ts` | Local schedule and assignment-brief parsing |
-| `calendar.ts` | Week-day placement, ordering, and movement |
-| `rebalance.ts` | Safe move proposals and explicit application |
-| `plans.ts` | Blocker routing, checkpoints, guardians, and checkpoint resolution |
-| `taskGuidance.ts` | Deterministic task-aware checkpoint proposals |
-| `guidance.ts` | Contextual help modes and guardian lenses |
-| `quests.ts` | Quest selection and one foreground recommendation |
-| `regulation.ts` | Recovery catalogue and preference policy |
-| `photo.ts` / `keepsake.ts` | Local photo checks and privacy-aware memory creation |
-| `rewards.ts` | XP, coins, levels, and reward parity |
+**Resources and time**
 
-## Data and Privacy
+A four person student team built this slice with zero cost tooling: React, TypeScript, Vite, Vitest, Testing Library, Playwright, and static hosting, with all art generated in house or sourced from credited packs. Frontend, domain modeling, pixel art pipeline, and QA verification were covered inside the team. The scope above is deliberately one campus loop because that is what fits a hackathon window honestly; every deferred item has a named seam (storage adapter, guidance provider interface, data driven districts) so a follow up build starts from working code, not from scratch.
 
-- Game data is stored under `pacetown.game` in browser `localStorage`.
-- Account data is stored locally under `pacetown.accounts` and `pacetown.session`.
-- Saves are versioned and migrated forward; missing fields use safe defaults.
-- Photos are optional and checked locally for greenery/daylight heuristics only.
-- A Keepsake never proves that a recovery quest happened.
-- No external AI, cloud sync, Google Calendar, or server API is required.
-- Home and Settings provide export and deletion controls.
+**Where it can go next**
 
-## Testing and Quality
-
-The current suite contains **378 passing tests across 40 files**. It includes:
-
-- Domain arithmetic, bands, calendar, rebalance, guidance, rewards, and migrations
-- Task guidance and guardian routing
-- Clock Tower movement, proposal preview, drag/drop, deadlines, and undo
-- Library task flow, checkpoint proposals, session outcomes, and continuity
-- Full-screen recovery activity scenes and response completion
-- Pocket photo verification, Keepsake consent, and reward parity
-- Seven-day Journal bucketing and neutral empty-day behavior
-- Landing, authentication, onboarding, themes, settings, error logging, and UI behavior
-- Runtime reset, save export, resume cards, and accessibility affordances
-
-Run the CI-equivalent checks locally:
-
-```powershell
-npm run lint
-npm run check:tokens
-npm run typecheck
-npm test
-npm run build
-```
-
-`npm run test:e2e` runs the Playwright browser suite when its browser
-environment is installed. GitHub Actions runs lint, typecheck, unit/component
-tests, and the production build on pushes and pull requests.
-
-## Assets
-
-Runtime artwork is sourced from `assets/app-runtime-v1/`, including:
-
-- Campus world, Library, Clock Tower, Recovery scenes, and Week Board artwork
-- Player and five guardian portrait/sprite packages
-- Recovery atlases for Ripples, Chime Drift, Warm Cup, Firefly Stories, and Night Lanterns
-- PWA icons and the README hero card
-
-Downloaded third-party packs and archives are intentionally excluded from Git.
-See [`assets/third-party/ASSET_MANIFEST.md`](assets/third-party/ASSET_MANIFEST.md)
-for source links, intended use, and license instructions.
-
-## Project Documents
-
-- [`PACETOWN_PROJECT_VISION.md`](PACETOWN_PROJECT_VISION.md) — product vision, principles, and guarantees
-- [`PaceTown_Hackathon_Implementation_Plan.md`](PaceTown_Hackathon_Implementation_Plan.md) — implementation requirements and contracts
-- [`prototypeflow.md`](prototypeflow.md) — current presenter recording script and developer notes
-- [`CAMPUS_GROVE.md`](CAMPUS_GROVE.md) — Campus Grove usage and architecture notes
-- [`DESIGN.md`](DESIGN.md) — visual and interaction design system
-- [`assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md`](assets/PACETOWN_ASSET_COMPLETION_CHECKLIST.md) — asset status and validation
-
-## Platform & Scope
-
-Responsive browser application, installable as a Progressive Web App, running
-fully testable locally before any deployment work. Built with React,
-TypeScript, and Vite; the town is a layered DOM/CSS scene rather than a full
-game engine. First implementation targets desktop and phone viewports with
-keyboard, touch, focus, contrast, and reduced-motion support throughout.
-
-Campus Grove is the only environment in the hackathon vertical slice;
-Coastal Commons and Night Market remain post-core progression goals. Seeded
-calendar data stands in for live integration; no cloud service is required
-for the local demonstration.
-
-The prototype intentionally leaves these production adapters out:
-
-- Hosted authentication and multi-device synchronization
-- IndexedDB or server-backed repositories
-- Live Google Calendar integration
-- Cloud AI conversations
-- Deep shop/catalog progression and production town upgrades
-- Full Recovery Garden catalog and long-term social features
-- Android packaging and production deployment infrastructure
+The same loop scales without redesign: more student groups with different capacity profiles, additional districts sharing all data and progression, institution onboarding that imports a real week, and installable PWA distribution already in place. Each step reuses the consent, parity, and no shame contracts, so growth never requires weakening the product promise.
